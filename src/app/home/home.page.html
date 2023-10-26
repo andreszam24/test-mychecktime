@@ -1,0 +1,12 @@
+<ion-header [translucent]="true">
+  <ion-toolbar [color]="networkStatus && networkStatus.connected? 'primary':'dark'">
+    <ion-title>home</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div id="container">
+    <strong>Network status</strong>
+    <div>{{networkStatus | json}}</div>
+  </div>
+</ion-content>
