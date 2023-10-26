@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { Toast } from '@capacitor/toast';
 
 @Component({
   selector: 'app-toast',
@@ -9,8 +10,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ToastComponent  implements OnInit {
 
+  @Input() toastText: string = '';
+  @Input() toastDuration: 'short' | 'long' = 'short';
+
   constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.showHelloToast();
+  }
+
+  async showHelloToast() {
+    await Toast.show({
+      text: this.toastText,
+      duration: this.toastDuration,
+      position:'top',
+    });
+  };
 
 }
