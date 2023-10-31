@@ -2,21 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import {InternetStatusComponent} from '../internet-status/internet-status.component';
-import {ToastComponent} from '../toast/toast.component';
-import { Toast } from '@capacitor/toast';
+import {InternetStatusComponent} from '../../components/internet-status/internet-status.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, InternetStatusComponent,ToastComponent]
+  imports: [IonicModule, CommonModule, FormsModule, InternetStatusComponent]
 })
 export class HomePage implements OnInit {
-
-  toastText: string = 'Hola';
-  toastDuration: 'short' | 'long' = 'long';
 
   constructor() { }
 
