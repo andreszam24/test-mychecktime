@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import {InternetStatusComponent} from '../../components/internet-status/internet-status.component';
 
+
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
