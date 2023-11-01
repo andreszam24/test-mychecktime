@@ -11,14 +11,14 @@ import {ToastComponent} from '../../components/toast/toast.component';
   templateUrl: './internet-status.component.html',
   styleUrls: ['./internet-status.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, InternetStatusComponent,ToastComponent]
+  imports: [IonicModule, CommonModule, FormsModule,ToastComponent]
 
 })
-export class InternetStatusComponent  implements OnInit {
+export class InternetStatusComponent implements OnInit {
 
   networkStatus!:ConnectionStatus
   toastText: string;
-  toastDuration: number = 2000;
+  toastDuration: number = 5000;
   color: string;
   @ViewChild('toastContainer', { read: ViewContainerRef }) toastContainer: ViewContainerRef;
   
@@ -41,10 +41,12 @@ export class InternetStatusComponent  implements OnInit {
 
   toastStatus(){
     if (this.networkStatus.connected) {
-      this.toastText = 'Estás en línea ahora';
+      this.toastText = '¡Buena noticia! Hemos recuperado la conexión a Internet. ' +
+      'Sincronizaremos todo tu trabajo ahora mismo.';
       this.color = "light";
     } else {
-      this.toastText = 'Estás desconectado ahora';
+      this.toastText = '¡Oops! Parece que hemos perdido la conexión a Internet. ' +
+      'No te preocupes, la función offline te permitirá seguir trabajando.';
       this.color = "dark";
     }    
     this.showHelloToast();
@@ -58,4 +60,5 @@ export class InternetStatusComponent  implements OnInit {
     factory.instance.color = this.color;
 
   }
+
 }
