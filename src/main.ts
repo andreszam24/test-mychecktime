@@ -9,6 +9,13 @@ import { environment } from './environments/environment';
 
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
+import { JwtModule } from "@auth0/angular-jwt";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
+
+export function tokenGetter() {
+  return localStorage.getItem("access_token");
+}
+
 if (environment.production) {
   enableProdMode();
 }
@@ -18,6 +25,18 @@ bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes),
+    importProvidersFrom(
+      JwtModule.forRoot({
+        config: {
+          tokenGetter: tokenGetter,
+          allowedDomains: ["example.com"], //TODO: setear dominio correcto
+          disallowedRoutes: ["http://example.com/examplebadroute/"],
+        },
+      }),
+    ),
+    provideHttpClient(
+      withInterceptorsFromDi()
+    ),
   ],
 });
 
