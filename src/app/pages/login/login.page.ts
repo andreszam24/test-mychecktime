@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { FormsModule} from '@angular/forms';
+import { IonicModule} from '@ionic/angular';
+
 
 @Component({
   selector: 'app-login',
@@ -12,9 +13,13 @@ import { IonicModule } from '@ionic/angular';
 })
 export class LoginPage implements OnInit {
 
+  user:string;
+  password:string;
+
   constructor() { }
 
   ngOnInit() {
+    
   }
 
 }
