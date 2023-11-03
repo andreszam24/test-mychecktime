@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-login',
@@ -13,8 +15,12 @@ import { InternetStatusComponent } from '../../components/internet-status/intern
 })
 export class LoginPage implements OnInit {
 
-  constructor(){}
+  constructor(private router: Router){}
 
   ngOnInit(){}
+
+  goToPatientIntake(){
+    this.router.navigateByUrl('/patient-intake');
+  }
 
 }

@@ -17,7 +17,7 @@ export class WelcomePage implements OnInit {
 
   ngOnInit() {
     setTimeout(() => {
-      this.router.navigateByUrl('/patient-intake');
+      this.router.navigateByUrl('/login');
     }, 3000)
   }
 
