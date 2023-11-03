@@ -6,13 +6,13 @@ import { InternetStatusComponent } from '../../components/internet-status/intern
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.page.html',
-  styleUrls: ['./login.page.scss'],
+  selector: 'app-patient-intake',
+  templateUrl: './patient-intake.page.html',
+  styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, InternetStatusComponent]
 })
-export class LoginPage implements OnInit {
+export class PatientIntakePage implements OnInit {
   isSupported = false;
   barcodes: Barcode[] = [];
 
