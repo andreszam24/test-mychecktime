@@ -1,3 +1,8 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Ingresar</ion-title>
+  </ion-toolbar>
+</ion-header>
 <ion-content [fullscreen]="true">
   <div id="login-spacer">
       <div>
@@ -6,33 +11,24 @@
   </div>
   <form id="login-form1">
     <ion-list>
-      
-      <ion-item id="login-user" no-lines class="userinput">
+
+      <ion-item id="login-user" lines="none" class="userinput">
         <ion-input [(ngModel)]="user" type="email" placeholder="Usuario" name="user"></ion-input>
       </ion-item>
 
-      <ion-item id="login-password" no-lines class="passinput">
+      <ion-item id="login-password" lines="none" class="passinput">
         <ion-input [(ngModel)]="password" type="password" placeholder="Contraseña" name="password"></ion-input>
-        
       </ion-item>
 
-      <ion-item no-lines>
+      <ion-item lines="none">
         <ion-label>Recordarme</ion-label>
         <ion-toggle name="stayInChk"></ion-toggle>
       </ion-item>
-   
+
     </ion-list>
-    
-    <div class="spacer" style="height:40px;" id="login-spacer"></div>
-    
-    <ion-row>
-      <ion-col text-center>
-        <button id="login-button" 
-          ion-button round 
-          color="--ion-color-app-blue" >
-            Iniciar sesión
-        </button>
-      </ion-col>
+
+    <ion-row class="ion-justify-content-center">
+        <ion-button id="login-button" size="default">Iniciar sesión</ion-button>
     </ion-row>
 
   </form>

@@ -24,8 +24,12 @@ ion-content{
 
     #login-form1{
         ion-input {
-            background-color: var(--ion-color-app-blue);
             color: white;
+            border-radius: 5px;
+              ::ng-deep input {
+                padding-left: 55px;
+                caret-color: white;
+              }
         }
     
         ion-input input.text-input {
@@ -39,21 +43,29 @@ ion-content{
         }
     
         .userinput{
-            background: url('../../../assets/svg/userxhdpi.svg') no-repeat;
-            background-size: 220px 40px; 
-            padding-left:35px;
-            padding-top:0px; 
-            background-position-y:2px;
+            ion-input{
+                background: url('../../../assets/svg/userxhdpi.svg') no-repeat,linear-gradient(to right, transparent 20%, var(--ion-color-app-blue) 20%);
+
+
+            }
         }
     
         .passinput{
-            background: url('../../../assets/svg/passwordxhdpi.svg') no-repeat;
-            background-size: 220px 39px; 
-            padding-left:35px;
-            padding-top:0px; 
-            background-position-y:3px;
+            ion-input{
+                background: url('../../../assets/svg/passwordxhdpi.svg') no-repeat,linear-gradient(to right, transparent 20%, var(--ion-color-app-blue) 20%);
+
+            }
         } 
+
+        ion-row{
+            padding-top: 40px;
+            ion-button{
+                --background: var(--ion-color-app-blue);
+                --border-radius: 20px;   
+            }
+        }
+
+        
     }
 }
-
 
