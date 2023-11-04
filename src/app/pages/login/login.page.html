@@ -13,7 +13,7 @@
     <ion-list>
 
       <ion-item id="login-user" lines="none" class="userinput">
-        <ion-input formControlName="user" type="email" placeholder="Usuario" name="user" required pattern="[a-zA-Z0-9]{3,}"></ion-input>
+        <ion-input formControlName="user" type="text" placeholder="Usuario" name="user" required></ion-input>
       </ion-item>
       <ng-container *ngIf="formLogin.controls['user'].touched && formLogin.controls['user'].invalid">
         <p class="error-message">El nombre de usuario es obligatorio.</p>

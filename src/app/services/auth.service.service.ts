@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { URLAuthLogin } from '../resources/urls.resource';
+import { URLAuthLogin, optionsCredentials } from '../resources/urls.resource';
 import { User } from '../models/user.model';
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +16,7 @@ export class AuthServiceService {
     const user = { email, password };
   
     try {
-      const response: any = await this.http.post(URLAuthLogin, user, { withCredentials: true }).toPromise();
+      const response: any = await this.http.post(URLAuthLogin, user, optionsCredentials).toPromise();
   
       if (response) {
         if (response.status === 200) {
