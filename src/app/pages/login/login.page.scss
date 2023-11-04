@@ -55,6 +55,25 @@ ion-content{
                 background: url('../../../assets/svg/passwordxhdpi.svg') no-repeat,linear-gradient(to right, transparent 20%, var(--ion-color-app-blue) 20%);
 
             }
+
+            ion-icon {
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 20px;
+                pointer-events: auto;
+                z-index: 10;
+              }
+              
+             ion-icon.eye-off {
+                display: none;
+              }
+              
+            ion-icon.eye {
+                display: block;
+              }
+              
         } 
 
         ion-row{
@@ -63,9 +82,14 @@ ion-content{
                 --background: var(--ion-color-app-blue);
                 --border-radius: 20px;   
             }
-        }
-
-        
+        }  
     }
+
+    .error-message {
+        color: red;
+        text-align: center;
+        font-size: 12px;
+        margin: 5;
+      }
 }
 
