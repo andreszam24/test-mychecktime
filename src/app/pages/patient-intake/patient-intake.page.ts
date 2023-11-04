@@ -21,6 +21,7 @@ export class PatientIntakePage implements OnInit {
   ngOnInit(){
     BarcodeScanner.isSupported().then((result) => {
       this.isSupported = result.supported;
+      this.scan();
     });
   }
   async scan(): Promise<void> {

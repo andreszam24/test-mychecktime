@@ -17,6 +17,7 @@ import {ToastComponent} from '../../components/toast/toast.component';
 export class InternetStatusComponent implements OnInit {
 
   networkStatus!:ConnectionStatus
+  beforeNetworkStatus: boolean = true;
   toastText: string;
   toastDuration: number = 5000;
   color: string;
@@ -24,7 +25,7 @@ export class InternetStatusComponent implements OnInit {
   
   constructor(private viewContainerRef: ViewContainerRef) { }
 
-  ngOnInit() {
+  async ngOnInit() {
 
     if(Network){ 
       Network.getStatus().then((status)=>{
@@ -40,15 +41,20 @@ export class InternetStatusComponent implements OnInit {
   }
 
   toastStatus(){
-    if (this.networkStatus.connected) {
+    if (this.networkStatus.connected ){//&& !this.beforeNetworkStatus) {
+      this.beforeNetworkStatus = true;
       this.toastText = '¡Buena noticia! Hemos recuperado la conexión a Internet. ' +
       'Sincronizaremos todo tu trabajo ahora mismo.';
       this.color = "light";
-    } else {
+    } else{// (!this.networkStatus.connected ) && this.beforeNetworkStatus) {
+      this.beforeNetworkStatus = false;
       this.toastText = '¡Oops! Parece que hemos perdido la conexión a Internet. ' +
       'No te preocupes, la función offline te permitirá seguir trabajando.';
       this.color = "dark";
-    }    
+    }
+    /*else{
+      return;
+    }  */  
     this.showHelloToast();
   }
 
