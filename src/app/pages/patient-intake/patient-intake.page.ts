@@ -31,9 +31,23 @@ export class PatientIntakePage implements OnInit {
       this.presentAlert();
       return;
     }
-    const { barcodes } = await BarcodeScanner.scan();
-    this.barcodes.push(...barcodes);
-    (window.document.querySelector('ion-app') as HTMLElement).classList.remove('cameraView');
+    // NOTE: To avoid that scan it doesn't work, you may use 5.0.3 versión or higher: npm i @capacitor-mlkit/barcode-scanning@5.0.3
+     //Check if the Google ML Kit barcode scanner is available
+     await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable().then(async (data) => {
+      if (data.available) {
+          // Start the barcode scanner
+          const { barcodes } = await BarcodeScanner.scan();
+          this.barcodes.push(...barcodes);
+      } else {
+          // Install the Google ML Kit barcode scanner
+          await BarcodeScanner.installGoogleBarcodeScannerModule().then(async () => {
+            const { barcodes } = await BarcodeScanner.scan();
+            this.barcodes.push(...barcodes);
+          });
+      }
+  });
+    
+    //(window.document.querySelector('ion-app') as HTMLElement).classList.remove('cameraView');
   }
 
   async requestPermissions(): Promise<boolean> {
