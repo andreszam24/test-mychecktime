@@ -7,7 +7,6 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
 
-import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 import { JwtModule } from "@auth0/angular-jwt";
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
@@ -40,7 +39,6 @@ bootstrapApplication(AppComponent, {
   ],
 });
 
-defineCustomElements(window);
 if (environment.production) {
   enableProdMode();
 }

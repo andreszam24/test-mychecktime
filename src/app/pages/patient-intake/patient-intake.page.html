@@ -5,6 +5,13 @@
 </ion-header>
 
 <ion-content>
+  <ion-searchbar [debounce]="1000" (ionInput)="handleInput($event)" placeholder="Ingrese el número de cédula para buscar el paciente"></ion-searchbar>
+
+  <ion-list>
+    <ion-item *ngFor="let result of results">
+      <ion-label>{{ result }}</ion-label>
+    </ion-item>
+  </ion-list>
   <ion-list>
     <ion-item *ngFor="let barcode of barcodes">
       <ion-label position="stacked">{{ barcode.displayValue }}</ion-label>
@@ -16,7 +23,51 @@
       <ion-icon src="../../../assets/svg/barcode-outline.svg"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-
-  <app-internet-status></app-internet-status>
-
 </ion-content>
+
+
+<ion-card *ngIf="user">
+
+  <ion-list [inset]="true">
+    <ion-item detail="false">
+      <ion-avatar aria-hidden="true" slot="start">
+        <img alt="" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+      </ion-avatar>
+      <ion-label>
+        <strong>{{ user.name }} {{user.lastname}}</strong><br />
+        <ion-text>cc {{ user.id }}</ion-text><br />
+        <ion-note color="medium" class="ion-text-wrap">
+          {{ user.gender }}
+        </ion-note>
+        
+      </ion-label>
+      <div class="metadata-end-wrapper" slot="end">
+        <ion-note color="medium">23-09-1973</ion-note>
+        <ion-icon color="medium" name="chevron-forward"></ion-icon>
+      </div>
+      
+    </ion-item>
+    <ion-item  detail="false">
+      
+      <ion-label>
+        <strong>Cirugía general</strong><br/>
+        <ion-text>#Registro: 028382</ion-text><br />
+        
+      </ion-label>
+      <div class="metadata-end-wrapper" slot="end">
+        <ion-note color="medium">ASA: IV</ion-note>
+        <ion-icon color="medium" name="chevron-forward"></ion-icon>
+      </div>
+    </ion-item>
+    <ion-item detail="false">
+      <ion-label>
+        <strong>Códigos CUPS</strong><br />
+        <ion-badge slot="start">1122</ion-badge>
+        <ion-badge slot="start">11</ion-badge>
+        <ion-badge slot="start">11</ion-badge>
+      </ion-label>
+  
+    </ion-item>
+  </ion-list>
+  
+</ion-card>  
