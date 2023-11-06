@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
-import { User } from 'src/app/models/user.model';
+
+import { MedicalAttention } from 'src/app/models/medical-attention.model';
 
 
 @Component({
@@ -17,7 +18,7 @@ import { User } from 'src/app/models/user.model';
 export class PatientIntakePage implements OnInit {
   isSupported = false;
   barcodes: Barcode[] = [];
-  user: User;
+  medicalAttention: MedicalAttention = new MedicalAttention();
 
   constructor(private alertController: AlertController) { }
 
@@ -41,18 +42,24 @@ export class PatientIntakePage implements OnInit {
     await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable().then(async (data) => {
       if (data.available) {
         // Start the barcode scanner
-        const { barcodes } = await BarcodeScanner.scan();
-        this.barcodes.push(...barcodes);
+        await this.readQR();
       } else {
         // Install the Google ML Kit barcode scanner
         await BarcodeScanner.installGoogleBarcodeScannerModule().then(async () => {
-          const { barcodes } = await BarcodeScanner.scan();
-          this.barcodes.push(...barcodes);
+          await this.readQR();
         });
       }
     });
 
     //(window.document.querySelector('ion-app') as HTMLElement).classList.remove('cameraView');
+  }
+
+  private async readQR() {
+    const { barcodes } = await BarcodeScanner.scan();
+    console.log(JSON.parse(JSON.stringify(barcodes[0].displayValue)));
+    this.medicalAttention = JSON.parse(barcodes[0].displayValue);
+    console.log('Aui', this.medicalAttention.patient);
+    
   }
 
   async requestPermissions(): Promise<boolean> {
@@ -77,14 +84,9 @@ export class PatientIntakePage implements OnInit {
   handleInput(event: any) {
     this.results = [];
     const query = event.target.value.toLowerCase();
-    if(query != ''){
+    if (query != '') {
       this.data = this.patientSearch();
       this.results = this.data.filter((d) => d.toLowerCase().indexOf(query) > -1);
-      this.user = new User();
-      this.user.name = 'Pepito Perez';
-      this.user.lastname = 'Perez';
-      this.user.id = 12345;
-      this.user.gender = 'Masculino';
     }
   }
 
