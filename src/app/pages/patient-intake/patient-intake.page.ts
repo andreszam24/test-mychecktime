@@ -15,10 +15,13 @@ import { MedicalAttention } from 'src/app/models/medical-attention.model';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, InternetStatusComponent]
 })
+
 export class PatientIntakePage implements OnInit {
-  isSupported = false;
-  barcodes: Barcode[] = [];
+
   medicalAttention: MedicalAttention = new MedicalAttention();
+  barcodes: Barcode[] = [];
+  isSupported = false;
+  manualIntake = false;
 
   constructor(private alertController: AlertController) { }
 
@@ -26,15 +29,21 @@ export class PatientIntakePage implements OnInit {
     BarcodeScanner.isSupported().then((result) => {
       this.isSupported = result.supported;
       this.scan();
+    }).catch(async error => {
+      this.manualIntake = true;
+      console.error(error.message);
+      await this.unsupportedBarcodeMessage();
     });
   }
+
+
   async scan(): Promise<void> {
     //(window.document.querySelector('ion-app') as HTMLElement).classList.add('barcode-scanning-active');
     // document.querySelector("body")?.classList.add("barcode-scanning-active");
-
     const granted = await this.requestPermissions();
     if (!granted) {
       this.presentAlert();
+      this.manualIntake = true;
       return;
     }
     // NOTE: To avoid that scan it doesn't work, you may use 5.0.3 version or higher: npm i @capacitor-mlkit/barcode-scanning@5.0.3
@@ -49,6 +58,11 @@ export class PatientIntakePage implements OnInit {
           await this.readQR();
         });
       }
+    }).catch(error => {
+      if(!this.medicalAttention?.patient){
+        this.manualIntake = true;
+      }
+      console.error(error.message);
     });
 
     //(window.document.querySelector('ion-app') as HTMLElement).classList.remove('cameraView');
@@ -56,10 +70,8 @@ export class PatientIntakePage implements OnInit {
 
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
-    console.log(JSON.parse(JSON.stringify(barcodes[0].displayValue)));
-    this.medicalAttention = JSON.parse(barcodes[0].displayValue);
-    console.log('Aui', this.medicalAttention.patient);
-    
+    this.medicalAttention = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
+    this.manualIntake = false;
   }
 
   async requestPermissions(): Promise<boolean> {
@@ -106,6 +118,27 @@ export class PatientIntakePage implements OnInit {
       'Polonia'
     ];
     return cities;
+  }
+
+  private async unsupportedBarcodeMessage() {
+    const alert = await this.alertController.create({
+      header: '¡Ups!',
+      message: 'Parece que tu dispositivo no puede escanear códigos' +
+        ' con la cámara en este momento. Lamentablemente, esta función no está disponible en tu dispositivo.',
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
+  
+  parseJSONMedicalAttentionSafely(obj: any) {
+    try {
+      return JSON.parse(obj);
+    }
+    catch (e) {
+      this.manualIntake = true;
+      console.log(e);
+      return {};
+    }
   }
 
 }
