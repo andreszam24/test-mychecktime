@@ -19,8 +19,4 @@ export class LoginPage implements OnInit {
 
   ngOnInit(){}
 
-  goToPatientIntake(){
-    this.router.navigateByUrl('/patient-intake');
-  }
-
 }
