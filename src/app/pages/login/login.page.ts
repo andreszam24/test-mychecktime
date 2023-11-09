@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
+
 import { Router } from '@angular/router';
+import { InternetStatusComponent } from 'src/app/components/internet-status/internet-status.component';
 
 
 @Component({

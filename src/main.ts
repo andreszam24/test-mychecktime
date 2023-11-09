@@ -11,20 +11,21 @@ import { environment } from './environments/environment';
 import { JwtModule } from "@auth0/angular-jwt";
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
-export function tokenGetter() {
-  return localStorage.getItem("access_token");
-}
-
 if (environment.production) {
   enableProdMode();
 }
+/*export function tokenGetter() {
+  return localStorage.getItem("access_token");
+}
+*/
+
 
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes),
-    importProvidersFrom(
+   /* importProvidersFrom(
       JwtModule.forRoot({
         config: {
           tokenGetter: tokenGetter,
@@ -32,13 +33,9 @@ bootstrapApplication(AppComponent, {
           disallowedRoutes: ["http://example.com/examplebadroute/"],
         },
       }),
-    ),
+    ),*/
     provideHttpClient(
       withInterceptorsFromDi()
     ),
   ],
 });
-
-if (environment.production) {
-  enableProdMode();
-}

@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, AlertController } from '@ionic/angular';
-import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
+import { BrowserModule } from '@angular/platform-browser';
+import {InternetStatusComponent} from '../../components/internet-status/internet-status.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
-
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 
 
@@ -13,7 +15,7 @@ import { MedicalAttention } from 'src/app/models/medical-attention.model';
   templateUrl: './patient-intake.page.html',
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, InternetStatusComponent]
+  imports: [IonDatetime,IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule],
 })
 
 export class PatientIntakePage implements OnInit {
@@ -83,7 +85,7 @@ export class PatientIntakePage implements OnInit {
     const alert = await this.alertController.create({
       header: 'Permission denied',
       message: 'Please grant camera permission to use the barcode scanner.',
-      buttons: ['OK'],
+      buttons: ['OK']
     });
     await alert.present();
   }
@@ -125,7 +127,7 @@ export class PatientIntakePage implements OnInit {
       header: '¡Ups!',
       message: 'Parece que tu dispositivo no puede escanear códigos' +
         ' con la cámara en este momento. Lamentablemente, esta función no está disponible en tu dispositivo.',
-      buttons: ['OK'],
+      buttons: ['OK']
     });
     await alert.present();
   }
