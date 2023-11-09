@@ -7,7 +7,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { URLAuthLogin, headers } from '../resources/urls.resource';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
-import { User } from '../models/user.model';
+
 
 const helper = new JwtHelperService();
 const TOKEN_KEY = 'jwt-token';

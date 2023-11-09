@@ -2,12 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppSpinnerComponent } from '../../components/app-spinner/app-spinner.component'
 import { FormsModule, ReactiveFormsModule, FormBuilder,FormControl, FormGroup, Validators} from '@angular/forms';
-import { IonicModule, AlertController} from '@ionic/angular';
+import { IonicModule, AlertController, NavController, LoadingController} from '@ionic/angular';
 import { HttpClientModule } from '@angular/common/http'; 
 import{ AuthService } from '../../services/auth.service'
 import { Router } from '@angular/router';
 import { of, catchError } from 'rxjs';
-import { NavController, LoadingController } from '@ionic/angular';
 
 
 
@@ -79,21 +78,4 @@ export class LoginPage implements OnInit {
       });
     }
   }
-
-
-  // Llamada al servicio de login
-     /* this.authService.login(this.formLogin.value.email, this.formLogin.value.password)
-        .then((user) => {
-          if (user && user.id) {
-            // El usuario está autenticado
-            this.router.navigateByUrl('/home');
-          } else {
-            // El usuario no está autenticado
-            this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
-          }
-        })
-        .catch((error) => {
-          // Se produjo un error
-          this.errorMensaje = 'Se produjo un error al iniciar sesión. Por favor, inténtalo de nuevo.';
-        });*/
 }
