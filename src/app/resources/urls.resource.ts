@@ -4,7 +4,7 @@ import { HttpHeaders } from '@angular/common/http';
 export const app_version = '1.2.7';
 
 
-const headers = new HttpHeaders({
+export const headers = new HttpHeaders({
     'Content-Type':  'application/json',
     'Authorization': 'Bearer',
     'Access-Control-Allow-Origin' : '*',
