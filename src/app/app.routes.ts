@@ -4,7 +4,7 @@ import { AuthGuard } from './guards/auth.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'welcome',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
   {
@@ -17,9 +17,8 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login.page').then( m => m.LoginPage)
   },
   {
-    path: 'welcome',
-    loadComponent: () => import('./pages/welcome/welcome.page').then( m => m.WelcomePage)
+    path: 'patient-intake',
+    loadComponent: () => import('./pages/patient-intake/patient-intake.page').then( m => m.PatientIntakePage)
   },
-
 
 ];

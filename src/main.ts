@@ -8,11 +8,16 @@ import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
 import { provideHttpClient } from '@angular/common/http';
 import { IonicStorageModule } from '@ionic/storage-angular';
-
+import { JwtModule } from "@auth0/angular-jwt";
 
 if (environment.production) {
   enableProdMode();
 }
+/*export function tokenGetter() {
+  return localStorage.getItem("access_token");
+}
+*/
+
 
 bootstrapApplication(AppComponent, {
   providers: [

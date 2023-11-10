@@ -3,10 +3,14 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>home</ion-title>
+    <ion-title>Hall de pacientes</ion-title>
   </ion-toolbar>
 </ion-header>
-
 <ion-content [fullscreen]="true">
-  <app-internet-status></app-internet-status>
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="goToPatientIntake()">
+      <ion-icon src="../../../assets/svg/person-add-outline.svg"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
 </ion-content>

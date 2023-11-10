@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import{ AuthService } from '../../services/auth.service'
 import { Router } from '@angular/router';
 import { of, catchError } from 'rxjs';
+import { InternetStatusComponent } from 'src/app/components/internet-status/internet-status.component';
 
 
 
@@ -16,7 +17,7 @@ import { of, catchError } from 'rxjs';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, AppSpinnerComponent],
+  imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, AppSpinnerComponent, InternetStatusComponent],
 })
 export class LoginPage implements OnInit {
 
