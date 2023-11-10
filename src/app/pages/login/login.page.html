@@ -13,7 +13,7 @@
     <ion-list>
 
       <ion-item id="login-user" lines="none" class="userinput">
-        <ion-input formControlName="user" type="text" placeholder="Usuario" name="user" required></ion-input>
+        <ion-input formControlName="user" type="email" placeholder="Usuario" name="user" required></ion-input>
       </ion-item>
       <ng-container *ngIf="formLogin.controls['user'].touched && formLogin.controls['user'].invalid">
         <p class="error-message">El nombre de usuario es obligatorio.</p>
@@ -38,9 +38,9 @@
 
     </ion-list>
     <ion-row class="ion-justify-content-center">
-        <ion-button id="login-button" size="default" (click)="doLogin()">Iniciar sesión</ion-button>
+        <ion-button id="login-button" size="default"[disabled]="isLoading" (click)="doLogin()">Iniciar sesión</ion-button>
+        <app-app-spinner *ngIf="isLoading"></app-app-spinner>
     </ion-row>
-
   </form>
 </ion-content>
 <ion-footer>
