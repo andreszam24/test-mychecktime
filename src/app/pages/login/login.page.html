@@ -1,5 +1,48 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>login</ion-title>
+    <ion-title>Ingresar</ion-title>
   </ion-toolbar>
 </ion-header>
+<ion-content [fullscreen]="true">
+  <div id="login-spacer">
+      <div>
+        <img class="menuIcon" src="../../../assets/svg/usuarioxhdpi.svg" alt="passwordxhdpi">
+      </div>
+  </div>
+  <form id="login-form1" #loginForm="ngForm" [formGroup]="formLogin">
+    <ion-list>
+
+      <ion-item id="login-user" lines="none" class="userinput">
+        <ion-input formControlName="user" type="text" placeholder="Usuario" name="user" required></ion-input>
+      </ion-item>
+      <ng-container *ngIf="formLogin.controls['user'].touched && formLogin.controls['user'].invalid">
+        <p class="error-message">El nombre de usuario es obligatorio.</p>
+        <p *ngIf="formLogin.controls['user'].hasError('pattern')" class="error-message">El nombre de usuario debe ser alfanumérico de más de 3 letras.</p>
+      </ng-container>
+
+      <ion-item id="login-password" lines="none" class="passinput">
+        <ion-input formControlName="password" type="{{ passwordVisible ? 'text' : 'password' }}" placeholder="Contraseña" name="password" required pattern="[a-zA-Z0-9]{3,}" class="passinput">
+          <ion-icon slot="icon" name="{{ passwordVisible ? 'eye' : 'eye-off' }}" class="eye-icon"  (click)="togglePasswordVisibility()"></ion-icon>
+        </ion-input>
+      </ion-item>
+      <ng-container *ngIf="formLogin.controls['password'].touched && formLogin.controls['password'].invalid">
+        <p class="error-message">La contraseña es obligatoria.</p>
+      </ng-container>
+
+      <ion-item lines="none">
+        <ion-label>Recordarme</ion-label>
+        <ion-toggle name="stayInChk"></ion-toggle>
+      </ion-item>
+
+      <div *ngIf="errorMensaje" class="error-message">{{ errorMensaje }}</div>
+
+    </ion-list>
+    <ion-row class="ion-justify-content-center">
+        <ion-button id="login-button" size="default" (click)="doLogin()">Iniciar sesión</ion-button>
+    </ion-row>
+
+  </form>
+</ion-content>
+<ion-footer>
+    App Versión:
+</ion-footer>
