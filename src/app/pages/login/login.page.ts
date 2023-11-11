@@ -2,12 +2,13 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppSpinnerComponent } from '../../components/app-spinner/app-spinner.component'
 import { FormsModule, ReactiveFormsModule, FormBuilder,FormControl, FormGroup, Validators} from '@angular/forms';
-import { IonicModule, LoadingController, IonContent} from '@ionic/angular';
+import { IonicModule, LoadingController} from '@ionic/angular';
 import { HttpClientModule } from '@angular/common/http'; 
-import{ AuthService } from '../../services/auth.service'
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service'
 import { of, catchError } from 'rxjs';
 import { InternetStatusComponent } from 'src/app/components/internet-status/internet-status.component';
+import { IonToggle } from '@ionic/angular/standalone';
 
 
 @Component({
@@ -15,7 +16,7 @@ import { InternetStatusComponent } from 'src/app/components/internet-status/inte
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, AppSpinnerComponent, InternetStatusComponent],
+  imports: [IonToggle, IonicModule, CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, AppSpinnerComponent, InternetStatusComponent],
 })
 export class LoginPage implements OnInit {
 
@@ -26,11 +27,11 @@ export class LoginPage implements OnInit {
 
 
   constructor(
-    public fb:FormBuilder,
+    public fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
     private loadingCtrl: LoadingController
-    ) { 
+  ) {
   }
 
   ngOnInit() {
@@ -49,35 +50,37 @@ export class LoginPage implements OnInit {
   }
 
   async doLogin() {
+    
     if (this.formLogin.valid) {
       this.isLoading = true;
 
       // Muestra el spinner
+      /*
       const loading = await this.loadingCtrl.create({
         message: 'Cargando...',
       });
-  
-      await loading.present();
-      this.auth.login(this.formLogin.value.user, this.formLogin.value.password)
-      .pipe(
-        catchError((error) => {
-          this.isLoading = false;
-          loading.dismiss();
-          this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
-          return of(null);
-        })
-      )
-      .subscribe((res) => {
-        if (res) {
-          this.isLoading = false;
-          loading.dismiss();
-          this.router.navigateByUrl('/home');
-        } else {
-          this.isLoading = false;
-          loading.dismiss();
-          this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
-        }
-      });
+
+      await loading.present();*/
+      this.auth.login(this.formLogin.value.user, this.formLogin.value.password);
+        /*.pipe(
+          catchError((error) => {
+            this.isLoading = false;
+           // loading.dismiss();
+            this.errorMensaje = '¡Ups! el usuario no existe o las credenciales son incorrectas.';
+            return of(null);
+          })
+        )
+        .subscribe((res) => {
+          if (res) {
+            this.isLoading = false;
+            //loading.dismiss();
+            this.router.navigateByUrl('/home');
+          } else {
+            this.isLoading = false;
+            //loading.dismiss();
+            this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
+          }
+        });*/
     }
   }
 }

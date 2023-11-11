@@ -12,11 +12,6 @@ import { IonicStorageModule } from '@ionic/storage-angular';
 if (environment.production) {
   enableProdMode();
 }
-/*export function tokenGetter() {
-  return localStorage.getItem("access_token");
-}
-*/
-
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -27,4 +22,6 @@ bootstrapApplication(AppComponent, {
     importProvidersFrom(IonicStorageModule.forRoot()),
   ],
 });
+
+
 
