@@ -1,10 +1,10 @@
 import { Platform } from '@ionic/angular';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { BehaviorSubject, Observable, Subject, from, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, from, of } from 'rxjs';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { map, switchMap } from 'rxjs/operators';
-import { URLAuthLogin, httpOptions, optionsCredentials } from '../resources/urls.resource';
+import { URLAuthLogin, headers } from '../resources/urls.resource';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
 
@@ -50,56 +50,34 @@ export class AuthService {
     );
   }
 
-  login(email: string, password: string): Promise<any> {
+  login(email: string, password: string) {
+  
     const user = { email, password };
-    return this.http.post(URLAuthLogin, user, optionsCredentials)
-    .toPromise()
-            .then(data => {
-              console.log(data);
-          return data;
+  
+    return this.http
+      .post(URLAuthLogin, user, {
+        headers,
+        observe: 'response',
       })
-      .catch(error => {
-          console.log('There was an error!', error);
-          return error;
-      });
-
-    /*this.http.post(URLAuthLogin, user, { headers, observe: 'response' })
-      .pipe(catchError((error: any): Observable<any> => {
-
-        console.error('There was an error!', error.message);
-subject.next('error consuminedo post auth');
-        // after handling error, return a new observable 
-        // that doesn't emit any values and completes
-        return subject;
-      }))
-      .subscribe(data => {
-        subject.next(data);
-        console.log('OK', data);
-        return subject;
-      });
-
-      return subject;*/
-    /*.pipe(map((response: HttpResponse<any>) => {
-        if (response.status === 200) {
-          return response.body;
-        } else {
-          console.log('usuario no autorizado:', response.status);
-          return of(null);
-        }
-      }),
-      switchMap((token) => {
-        let decoded = helper.decodeToken(token.access_token);
-        this.userData.next(
-          decoded,
-        );
-        let storageObs = from(this.storage.set(TOKEN_KEY, token.access_token));
-        return storageObs;
-      }), 
-      catchError((error) => {
-        console.error('Error en post login ', error.message);
-        return of(null);
-      })
-    );*/
+      .pipe(
+        map((response: HttpResponse<any>) => {
+          if (response.status === 200) {
+            console.log(response.body)
+            return response.body;
+          } else {
+            console.log('usuario no autorizado:', response.status);
+            return of(null);
+          }
+        }),
+        switchMap((token) => {
+          let decoded = helper.decodeToken(token.access_token);
+          this.userData.next(
+            decoded,
+          );
+          let storageObs = from(this.storage.set(TOKEN_KEY, token.access_token));
+          return storageObs;
+        })
+      );
   }
 
   getUser() {
@@ -113,5 +91,6 @@ subject.next('error consuminedo post auth');
     });
   }
 }
+
 
 

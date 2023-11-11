@@ -31,16 +31,17 @@
 
       <ion-item lines="none">
         <ion-label>Recordarme</ion-label>
-        <ion-toggle aria-label="Email" name="stayInChk"></ion-toggle>
+        <ion-toggle name="stayInChk"></ion-toggle>
       </ion-item>
 
       <div *ngIf="errorMensaje" class="error-message">{{ errorMensaje }}</div>
 
     </ion-list>
-    <ion-row class="ion-justify-content-center">
+    <div class="content-button">
         <ion-button id="login-button" size="default"[disabled]="isLoading" (click)="doLogin()">Iniciar sesión</ion-button>
-        <app-app-spinner *ngIf="isLoading"></app-app-spinner>
-    </ion-row>
+        <!--<app-app-spinner *ngIf="isLoading"></app-app-spinner>-->
+        <ion-loading class="custom-loading" trigger="login-button" message="Cargando..." ></ion-loading>
+    </div>
   </form>
 </ion-content>
 <ion-footer>
