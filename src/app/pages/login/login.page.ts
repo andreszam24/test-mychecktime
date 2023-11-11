@@ -1,15 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppSpinnerComponent } from '../../components/app-spinner/app-spinner.component'
 import { FormsModule, ReactiveFormsModule, FormBuilder,FormControl, FormGroup, Validators} from '@angular/forms';
-import { IonicModule, AlertController, NavController, LoadingController} from '@ionic/angular';
+import { IonicModule, LoadingController, IonContent} from '@ionic/angular';
 import { HttpClientModule } from '@angular/common/http'; 
 import{ AuthService } from '../../services/auth.service'
 import { Router } from '@angular/router';
 import { of, catchError } from 'rxjs';
 import { InternetStatusComponent } from 'src/app/components/internet-status/internet-status.component';
-
-
 
 
 @Component({
@@ -31,12 +29,15 @@ export class LoginPage implements OnInit {
     public fb:FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private alertCtrl: AlertController,
-    private navCtrl: NavController, private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController
     ) { 
   }
 
   ngOnInit() {
+    const mainContent = document.getElementById('menu') as HTMLElement;
+    mainContent.style.display = 'none';
+
+    console.log(mainContent)
     this.formLogin = this.fb.group({
       user: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')])
