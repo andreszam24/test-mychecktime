@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppSpinnerComponent } from '../../components/app-spinner/app-spinner.component'
 import { FormsModule, ReactiveFormsModule, FormBuilder,FormControl, FormGroup, Validators} from '@angular/forms';
@@ -42,7 +42,17 @@ export class LoginPage implements OnInit {
     mainContent.style.display = 'none';
     this.formLogin = this.fb.group({
       user: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')])
+      password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')]),
+      stayInChk: new FormControl(false)
+    });
+  }
+
+  ionViewDidEnter() {
+    this.auth.checkAuthentication().subscribe((authenticated) => {
+      if (authenticated) {
+        // El usuario ya está autenticado, redirigir a la página de inicio
+        this.router.navigateByUrl('/home');
+      }
     });
   }
 
@@ -53,6 +63,9 @@ export class LoginPage implements OnInit {
   async doLogin() {
     if (this.formLogin.valid) {
       this.isLoading = true;
+      const rememberMe = this.formLogin.get('stayInChk')?.value;
+      console.log(rememberMe) ;
+
 
 
       // Muestra el spinner
@@ -60,7 +73,7 @@ export class LoginPage implements OnInit {
   
 
       //await loading.present();
-      this.auth.login(this.formLogin.value.user, this.formLogin.value.password)
+      this.auth.login(this.formLogin.value.user, this.formLogin.value.password,rememberMe)
       .pipe(
         catchError((error) => {
           this.isLoading = false;
@@ -71,7 +84,6 @@ export class LoginPage implements OnInit {
         })
       )
       .subscribe((res) => {
-        console.log('entro res')
         if (res) {
           this.isLoading = false;
           //loading.dismiss();
