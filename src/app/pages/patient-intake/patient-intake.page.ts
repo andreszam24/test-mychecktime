@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController } from '@ionic/angular/standalone';
-import { FormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
-import {InternetStatusComponent} from '../../components/internet-status/internet-status.component';
+import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController } from '@ionic/angular/standalone';
+import { FormBuilder, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 
@@ -15,37 +13,51 @@ import { MedicalAttention } from 'src/app/models/medical-attention.model';
   templateUrl: './patient-intake.page.html',
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
-  imports: [IonDatetime,IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule],
+  imports: [IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule],
 })
 
 export class PatientIntakePage implements OnInit {
-
-  medicalAttention: MedicalAttention = new MedicalAttention();
+  dummyMA = '{"patient":{"name":"Pepito","lastname":"Perez","birthday":"1922-09-19","gender":"masculino","dni":"192832"},"specialty":{"name":"CIRUGÍA GENERAL"},"procedureCodes":[{"code":"1252","name":"rodillameniscos"},{"code":"1312","name":"rodillaligamento"}],"numeroResgistro":"DE123","programming":"urgencia externa","asa":"IV"}';
+  medicalAttention: MedicalAttention | undefined | null = new MedicalAttention();
   barcodes: Barcode[] = [];
   isSupported = false;
   manualIntake = false;
+  formPatientIntake: FormGroup;
 
-  constructor(private alertController: AlertController) { }
+
+  constructor(private alertController: AlertController, public fb: FormBuilder) { }
 
   ngOnInit() {
+    this.formIntakeValidation();
+    this.startBarcodeScanner();
+    this.medicalAttention = this.parseJSONMedicalAttentionSafely(this.dummyMA);
+    console.log(this.medicalAttention?.patient.birthday.toString().replace(/T.*/,'').split('-').reverse().join('-'));
+  }
+
+
+  private startBarcodeScanner() {
     BarcodeScanner.isSupported().then((result) => {
       this.isSupported = result.supported;
       this.scan();
-    }).catch(async error => {
-      this.manualIntake = true;
+    }).catch(async (error) => {
+      //TODO: Descomentar this.changeStatusManulIntake(true);
       console.error(error.message);
       await this.unsupportedBarcodeMessage();
     });
   }
 
+  private formIntakeValidation() {
+    this.formPatientIntake = this.fb.group({
+      user: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')])
+    });
+  }
 
   async scan(): Promise<void> {
-    //(window.document.querySelector('ion-app') as HTMLElement).classList.add('barcode-scanning-active');
-    // document.querySelector("body")?.classList.add("barcode-scanning-active");
     const granted = await this.requestPermissions();
     if (!granted) {
       this.presentAlert();
-      this.manualIntake = true;
+      this.changeStatusManulIntake(true);
       return;
     }
     // NOTE: To avoid that scan it doesn't work, you may use 5.0.3 version or higher: npm i @capacitor-mlkit/barcode-scanning@5.0.3
@@ -61,19 +73,18 @@ export class PatientIntakePage implements OnInit {
         });
       }
     }).catch(error => {
-      if(!this.medicalAttention?.patient){
-        this.manualIntake = true;
+      if (!this.medicalAttention?.patient) {
+        this.changeStatusManulIntake(true);
       }
       console.error(error.message);
     });
 
-    //(window.document.querySelector('ion-app') as HTMLElement).classList.remove('cameraView');
   }
 
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     this.medicalAttention = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    this.manualIntake = false;
+    this.changeStatusManulIntake(false);
   }
 
   async requestPermissions(): Promise<boolean> {
@@ -83,8 +94,8 @@ export class PatientIntakePage implements OnInit {
 
   async presentAlert(): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Permission denied',
-      message: 'Please grant camera permission to use the barcode scanner.',
+      header: '¡Ups! Sin permisos',
+      message: '¡Activa los permisos de la cámara para usar el escáner de códigos!',
       buttons: ['OK']
     });
     await alert.present();
@@ -122,6 +133,14 @@ export class PatientIntakePage implements OnInit {
     return cities;
   }
 
+  enableEditMedicalAttentionData() {
+    this.changeStatusManulIntake(true);
+  }
+
+  changeStatusManulIntake(newState: boolean) {
+    this.manualIntake = newState;
+  }
+
   private async unsupportedBarcodeMessage() {
     const alert = await this.alertController.create({
       header: '¡Ups!',
@@ -131,7 +150,7 @@ export class PatientIntakePage implements OnInit {
     });
     await alert.present();
   }
-  
+
   parseJSONMedicalAttentionSafely(obj: any) {
     try {
       return JSON.parse(obj);

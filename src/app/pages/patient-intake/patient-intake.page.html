@@ -6,39 +6,37 @@
 
 <ion-content>
   <div>
-  <ion-card *ngIf="medicalAttention?.patient && medicalAttention?.specialty">
+  <ion-card *ngIf="medicalAttention?.patient && medicalAttention?.specialty && !manualIntake">
     <ion-list [inset]="true">
       <ion-item detail="false">
         <ion-avatar aria-hidden="true" slot="start">
           <img alt="" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
         </ion-avatar>
         <ion-label>
-          <strong>{{ medicalAttention.patient.name }} {{ medicalAttention.patient.lastname}}</strong><br />
-          <ion-text>cc {{ medicalAttention.patient.dni }}</ion-text><br />
+          <strong>{{ medicalAttention?.patient?.name }} {{ medicalAttention?.patient?.lastname}}</strong><br />
+          <ion-text>cc {{ medicalAttention?.patient?.dni }}</ion-text><br />
           <ion-note color="medium" class="ion-text-wrap">
-            {{ medicalAttention.patient.gender }}
+            {{ medicalAttention?.patient?.gender }}
           </ion-note>
-
         </ion-label>
-        <div class="metadata-end-wrapper" slot="end">
-          <ion-note color="medium"> {{ medicalAttention.patient.birthday }} </ion-note>
-          <ion-icon color="medium" name="chevron-forward"></ion-icon>
+        <div class="metadata-end-wrapper" >
+          <ion-note color="medium"> {{ medicalAttention?.patient?.birthday }} </ion-note>
         </div>
-
+        <ion-icon slot="end" (click)="enableEditMedicalAttentionData()" color="medium" src="../../../assets/svg/create-outline.svg"></ion-icon>
       </ion-item>
 
       <ion-item detail="false">
         <ion-label>
-          <strong>{{ medicalAttention.specialty.name }}</strong><br />
-          <ion-text>#Registro: {{ medicalAttention.numeroResgistro }}</ion-text><br />
+          <strong>{{ medicalAttention?.specialty?.name }}</strong><br />
+          <ion-text>#Registro: {{ medicalAttention?.numeroResgistro }}</ion-text><br />
         </ion-label>
       </ion-item>
 
       <ion-item detail="false">
         <ion-label>
           <strong>Códigos CUPS</strong><br />
-          <div *ngIf="medicalAttention?.procedureCodes && medicalAttention.procedureCodes.length > 0">
-            <ion-item *ngFor="let cup of medicalAttention.procedureCodes">
+          <div *ngIf="medicalAttention?.procedureCodes">
+            <ion-item *ngFor="let cup of medicalAttention?.procedureCodes">
               <ion-badge slot="start">{{ cup.code }}</ion-badge>
             </ion-item>
           </div>
@@ -57,30 +55,30 @@
 
   <ion-list [inset]="true">
     <ion-item>
-      <ion-input label="Nº registro institucional" label-placement="stacked" placeholder=""></ion-input>
+      <ion-input label="Nº registro institucional" value="{{ medicalAttention?.numeroResgistro ?? '' }}" label-placement="stacked" placeholder=""></ion-input>
     </ion-item>
     <ion-item>
-      <ion-select label="Tipo de programación" placeholder="Selecciona">
+      <ion-select label="Tipo de programación" placeholder="Selecciona" value="{{ medicalAttention?.programming ?? '' }}">
         <ion-select-option value="cirugía electiva">Cirugía electiva</ion-select-option>
-        <ion-select-option value="Programada de piso">Programada de piso</ion-select-option>
-        <ion-select-option value="Urgencia de piso">Urgencia de piso</ion-select-option>
-        <ion-select-option value="Urgencia externa">Urgencia externa</ion-select-option>
-        <ion-select-option value="Recuperación">Recuperación</ion-select-option>
-        <ion-select-option value="UCI">UCI</ion-select-option>
+        <ion-select-option value="programada de piso">Programada de piso</ion-select-option>
+        <ion-select-option value="urgencia de piso">Urgencia de piso</ion-select-option>
+        <ion-select-option value="urgencia externa">Urgencia externa</ion-select-option>
+        <ion-select-option value="recuperación">Recuperación</ion-select-option>
+        <ion-select-option value="uci">UCI</ion-select-option>
 
       </ion-select>
     </ion-item>
     <ion-item>
-      <ion-input label="Identificación del paciente" label-placement="stacked" placeholder=""></ion-input>
+      <ion-input label="Identificación del paciente" value="{{ medicalAttention?.patient?.dni ?? '' }}" label-placement="stacked" placeholder=""></ion-input>
     </ion-item>
     <ion-item>
-      <ion-input label="Nombre" label-placement="stacked" placeholder=""></ion-input>
+      <ion-input label="Nombre" label-placement="stacked" value="{{ medicalAttention?.patient?.name ?? '' }}" placeholder=""></ion-input>
     </ion-item>
     <ion-item>
-      <ion-input label="Apellido" label-placement="stacked" placeholder=""></ion-input>
+      <ion-input label="Apellido" label-placement="stacked" value="{{ medicalAttention?.patient?.lastname ?? '' }}" placeholder=""></ion-input>
     </ion-item>
     <ion-item>
-      <ion-select label="Genero" placeholder="Selecciona">
+      <ion-select label="Genero" value="{{ medicalAttention?.patient?.gender ?? '' }}" placeholder="Selecciona">
         <ion-select-option value="femenino">Femenino</ion-select-option>
         <ion-select-option value="masculino">Maculino</ion-select-option>
         <ion-select-option value="otro">Otro</ion-select-option>
@@ -90,19 +88,25 @@
       Fecha de nacimiento
     </ion-item>
     <ion-item>
-      <ion-datetime value="2000-04-21" min="1900-03-01" presentation="date" [preferWheel]="true"></ion-datetime>
+      <ion-datetime value="{{ medicalAttention?.patient?.birthday ?? '' }}" min="1900-03-01" presentation="year" [preferWheel]="true"></ion-datetime>
     </ion-item>
     <ion-item>
       <ion-searchbar [debounce]="1000" (ionInput)="handleInput($event)" placeholder="Búsqueda de especialidad">
       </ion-searchbar>
-      <ion-label></ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ medicalAttention?.specialty?.name ?? '' }}</ion-label>
     </ion-item>
     <ion-item>
       <ion-searchbar [debounce]="1000" (ionInput)="handleInput($event)" placeholder="Búsqueda de CUPS">
       </ion-searchbar>
     </ion-item>
     <ion-item>
-      <ion-badge slot="start">1233</ion-badge>
+      <div *ngIf="medicalAttention?.procedureCodes">
+        <ion-item *ngFor="let cup of medicalAttention?.procedureCodes">
+          <ion-badge slot="start">{{ cup.code }}</ion-badge> X
+        </ion-item>
+      </div>
     </ion-item>
   </ion-list>
   </div>

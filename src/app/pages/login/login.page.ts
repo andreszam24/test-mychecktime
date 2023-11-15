@@ -71,7 +71,7 @@ export class LoginPage implements OnInit {
         })
       )
       .subscribe((res) => {
-        console.log('entro res')
+        console.log('entro res') // TODO: Borrar esto
         if (res) {
           this.isLoading = false;
           //loading.dismiss();
