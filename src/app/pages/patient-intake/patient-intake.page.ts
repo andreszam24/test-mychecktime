@@ -6,6 +6,7 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, Validators } from '@a
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
+import { Patient } from '../../models/patient.model';
 
 
 @Component({
@@ -17,11 +18,12 @@ import { MedicalAttention } from 'src/app/models/medical-attention.model';
 })
 
 export class PatientIntakePage implements OnInit {
-  dummyMA = '{"patient":{"name":"Pepito","lastname":"Perez","birthday":"1922-09-19","gender":"masculino","dni":"192832"},"specialty":{"name":"CIRUGÍA GENERAL"},"procedureCodes":[{"code":"1252","name":"rodillameniscos"},{"code":"1312","name":"rodillaligamento"}],"numeroResgistro":"DE123","programming":"urgencia externa","asa":"IV"}';
+  //TODO: Borrar dummyMA = '{"patient":{"name":"Pepito","lastname":"Perez","birthday":"1922-09-19","gender":"masculino","dni":"192832"},"specialty":{"name":"CIRUGÍA GENERAL"},"procedureCodes":[{"code":"1252","name":"rodillameniscos"},{"code":"1312","name":"rodillaligamento"}],"numeroResgistro":"DE123","programming":"urgencia externa","asa":"IV"}';
   medicalAttention: MedicalAttention | undefined | null = new MedicalAttention();
   barcodes: Barcode[] = [];
   isSupported = false;
   manualIntake = false;
+  lookingForPatient = false;
   formPatientIntake: FormGroup;
 
 
@@ -30,8 +32,8 @@ export class PatientIntakePage implements OnInit {
   ngOnInit() {
     this.formIntakeValidation();
     this.startBarcodeScanner();
-    this.medicalAttention = this.parseJSONMedicalAttentionSafely(this.dummyMA);
-    console.log(this.medicalAttention?.patient.birthday.toString().replace(/T.*/,'').split('-').reverse().join('-'));
+    //TODO: Borrar this.medicalAttention = this.parseJSONMedicalAttentionSafely(this.dummyMA);
+    // console.log(this.medicalAttention?.patient.birthday.toString().replace(/T.*/,'').split('-').reverse().join('-'));
   }
 
 
@@ -40,16 +42,9 @@ export class PatientIntakePage implements OnInit {
       this.isSupported = result.supported;
       this.scan();
     }).catch(async (error) => {
-      //TODO: Descomentar this.changeStatusManulIntake(true);
+      this.changeStatusManulIntake(true);
       console.error(error.message);
       await this.unsupportedBarcodeMessage();
-    });
-  }
-
-  private formIntakeValidation() {
-    this.formPatientIntake = this.fb.group({
-      user: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')])
     });
   }
 
@@ -85,6 +80,7 @@ export class PatientIntakePage implements OnInit {
     const { barcodes } = await BarcodeScanner.scan();
     this.medicalAttention = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
     this.changeStatusManulIntake(false);
+    this.changeStatusLookingForPatient(false);
   }
 
   async requestPermissions(): Promise<boolean> {
@@ -101,36 +97,36 @@ export class PatientIntakePage implements OnInit {
     await alert.present();
   }
 
-  public data = [''];
+  public data: Patient[] = [];
+  public resultsSearchigPatient = [...this.data];
 
-
-  public results = [...this.data];
-
-  handleInput(event: any) {
-    this.results = [];
-    const query = event.target.value.toLowerCase();
-    if (query != '') {
-      this.data = this.patientSearch();
-      this.results = this.data.filter((d) => d.toLowerCase().indexOf(query) > -1);
+  handleInputDNIPatient(event: any) {
+    const query = event.target.value.toLowerCase().trim();
+    if (query != '' && query.length > 5) {
+      this.resultsSearchigPatient = [];
+      this.data = this.patientSearchByDNI();
+      this.resultsSearchigPatient = this.data.filter((patient) => patient.name.toLowerCase().indexOf(query) > -1);
     }
   }
 
-  patientSearch() {
-    const cities = [
-      'Amsterdam',
-      'Buenos Aires',
-      'Cairo',
-      'Geneva',
-      'Hong Kong',
-      'Istanbul',
-      'London',
-      'Madrid',
-      'New York',
-      'Panama City',
-      'Peru',
-      'Polonia'
-    ];
-    return cities;
+  patientSelected(patient: Patient){
+    console.log(patient);
+    this.resultsSearchigPatient = [];
+    this.changeStatusLookingForPatient(true);
+  }
+
+  patientSearchByDNI() {
+    const patients: Patient[] = [];
+    /*this.patientsService.searchByDni(text)
+      .subscribe(p => {
+        event.component.items = p as any;
+        event.component.isSearching = false;
+      },_ => {
+        event.component.isSearching = false;
+      }
+    );*/
+
+    return patients;
   }
 
   enableEditMedicalAttentionData() {
@@ -139,6 +135,10 @@ export class PatientIntakePage implements OnInit {
 
   changeStatusManulIntake(newState: boolean) {
     this.manualIntake = newState;
+  }
+
+  changeStatusLookingForPatient(newState: boolean) {
+    this.lookingForPatient = newState;
   }
 
   private async unsupportedBarcodeMessage() {
@@ -160,6 +160,13 @@ export class PatientIntakePage implements OnInit {
       console.log(e);
       return {};
     }
+  }
+
+  private formIntakeValidation() {
+    this.formPatientIntake = this.fb.group({
+      user: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')])
+    });
   }
 
 }

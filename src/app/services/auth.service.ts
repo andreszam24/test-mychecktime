@@ -51,9 +51,9 @@ export class AuthService {
   }
 
   login(email: string, password: string) {
-  
+
     const user = { email, password };
-  
+
     return this.http
       .post(URLAuthLogin, user, {
         headers,
@@ -90,6 +90,16 @@ export class AuthService {
       this.userData.next(null);
     });
   }
+
+  static getToken(): string {
+    return localStorage.getItem(TOKEN_KEY) ?? '';
+  }
+  
+  static getTokenParams(): string {
+    return '?token=' + AuthService.getToken();
+  }
+
+
 }
 
 
