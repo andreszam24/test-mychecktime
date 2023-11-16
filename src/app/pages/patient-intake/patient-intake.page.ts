@@ -7,6 +7,8 @@ import { InternetStatusComponent } from '../../components/internet-status/intern
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { Patient } from '../../models/patient.model';
+import { PatientService } from 'src/app/services/patient.service';
+import { of, catchError } from 'rxjs';
 
 
 @Component({
@@ -27,7 +29,7 @@ export class PatientIntakePage implements OnInit {
   formPatientIntake: FormGroup;
 
 
-  constructor(private alertController: AlertController, public fb: FormBuilder) { }
+  constructor(private alertController: AlertController, public fb: FormBuilder, private patientsService: PatientService) { }
 
   ngOnInit() {
     this.formIntakeValidation();
@@ -104,28 +106,45 @@ export class PatientIntakePage implements OnInit {
     const query = event.target.value.toLowerCase().trim();
     if (query != '' && query.length > 5) {
       this.resultsSearchigPatient = [];
-      this.data = this.patientSearchByDNI();
+      this.data = this.patientSearchByDNI(query);
       this.resultsSearchigPatient = this.data.filter((patient) => patient.name.toLowerCase().indexOf(query) > -1);
     }
   }
 
-  patientSelected(patient: Patient){
+  patientSelected(patient: Patient) {
     console.log(patient);
     this.resultsSearchigPatient = [];
     this.changeStatusLookingForPatient(true);
   }
 
-  patientSearchByDNI() {
-    const patients: Patient[] = [];
-    /*this.patientsService.searchByDni(text)
-      .subscribe(p => {
-        event.component.items = p as any;
-        event.component.isSearching = false;
-      },_ => {
-        event.component.isSearching = false;
-      }
-    );*/
+  patientSearchByDNI(dni: string) {
+    let patients: Patient[] = [];
+    this.patientsService.searchByDni(dni)
+      .pipe(
+        catchError((error) => {
+          //this.isLoading = false;
+          //this.loadingCtrl.dismiss();
+          //this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
+          console.log('Error', error);
+          return of(null);
+        })
+      )
+      .subscribe((res) => {
 
+        if (res) {
+          //this.isLoading = false;
+          console.log('ITEM:', res);
+          let patient: Patient = JSON.parse(JSON.stringify(res));
+          console.log('PACIENTe', patient);
+          patients.push(patient);
+          //this.loadingCtrl.dismiss();
+        } else {
+          //this.isLoading = false;
+          //this.loadingCtrl.dismiss();
+          //this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
+        }
+      });
+    console.log('array', patients);
     return patients;
   }
 

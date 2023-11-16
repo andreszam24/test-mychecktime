@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { URLPatients, headers } from '../resources/urls.resource';
+import { URLPatients, URLPatientsByDni, headers } from '../resources/urls.resource';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Patient } from '../models/patient.model';
 import { map, switchMap } from 'rxjs/operators';
@@ -29,7 +29,7 @@ export class PatientService {
     getPatientById(id: number) {
         const urlGetById = `${URLPatients}/${id}`;
 
-        return this.http.get(urlGetById + AuthService.getTokenParams(), { headers, observe: 'response'}).pipe(
+        return this.http.get(urlGetById + AuthService.getTokenParams(), { headers, observe: 'response' }).pipe(
             map((response: HttpResponse<any>) => {
                 if (response.status === 200) {
                     return response.body;
@@ -38,7 +38,7 @@ export class PatientService {
                     return of(null);
                 }
 
-            }),switchMap((data) => {
+            }), switchMap((data) => {
                 return data;
             })
         );
@@ -56,29 +56,35 @@ export class PatientService {
         Observable.throw(error);
       }); 
     }
-  
-    searchByDni(text: string): Observable<Patient> {
-      const urlGetPatients = `${URLPatientsByDni}/${text}`;
-  
-      return this.http.get(urlGetPatients + AuthService.getTokenParams(), httpOptions)
-      .map((response) => {
-        const patient : Patient = JSON.parse(JSON.stringify(response));
-        return patient;
-      }, (error) => {
-        console.log('Error consumiendo el servicio para obtener el paciente por DNI: ' + error);
-        Observable.throw(error);
-      }); 
+  */
+    searchByDni(text: string) {
+        const urlGetPatients = `${URLPatientsByDni}/${text}`;
+        return this.http.get(urlGetPatients + AuthService.getTokenParams(), { headers, observe: 'response' }).pipe(
+            map((response: HttpResponse<any>) => {
+                if (response.status === 200) {
+                    return response.body;
+                } else {
+                    console.log('usuario no autorizado:', response.status);
+                    return of(null);
+                }
+
+            }), switchMap(data => {
+                let patientObs = from(data);
+                return patientObs;
+            })
+        );
+
     }
-  
-    createPatient(newPatient: Patient): Observable<Patient> {
-  
-      return this.http.post(URLPatients + AuthService.getTokenParams(), newPatient, httpOptions)
-        .map((response) => {
-            const patient : Patient = JSON.parse(JSON.stringify(response));
-            return patient;
-        },(error) => {
-          console.log('Error consumiendo el servicio para crear un paciente: ' + error);
-          Observable.throw(error);
-        });
-    }*/
+    /*
+      createPatient(newPatient: Patient): Observable<Patient> {
+    
+        return this.http.post(URLPatients + AuthService.getTokenParams(), newPatient, httpOptions)
+          .map((response) => {
+              const patient : Patient = JSON.parse(JSON.stringify(response));
+              return patient;
+          },(error) => {
+            console.log('Error consumiendo el servicio para crear un paciente: ' + error);
+            Observable.throw(error);
+          });
+      }*/
 }
