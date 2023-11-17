@@ -74,7 +74,6 @@ export class LoginPage implements OnInit {
       this.auth.login(this.formLogin.value.user, this.formLogin.value.password,rememberMe)
       .pipe(
         catchError((error) => {
-          console.log('entro a login',error)
           this.isLoading = false;
           //loading.dismiss();
           this.loadingCtrl.dismiss();
