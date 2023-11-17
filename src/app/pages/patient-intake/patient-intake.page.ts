@@ -106,46 +106,49 @@ export class PatientIntakePage implements OnInit {
     const query = event.target.value.toLowerCase().trim();
     if (query != '' && query.length > 5) {
       this.resultsSearchigPatient = [];
-      this.data = this.patientSearchByDNI(query);
-      this.resultsSearchigPatient = this.data.filter((patient) => patient.name.toLowerCase().indexOf(query) > -1);
+      this.patientSearchByDNI(query);
+      
     }
   }
 
   patientSelected(patient: Patient) {
     console.log(patient);
+    if (this.medicalAttention){
+      this.medicalAttention.patient = patient;
+    }
     this.resultsSearchigPatient = [];
     this.changeStatusLookingForPatient(true);
   }
 
   patientSearchByDNI(dni: string) {
-    let patients: Patient[] = [];
-    this.patientsService.searchByDni(dni)
-      .pipe(
-        catchError((error) => {
-          //this.isLoading = false;
-          //this.loadingCtrl.dismiss();
-          //this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
-          console.log('Error', error);
-          return of(null);
-        })
-      )
-      .subscribe((res) => {
+    
+    this.patientsService.searchByDni(dni).pipe(
+      catchError((error) => {
+        //this.isLoading = false;
+        //this.loadingCtrl.dismiss();
+        //this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
+        console.log('Error', error);
+        return of(null);
+      })
+    )
+    .subscribe((res) => {
 
-        if (res) {
-          //this.isLoading = false;
-          console.log('ITEM:', res);
-          let patient: Patient = JSON.parse(JSON.stringify(res));
-          console.log('PACIENTe', patient);
-          patients.push(patient);
-          //this.loadingCtrl.dismiss();
-        } else {
-          //this.isLoading = false;
-          //this.loadingCtrl.dismiss();
-          //this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
-        }
-      });
-    console.log('array', patients);
-    return patients;
+      if (res) {
+        //this.isLoading = false;
+        console.log('ITEM:', res);
+        this.data = res;
+        console.log('DATOS: ', this.data);
+        this.resultsSearchigPatient = this.data.filter((patient) => patient.dni.toLowerCase().indexOf(dni) > -1);
+        //this.loadingCtrl.dismiss();
+        console.log('RESULT: ', this.resultsSearchigPatient);
+      } else {
+        console.log("NO", this.data)
+        //this.isLoading = false;
+        //this.loadingCtrl.dismiss();
+        //this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
+      }
+    });
+  console.log('array', this.data);
   }
 
   enableEditMedicalAttentionData() {
