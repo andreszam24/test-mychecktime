@@ -19,7 +19,6 @@ export class AuthService {
   public user: Observable<{ loggedIn: boolean; token: string | null }>;
   private userData = new BehaviorSubject<{ loggedIn: boolean; token: any }>({ loggedIn: false, token: null });
   private redirectFlag = false;
-  private storageObs = Observable<any>;
 
   constructor(
     private storage: Storage,
@@ -45,7 +44,6 @@ export class AuthService {
     if (token) {
       let decoded = helper.decodeToken(token);
       this.userData.next({ loggedIn: true, token: decoded });
-  
       if (!this.redirectFlag && token === localStorage.getItem(TOKEN_KEY)) {
         this.redirectFlag = true;
         this.router.navigateByUrl('/home');
