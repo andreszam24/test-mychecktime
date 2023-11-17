@@ -25,6 +25,7 @@ const URLServer = 'https://mychecktime.com.co/main';
 
 
 export const URLAuthLogin = `${URLServer}/login`;
+export const URLAuthRefresh = `${URLServer}/refresh`;
 
 export const URLPatients = `${URLServer}/patients`;
 export const URLPatientsByName = `${URLServer}/patientsByName`;

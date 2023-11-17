@@ -1,6 +1,6 @@
 import { AuthService } from './../services/auth.service';
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 import { AlertController } from '@ionic/angular';
@@ -15,7 +15,8 @@ export class AuthGuard implements CanActivate{
     return this.auth.user.pipe(
       take(1),
       map(user => {
-        if (!user) {
+        if (!user.loggedIn) {
+          console.log('entro a guard',user.loggedIn)
           this.alertCtrl.create({
             header: 'Unauthorized',
             message: 'You are not allowed to access that page.',
