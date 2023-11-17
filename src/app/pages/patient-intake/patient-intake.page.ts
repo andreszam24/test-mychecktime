@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController } from '@ionic/angular/standalone';
-import { FormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
-import {InternetStatusComponent} from '../../components/internet-status/internet-status.component';
+import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController } from '@ionic/angular/standalone';
+import { FormBuilder, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
+import { Patient } from '../../models/patient.model';
+import { PatientService } from 'src/app/services/patient.service';
+import { of, catchError } from 'rxjs';
 
 
 @Component({
@@ -15,37 +16,45 @@ import { MedicalAttention } from 'src/app/models/medical-attention.model';
   templateUrl: './patient-intake.page.html',
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
-  imports: [IonDatetime,IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule],
+  imports: [IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule],
 })
 
 export class PatientIntakePage implements OnInit {
-
-  medicalAttention: MedicalAttention = new MedicalAttention();
+  //TODO: Borrar dummyMA = '{"patient":{"name":"Pepito","lastname":"Perez","birthday":"1922-09-19","gender":"masculino","dni":"192832"},"specialty":{"name":"CIRUGÍA GENERAL"},"procedureCodes":[{"code":"1252","name":"rodillameniscos"},{"code":"1312","name":"rodillaligamento"}],"numeroResgistro":"DE123","programming":"urgencia externa","asa":"IV"}';
+  medicalAttention: MedicalAttention | undefined | null = new MedicalAttention();
   barcodes: Barcode[] = [];
   isSupported = false;
   manualIntake = false;
+  lookingForPatient = false;
+  formPatientIntake: FormGroup;
 
-  constructor(private alertController: AlertController) { }
+
+  constructor(private alertController: AlertController, public fb: FormBuilder, private patientsService: PatientService) { }
 
   ngOnInit() {
+    this.formIntakeValidation();
+    this.startBarcodeScanner();
+    //TODO: Borrar this.medicalAttention = this.parseJSONMedicalAttentionSafely(this.dummyMA);
+    // console.log(this.medicalAttention?.patient.birthday.toString().replace(/T.*/,'').split('-').reverse().join('-'));
+  }
+
+
+  private startBarcodeScanner() {
     BarcodeScanner.isSupported().then((result) => {
       this.isSupported = result.supported;
       this.scan();
-    }).catch(async error => {
-      this.manualIntake = true;
+    }).catch(async (error) => {
+      this.changeStatusManulIntake(true);
       console.error(error.message);
       await this.unsupportedBarcodeMessage();
     });
   }
 
-
   async scan(): Promise<void> {
-    //(window.document.querySelector('ion-app') as HTMLElement).classList.add('barcode-scanning-active');
-    // document.querySelector("body")?.classList.add("barcode-scanning-active");
     const granted = await this.requestPermissions();
     if (!granted) {
       this.presentAlert();
-      this.manualIntake = true;
+      this.changeStatusManulIntake(true);
       return;
     }
     // NOTE: To avoid that scan it doesn't work, you may use 5.0.3 version or higher: npm i @capacitor-mlkit/barcode-scanning@5.0.3
@@ -61,19 +70,19 @@ export class PatientIntakePage implements OnInit {
         });
       }
     }).catch(error => {
-      if(!this.medicalAttention?.patient){
-        this.manualIntake = true;
+      if (!this.medicalAttention?.patient) {
+        this.changeStatusManulIntake(true);
       }
       console.error(error.message);
     });
 
-    //(window.document.querySelector('ion-app') as HTMLElement).classList.remove('cameraView');
   }
 
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     this.medicalAttention = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    this.manualIntake = false;
+    this.changeStatusManulIntake(false);
+    this.changeStatusLookingForPatient(false);
   }
 
   async requestPermissions(): Promise<boolean> {
@@ -83,43 +92,72 @@ export class PatientIntakePage implements OnInit {
 
   async presentAlert(): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Permission denied',
-      message: 'Please grant camera permission to use the barcode scanner.',
+      header: '¡Ups! Sin permisos',
+      message: '¡Activa los permisos de la cámara para usar el escáner de códigos!',
       buttons: ['OK']
     });
     await alert.present();
   }
 
-  public data = [''];
+  public data: Patient[] = [];
+  public resultsSearchigPatient = [...this.data];
 
-
-  public results = [...this.data];
-
-  handleInput(event: any) {
-    this.results = [];
-    const query = event.target.value.toLowerCase();
-    if (query != '') {
-      this.data = this.patientSearch();
-      this.results = this.data.filter((d) => d.toLowerCase().indexOf(query) > -1);
+  handleInputDNIPatient(event: any) {
+    const query = event.target.value.toLowerCase().trim();
+    if (query != '' && query.length > 5) {
+      this.resultsSearchigPatient = [];
+      this.data = this.patientSearchByDNI(query);
+      this.resultsSearchigPatient = this.data.filter((patient) => patient.name.toLowerCase().indexOf(query) > -1);
     }
   }
 
-  patientSearch() {
-    const cities = [
-      'Amsterdam',
-      'Buenos Aires',
-      'Cairo',
-      'Geneva',
-      'Hong Kong',
-      'Istanbul',
-      'London',
-      'Madrid',
-      'New York',
-      'Panama City',
-      'Peru',
-      'Polonia'
-    ];
-    return cities;
+  patientSelected(patient: Patient) {
+    console.log(patient);
+    this.resultsSearchigPatient = [];
+    this.changeStatusLookingForPatient(true);
+  }
+
+  patientSearchByDNI(dni: string) {
+    let patients: Patient[] = [];
+    this.patientsService.searchByDni(dni)
+      .pipe(
+        catchError((error) => {
+          //this.isLoading = false;
+          //this.loadingCtrl.dismiss();
+          //this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
+          console.log('Error', error);
+          return of(null);
+        })
+      )
+      .subscribe((res) => {
+
+        if (res) {
+          //this.isLoading = false;
+          console.log('ITEM:', res);
+          let patient: Patient = JSON.parse(JSON.stringify(res));
+          console.log('PACIENTe', patient);
+          patients.push(patient);
+          //this.loadingCtrl.dismiss();
+        } else {
+          //this.isLoading = false;
+          //this.loadingCtrl.dismiss();
+          //this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
+        }
+      });
+    console.log('array', patients);
+    return patients;
+  }
+
+  enableEditMedicalAttentionData() {
+    this.changeStatusManulIntake(true);
+  }
+
+  changeStatusManulIntake(newState: boolean) {
+    this.manualIntake = newState;
+  }
+
+  changeStatusLookingForPatient(newState: boolean) {
+    this.lookingForPatient = newState;
   }
 
   private async unsupportedBarcodeMessage() {
@@ -131,7 +169,7 @@ export class PatientIntakePage implements OnInit {
     });
     await alert.present();
   }
-  
+
   parseJSONMedicalAttentionSafely(obj: any) {
     try {
       return JSON.parse(obj);
@@ -141,6 +179,13 @@ export class PatientIntakePage implements OnInit {
       console.log(e);
       return {};
     }
+  }
+
+  private formIntakeValidation() {
+    this.formPatientIntake = this.fb.group({
+      user: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')])
+    });
   }
 
 }
