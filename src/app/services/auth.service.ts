@@ -19,6 +19,7 @@ export class AuthService {
   public user: Observable<{ loggedIn: boolean; token: string | null }>;
   private userData = new BehaviorSubject<{ loggedIn: boolean; token: any }>({ loggedIn: false, token: null });
   private redirectFlag = false;
+  private storageObs = Observable<any>;
 
   constructor(
     private storage: Storage,
@@ -34,19 +35,7 @@ export class AuthService {
   loadStoredToken() {
     let platformObs = from(this.plt.ready());
     this.user = platformObs.pipe(
-      switchMap(() => {
-        const localStorageObs = from(this.storage.get(TOKEN_KEY));
-
-        const sessionStorageObs = defer(() => of(sessionStorage.getItem(TOKEN_KEY)!));
-
-
-
-
-
-        console.log('switchMap:',this.storage.get(TOKEN_KEY),sessionStorage.getItem(TOKEN_KEY));
-        return localStorageObs || sessionStorageObs;
-      }),
-      map((token) => this.handleStoredToken(token))
+      map(() => this.handleStoredToken(AuthService.getAuthToken()))
     );
   }
   
@@ -61,7 +50,6 @@ export class AuthService {
         this.redirectFlag = true;
         this.router.navigateByUrl('/home');
       }
-  
       return { loggedIn: true, token: decoded };
     } else {
       console.log('No se encontró token almacenado.');
@@ -88,9 +76,6 @@ export class AuthService {
     return storageObs.pipe(map((storedToken) => this.handleStoredToken(storedToken)));
   }
   
-  
-  
-
   login(email: string, password: string, rememberMe: boolean) {
     const userCredential = { email, password };
     return this.http
