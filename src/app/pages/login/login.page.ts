@@ -16,8 +16,9 @@ import { IonToggle, IonItem, IonContent, IonList, IonLabel, IonFooter, IonSpinne
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, IonSpinner,IonList,IonItem,IonToggle,IonLabel,IonFooter,IonLoading,IonicModule, CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, AppSpinnerComponent, InternetStatusComponent],
+  imports: [IonContent, IonSpinner,IonList,IonItem,IonToggle,IonLabel,IonFooter,IonLoading,IonicModule, CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, AppSpinnerComponent, InternetStatusComponent]
 })
+
 export class LoginPage implements OnInit {
 
   //@ViewChild(AppSpinnerComponent) spinnerComponent: AppSpinnerComponent;
@@ -64,9 +65,6 @@ export class LoginPage implements OnInit {
     if (this.formLogin.valid) {
       this.isLoading = true;
       const rememberMe = this.formLogin.get('stayInChk')?.value;
-      console.log(rememberMe) ;
-
-
 
       // Muestra el spinner
       //await this.spinnerComponent.presentLoading();
@@ -76,6 +74,7 @@ export class LoginPage implements OnInit {
       this.auth.login(this.formLogin.value.user, this.formLogin.value.password,rememberMe)
       .pipe(
         catchError((error) => {
+          console.log('entro a login',error)
           this.isLoading = false;
           //loading.dismiss();
           this.loadingCtrl.dismiss();

@@ -15,7 +15,8 @@ export class AuthGuard implements CanActivate{
     return this.auth.user.pipe(
       take(1),
       map(user => {
-        if (!user) {
+        if (!user.loggedIn) {
+          console.log('entro a guard',user.loggedIn)
           this.alertCtrl.create({
             header: 'Unauthorized',
             message: 'You are not allowed to access that page.',

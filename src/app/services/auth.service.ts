@@ -1,13 +1,12 @@
 import { Platform } from '@ionic/angular';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { BehaviorSubject, Observable, from, of ,merge} from 'rxjs';
+import { BehaviorSubject, Observable, from, of, defer } from 'rxjs';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { map, switchMap } from 'rxjs/operators';
-import { URLAuthLogin, headers } from '../resources/urls.resource';
+import { URLAuthLogin, headers, URLAuthRefresh, httpOptions } from '../resources/urls.resource';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
-
 
 const helper = new JwtHelperService();
 const TOKEN_KEY = 'jwt-token';
@@ -17,8 +16,9 @@ const TOKEN_KEY = 'jwt-token';
 })
 
 export class AuthService {
-  public user: Observable<any>;
-  private userData = new BehaviorSubject(null);
+  public user: Observable<{ loggedIn: boolean; token: string | null }>;
+  private userData = new BehaviorSubject<{ loggedIn: boolean; token: any }>({ loggedIn: false, token: null });
+  private redirectFlag = false;
 
   constructor(
     private storage: Storage,
@@ -33,46 +33,68 @@ export class AuthService {
 
   loadStoredToken() {
     let platformObs = from(this.plt.ready());
-    let redirectFlag = false;
-  
     this.user = platformObs.pipe(
       switchMap(() => {
-        const localStorageObs = from(this.storage.get(TOKEN_KEY)); 
-        console.log(localStorageObs)
+        const localStorageObs = from(this.storage.get(TOKEN_KEY));
 
-        const sessionStorageObs = from(new Observable<string>((observer) => {
-          const token = sessionStorage.getItem(TOKEN_KEY);
-          observer.next(token!);
-          observer.complete();
-        }));
+        const sessionStorageObs = defer(() => of(sessionStorage.getItem(TOKEN_KEY)!));
 
-        return localStorageObs ? localStorageObs : sessionStorageObs;
+
+
+
+
+        console.log('switchMap:',this.storage.get(TOKEN_KEY),sessionStorage.getItem(TOKEN_KEY));
+        return localStorageObs || sessionStorageObs;
       }),
-      map((token) => {
-        if (token) {
-          console.log('Token almacenado:', token); 
-          let decoded = helper.decodeToken(token);
-          this.userData.next(decoded);
-          if (!redirectFlag && localStorage.getItem(TOKEN_KEY) !== null) {
-            redirectFlag = true;
-            this.router.navigateByUrl('/home');
-          }
-          return true;
-        } else {
-          console.log('No se encontró token almacenado.');
-          return null;
-        }
-      })
+      map((token) => this.handleStoredToken(token))
     );
   }
+  
+  handleStoredToken(token: string | null): { loggedIn: boolean; token: any } {
+    console.log('Token almacenado handleStoredToken:', token);
+  
+    if (token) {
+      let decoded = helper.decodeToken(token);
+      this.userData.next({ loggedIn: true, token: decoded });
+  
+      if (!this.redirectFlag && token === localStorage.getItem(TOKEN_KEY)) {
+        this.redirectFlag = true;
+        this.router.navigateByUrl('/home');
+      }
+  
+      return { loggedIn: true, token: decoded };
+    } else {
+      console.log('No se encontró token almacenado.');
+      return { loggedIn: false, token: null };
+    }
+  }
+
+  handleLoginResponse(token: any, rememberMe: boolean): Observable<any> {
+    let decoded = helper.decodeToken(token.access_token);
+    this.userData.next({ loggedIn: true, token: decoded });
+  
+    let storageObs: Observable<any>;
+  
+    if (rememberMe) {
+      storageObs = from(this.storage.set(TOKEN_KEY, token.access_token));
+      localStorage.setItem(TOKEN_KEY, token.access_token);
+    } else {
+      storageObs = defer(() => {
+        sessionStorage.setItem(TOKEN_KEY, token.access_token);
+        return of(token.access_token);
+      });
+    }
+  
+    return storageObs.pipe(map((storedToken) => this.handleStoredToken(storedToken)));
+  }
+  
+  
+  
 
   login(email: string, password: string, rememberMe: boolean) {
-  
-    const user = { email, password };
-    console.log(email, password, rememberMe)
-  
+    const userCredential = { email, password };
     return this.http
-      .post(URLAuthLogin, user, {
+      .post(URLAuthLogin, userCredential, {
         headers,
         observe: 'response',
       })
@@ -81,51 +103,43 @@ export class AuthService {
           if (response.status === 200) {
             return response.body;
           } else {
-            console.log('usuario no autorizado:', response.status);
             return of(null);
           }
         }),
-        switchMap((token) => {
-          let decoded = helper.decodeToken(token.access_token);
-          this.userData.next(decoded);
-
-          let storageObs: Observable<any>;
-          if (rememberMe) {
-            storageObs = from(this.storage.set(TOKEN_KEY, token.access_token));
-            localStorage.setItem(TOKEN_KEY, token.access_token);
-          } else {
-            storageObs = new Observable<string>((observer) => {
-              sessionStorage.setItem(TOKEN_KEY, token.access_token);
-              const storedToken = sessionStorage.getItem(TOKEN_KEY);
-              observer.next(storedToken!);
-              observer.complete();
-            });
-          }
-          return storageObs;
-        })
+        switchMap((token) => this.handleLoginResponse(token, rememberMe))
       );
   }
 
-  getAuthToken(): string | null {
-    return localStorage.getItem('jwt-token'); 
+  
+  static getAuthToken(): string | null {
+    const localStorageToken = localStorage.getItem('jwt-token');
+    const sessionStorageToken = sessionStorage.getItem('jwt-token');
+    return localStorageToken ?? sessionStorageToken ?? null;
   }
 
   checkAuthentication(): Observable<boolean> {
-    const token = this.getAuthToken();
+    const token = AuthService.getAuthToken();
     return of(!!token); 
   }
 
   getUser() {
-    return this.userData.getValue();
+    return this.userData.asObservable();
   }
 
   logout() {
     this.storage.remove(TOKEN_KEY).then(() => {
       this.router.navigateByUrl('/');
-      this.userData.next(null);
+      this.userData.next({ loggedIn: false, token: null });
     });
   }
+
+  static getTokenParams(): string {
+    return '?token=' + AuthService.getAuthToken();
+  }
+
+  refreshToken(): Observable<string> {
+    return this.http.post(URLAuthRefresh + AuthService.getTokenParams(), {}, httpOptions).pipe(
+      map((response: any) => response)
+    );
+  }
 }
-
-
-

@@ -25,3 +25,4 @@ const URLServer = 'https://mychecktime.com.co/main';
 
 
 export const URLAuthLogin = `${URLServer}/login`;
+export const URLAuthRefresh = `${URLServer}/refresh`;
