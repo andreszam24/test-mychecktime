@@ -16,7 +16,7 @@ import { IonToggle, IonItem, IonContent, IonList, IonLabel, IonFooter, IonSpinne
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, IonSpinner,IonList,IonItem,IonToggle,IonLabel,IonFooter,IonLoading,IonicModule, CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, AppSpinnerComponent, InternetStatusComponent]
+  imports: [ HttpClientModule, IonContent, IonSpinner,IonList,IonItem,IonToggle,IonLabel,IonFooter,IonLoading,IonicModule, CommonModule, FormsModule, ReactiveFormsModule, AppSpinnerComponent, InternetStatusComponent]
 })
 
 export class LoginPage implements OnInit {
