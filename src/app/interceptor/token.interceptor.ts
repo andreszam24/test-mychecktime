@@ -16,6 +16,7 @@ export class TokenInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService, private helper: JwtHelperService ) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    console.log('entro a interceptor')
     return this.authService.user.pipe(
       switchMap((user) => {
         console.log('entro', user.loggedIn, user.token)

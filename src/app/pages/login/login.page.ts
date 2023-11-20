@@ -51,7 +51,6 @@ export class LoginPage implements OnInit {
   ionViewDidEnter() {
     this.auth.checkAuthentication().subscribe((authenticated) => {
       if (authenticated) {
-        // El usuario ya está autenticado, redirigir a la página de inicio
         this.router.navigateByUrl('/home');
       }
     });
@@ -74,23 +73,25 @@ export class LoginPage implements OnInit {
       this.auth.login(this.formLogin.value.user, this.formLogin.value.password,rememberMe)
       .pipe(
         catchError((error) => {
+          console.log('entro a catchError', error)
           this.isLoading = false;
           //loading.dismiss();
-          this.loadingCtrl.dismiss();
+          //this.loadingCtrl.dismiss();
           this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
           return of(null);
         })
       )
       .subscribe((res) => {
         if (res) {
+          console.log(res)
           this.isLoading = false;
           //loading.dismiss();
-          this.loadingCtrl.dismiss();
+          //this.loadingCtrl.dismiss();
           this.router.navigateByUrl('/home');
         } else {
           this.isLoading = false;
           //loading.dismiss();
-          this.loadingCtrl.dismiss();
+          //this.loadingCtrl.dismiss();
           this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
         }
       });

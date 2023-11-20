@@ -1,9 +1,9 @@
 import { Platform } from '@ionic/angular';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { BehaviorSubject, Observable, from, of, defer } from 'rxjs';
+import { BehaviorSubject, Observable, from, of, defer} from 'rxjs';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, catchError } from 'rxjs/operators';
 import { URLAuthLogin, headers, URLAuthRefresh, httpOptions } from '../resources/urls.resource';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
@@ -32,6 +32,7 @@ export class AuthService {
   }
 
   loadStoredToken() {
+    //console.log('entro a loadStoredToken');
     let platformObs = from(this.plt.ready());
     this.user = platformObs.pipe(
       map(() => this.handleStoredToken(AuthService.getAuthToken()))
@@ -56,6 +57,7 @@ export class AuthService {
   }
 
   handleLoginResponse(token: any, rememberMe: boolean): Observable<any> {
+    //console.log('handleLoginResponse');
     let decoded = helper.decodeToken(token.access_token);
     this.userData.next({ loggedIn: true, token: decoded });
   
@@ -76,6 +78,7 @@ export class AuthService {
   
   login(email: string, password: string, rememberMe: boolean) {
     const userCredential = { email, password };
+    console.log('userCredential:',userCredential)
     return this.http
       .post(URLAuthLogin, userCredential, {
         headers,
@@ -84,12 +87,18 @@ export class AuthService {
       .pipe(
         map((response: HttpResponse<any>) => {
           if (response.status === 200) {
+            //console.log(response.status)
             return response.body;
           } else {
+            //console.log(response.status)
             return of(null);
           }
         }),
-        switchMap((token) => this.handleLoginResponse(token, rememberMe))
+        switchMap((token) => this.handleLoginResponse(token, rememberMe)),
+        catchError((error) => {
+          console.error('Error en la autenticación:', error);
+          return of(); // Devuelve un observable vacío en caso de error
+        })
       );
   }
 
@@ -101,6 +110,7 @@ export class AuthService {
   }
 
   checkAuthentication(): Observable<boolean> {
+    console.log('checkAuthentication');
     const token = AuthService.getAuthToken();
     return of(!!token); 
   }
