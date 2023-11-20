@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController } from '@ionic/angular/standalone';
+import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController, LoadingController } from '@ionic/angular/standalone';
 import { FormBuilder, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
@@ -20,22 +20,27 @@ import { of, catchError } from 'rxjs';
 })
 
 export class PatientIntakePage implements OnInit {
-  //TODO: Borrar dummyMA = '{"patient":{"name":"Pepito","lastname":"Perez","birthday":"1922-09-19","gender":"masculino","dni":"192832"},"specialty":{"name":"CIRUGÍA GENERAL"},"procedureCodes":[{"code":"1252","name":"rodillameniscos"},{"code":"1312","name":"rodillaligamento"}],"numeroResgistro":"DE123","programming":"urgencia externa","asa":"IV"}';
+
   medicalAttention: MedicalAttention | undefined | null = new MedicalAttention();
   barcodes: Barcode[] = [];
   isSupported = false;
   manualIntake = false;
   lookingForPatient = false;
   formPatientIntake: FormGroup;
+  public data: Patient[] = [];
+  public resultsSearchigPatient = [...this.data];
 
 
-  constructor(private alertController: AlertController, public fb: FormBuilder, private patientsService: PatientService) { }
+  constructor(
+    private alertController: AlertController,
+    public fb: FormBuilder,
+    private patientsService: PatientService,
+    private loadingCtrl: LoadingController
+  ) { }
 
   ngOnInit() {
     this.formIntakeValidation();
     this.startBarcodeScanner();
-    //TODO: Borrar this.medicalAttention = this.parseJSONMedicalAttentionSafely(this.dummyMA);
-    // console.log(this.medicalAttention?.patient.birthday.toString().replace(/T.*/,'').split('-').reverse().join('-'));
   }
 
 
@@ -53,7 +58,7 @@ export class PatientIntakePage implements OnInit {
   async scan(): Promise<void> {
     const granted = await this.requestPermissions();
     if (!granted) {
-      this.presentAlert();
+      this.presentBasicAlert('¡Ups! Sin permisos', '¡Activa los permisos de la cámara para usar el escáner de códigos!');
       this.changeStatusManulIntake(true);
       return;
     }
@@ -90,30 +95,18 @@ export class PatientIntakePage implements OnInit {
     return camera === 'granted' || camera === 'limited';
   }
 
-  async presentAlert(): Promise<void> {
-    const alert = await this.alertController.create({
-      header: '¡Ups! Sin permisos',
-      message: '¡Activa los permisos de la cámara para usar el escáner de códigos!',
-      buttons: ['OK']
-    });
-    await alert.present();
-  }
-
-  public data: Patient[] = [];
-  public resultsSearchigPatient = [...this.data];
-
   handleInputDNIPatient(event: any) {
     const query = event.target.value.toLowerCase().trim();
     if (query != '' && query.length > 5) {
       this.resultsSearchigPatient = [];
       this.patientSearchByDNI(query);
-      
+    }else{
+      this.medicalAttention?.setPatient(new Patient());
     }
   }
 
   patientSelected(patient: Patient) {
-    console.log(patient);
-    if (this.medicalAttention){
+    if (this.medicalAttention) {
       this.medicalAttention.patient = patient;
     }
     this.resultsSearchigPatient = [];
@@ -121,34 +114,28 @@ export class PatientIntakePage implements OnInit {
   }
 
   patientSearchByDNI(dni: string) {
-    
+    this.showLoadingBasic("Cargango...");
     this.patientsService.searchByDni(dni).pipe(
       catchError((error) => {
-        //this.isLoading = false;
-        //this.loadingCtrl.dismiss();
-        //this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
-        console.log('Error', error);
+        this.loadingCtrl.dismiss();
+        console.error('Ups! Algo salio mal al consultar los pacientes por DNI: ', error);
         return of(null);
       })
     )
-    .subscribe((res) => {
+      .subscribe((result) => {
+        if (result && result.length > 0) {
+          this.loadingCtrl.dismiss();
+          this.data = result;
+          this.resultsSearchigPatient = this.data.filter((patient) => patient.dni.toLowerCase().indexOf(dni) > -1);
+        } else {
+          let newPatient = new Patient();
+          newPatient.dni = dni;
+          this.medicalAttention?.setPatient(newPatient);
+          this.presentBasicAlert('Oops!', 'Parece que a quien buscas no se encuentra. Por favor intenta con otra búsqueda.');
+          this.loadingCtrl.dismiss();
+        }
+      });
 
-      if (res) {
-        //this.isLoading = false;
-        console.log('ITEM:', res);
-        this.data = res;
-        console.log('DATOS: ', this.data);
-        this.resultsSearchigPatient = this.data.filter((patient) => patient.dni.toLowerCase().indexOf(dni) > -1);
-        //this.loadingCtrl.dismiss();
-        console.log('RESULT: ', this.resultsSearchigPatient);
-      } else {
-        console.log("NO", this.data)
-        //this.isLoading = false;
-        //this.loadingCtrl.dismiss();
-        //this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
-      }
-    });
-  console.log('array', this.data);
   }
 
   enableEditMedicalAttentionData() {
@@ -189,6 +176,32 @@ export class PatientIntakePage implements OnInit {
       user: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')])
     });
+  }
+
+  async showLoadingWithTimer(message: string, timer: number) {
+    const loading = await this.loadingCtrl.create({
+      message: message,
+      duration: timer,
+    });
+
+    loading.present();
+  }
+
+  async showLoadingBasic(message: string) {
+    const loading = await this.loadingCtrl.create({
+      message: message
+    });
+
+    loading.present();
+  }
+
+  async presentBasicAlert(header: string, message: string): Promise<void> {
+    const alert = await this.alertController.create({
+      header: header,
+      message: message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
 }

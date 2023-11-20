@@ -50,7 +50,7 @@
   </div>
 
   <div *ngIf="manualIntake" color="light">
-    <ion-searchbar [debounce]="1000" (ionInput)="handleInputDNIPatient($event)"
+    <ion-searchbar [debounce]="2500" (ionInput)="handleInputDNIPatient($event)"
       placeholder="Búsqueda de paciente por identificación">
     </ion-searchbar>
     <ion-list>
@@ -124,6 +124,7 @@
       </ion-item>
     </ion-list>
   </div>
+  <ion-loading class="custom-loading" trigger="login-button" message="Cargando..." ></ion-loading>
 </ion-content>
 
 <ion-fab slot="fixed" vertical="bottom" horizontal="end">

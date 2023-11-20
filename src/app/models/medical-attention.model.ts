@@ -26,6 +26,10 @@ export class MedicalAttention {
 
   // Encabezado
   patient: Patient;
+ 
+  setPatient(value: Patient) {
+    this.patient = value;
+  }
   specialty: Specialty;
   numeroResgistro: string;
   programming: string;
