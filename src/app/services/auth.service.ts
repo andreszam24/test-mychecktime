@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import { BehaviorSubject, Observable, from, of, defer} from 'rxjs';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { map, switchMap, catchError } from 'rxjs/operators';
-import { URLAuthLogin, headers, URLAuthRefresh, httpOptions } from '../resources/urls.resource';
+import { map, switchMap } from 'rxjs/operators';
+import { URLAuthLogin, headers, httpOptions } from '../resources/urls.resource';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
 
@@ -19,12 +19,15 @@ export class AuthService {
   public user: Observable<{ loggedIn: boolean; token: string | null }>;
   private userData = new BehaviorSubject<{ loggedIn: boolean; token: any }>({ loggedIn: false, token: null });
   private redirectFlag = false;
+  private userCredential = {};
+  private rememberMeStatus:boolean;
+  
 
   constructor(
     private storage: Storage,
     private http: HttpClient,
     private plt: Platform,
-    private router: Router
+    private router: Router,
   ) {
     this.storage.create().then(() => {
       this.loadStoredToken();
@@ -32,7 +35,6 @@ export class AuthService {
   }
 
   loadStoredToken() {
-    //console.log('entro a loadStoredToken');
     let platformObs = from(this.plt.ready());
     this.user = platformObs.pipe(
       map(() => this.handleStoredToken(AuthService.getAuthToken()))
@@ -40,7 +42,7 @@ export class AuthService {
   }
   
   handleStoredToken(token: string | null): { loggedIn: boolean; token: any } {
-    console.log('Token almacenado handleStoredToken:', token);
+    console.log('Token almacenado', token);
   
     if (token) {
       let decoded = helper.decodeToken(token);
@@ -57,7 +59,6 @@ export class AuthService {
   }
 
   handleLoginResponse(token: any, rememberMe: boolean): Observable<any> {
-    //console.log('handleLoginResponse');
     let decoded = helper.decodeToken(token.access_token);
     this.userData.next({ loggedIn: true, token: decoded });
   
@@ -77,20 +78,18 @@ export class AuthService {
   }
   
   login(email: string, password: string, rememberMe: boolean) {
-    const userCredential = { email, password };
-    console.log('userCredential:',userCredential)
+    this.userCredential = { email, password };
+    this.rememberMeStatus = rememberMe;
     return this.http
-      .post(URLAuthLogin, userCredential, {
+      .post(URLAuthLogin, this.userCredential, {
         headers,
         observe: 'response',
       })
       .pipe(
         map((response: HttpResponse<any>) => {
           if (response.status === 200) {
-            //console.log(response.status)
             return response.body;
           } else {
-            //console.log(response.status)
             return of(null);
           }
         }),
@@ -125,9 +124,10 @@ export class AuthService {
     return '?token=' + AuthService.getAuthToken();
   }
 
-  refreshToken(): Observable<string> {
-    return this.http.post(URLAuthRefresh + AuthService.getTokenParams(), {}, httpOptions).pipe(
-      map((response: any) => response)
-    );
+ refreshToken(): Observable<any> {
+    const user = this.userCredential;
+    return this.http.post(URLAuthLogin, user, httpOptions).pipe(
+      map((response:any) => this.handleLoginResponse(response, this.rememberMeStatus)
+    ));
   }
 }
