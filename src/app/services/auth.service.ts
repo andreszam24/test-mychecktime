@@ -42,8 +42,6 @@ export class AuthService {
   }
   
   handleStoredToken(token: string | null): { loggedIn: boolean; token: any } {
-    console.log('Token almacenado', token);
-  
     if (token) {
       let decoded = helper.decodeToken(token);
       this.userData.next({ loggedIn: true, token: decoded });

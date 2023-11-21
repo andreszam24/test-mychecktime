@@ -80,7 +80,6 @@ export class LoginPage implements OnInit {
       )
       .subscribe((res) => {
         if (res) {
-          console.log(res)
           this.isLoading = false;
           this.loadingCtrl.dismiss();
           this.router.navigateByUrl('/home');
