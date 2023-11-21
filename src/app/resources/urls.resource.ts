@@ -30,3 +30,5 @@ export const URLAuthRefresh = `${URLServer}/refresh`;
 export const URLPatients = `${URLServer}/patients`;
 export const URLPatientsByName = `${URLServer}/patientsByName`;
 export const URLPatientsByDni = `${URLServer}/patientsByDni`;
+
+export const URLSpecialties = `${URLServer}/especialidades`;

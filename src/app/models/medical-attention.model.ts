@@ -26,10 +26,8 @@ export class MedicalAttention {
 
   // Encabezado
   patient: Patient;
- 
-  setPatient(value: Patient) {
-    this.patient = value;
-  }
+
+
   specialty: Specialty;
   numeroResgistro: string;
   programming: string;
@@ -38,7 +36,7 @@ export class MedicalAttention {
   /*originDate: Date;
   simpleOriginDate: String;
   simpleOriginHour: String;*/
-  
+
   /*
   anestehsiologist: Array<AnesthesiologistProfile>;
   
@@ -65,4 +63,11 @@ export class MedicalAttention {
   // Volatil
   
   operatingRoom: OperationRoom;*/
+  setPatient(value: Patient) {
+    this.patient = value;
+  }
+
+  setSpecialty(value: Specialty) {
+    this.specialty = value;
+  }
 }

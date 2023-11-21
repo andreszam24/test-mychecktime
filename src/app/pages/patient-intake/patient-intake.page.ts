@@ -9,6 +9,8 @@ import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { Patient } from '../../models/patient.model';
 import { PatientService } from 'src/app/services/patient.service';
 import { of, catchError } from 'rxjs';
+import { Specialty } from 'src/app/models/specialty.model';
+import { SpecialtyService } from '../../services/specialty.service';
 
 
 @Component({
@@ -27,22 +29,24 @@ export class PatientIntakePage implements OnInit {
   manualIntake = false;
   lookingForPatient = false;
   formPatientIntake: FormGroup;
-  public data: Patient[] = [];
-  public resultsSearchigPatient = [...this.data];
-
+  patientList: Patient[] = [];
+  resultsSearchigPatient = [...this.patientList];
+  specialtiesList: Specialty[] = [];
+  resultsSearchigSpecialties = [...this.specialtiesList];
 
   constructor(
     private alertController: AlertController,
     public fb: FormBuilder,
     private patientsService: PatientService,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private specialtyService: SpecialtyService
   ) { }
 
   ngOnInit() {
-    this.formIntakeValidation();
     this.startBarcodeScanner();
+    this.loadMasterData();
+    this.formIntakeValidation();
   }
-
 
   private startBarcodeScanner() {
     BarcodeScanner.isSupported().then((result) => {
@@ -90,9 +94,38 @@ export class PatientIntakePage implements OnInit {
     this.changeStatusLookingForPatient(false);
   }
 
-  async requestPermissions(): Promise<boolean> {
-    const { camera } = await BarcodeScanner.requestPermissions();
-    return camera === 'granted' || camera === 'limited';
+  loadMasterData() {
+    this.getAllCupsCodes();
+    this.getAllSpecialties();
+  }
+
+  getAllCupsCodes() { }
+
+  getAllSpecialties() {
+    this.showLoadingBasic("Cargango...");
+    this.specialtiesList = this.specialtyService.getLocalSpecialties();
+    if (this.specialtiesList.length < 1) {
+      this.specialtyService.getRemoteSpecialties()
+        .pipe(
+          catchError((error) => {
+            this.loadingCtrl.dismiss();
+            console.error('Ups! Algo salio mal al consultar las especialidades: ', error);
+            this.presentBasicAlert('Oops!', 'Parece algo salio mal y no logramos conectar con el servidor');
+            return of(null);
+          })
+        ).subscribe((result) => {
+          if (result && result.length > 0) {
+            this.loadingCtrl.dismiss();
+            this.specialtiesList = result;
+          } else {
+            this.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de especialidades.');
+            this.loadingCtrl.dismiss();
+          }
+        });
+    } else {
+      this.loadingCtrl.dismiss();
+    }
+
   }
 
   handleInputDNIPatient(event: any) {
@@ -100,17 +133,9 @@ export class PatientIntakePage implements OnInit {
     if (query != '' && query.length > 5) {
       this.resultsSearchigPatient = [];
       this.patientSearchByDNI(query);
-    }else{
+    } else {
       this.medicalAttention?.setPatient(new Patient());
     }
-  }
-
-  patientSelected(patient: Patient) {
-    if (this.medicalAttention) {
-      this.medicalAttention.patient = patient;
-    }
-    this.resultsSearchigPatient = [];
-    this.changeStatusLookingForPatient(true);
   }
 
   patientSearchByDNI(dni: string) {
@@ -125,8 +150,8 @@ export class PatientIntakePage implements OnInit {
       .subscribe((result) => {
         if (result && result.length > 0) {
           this.loadingCtrl.dismiss();
-          this.data = result;
-          this.resultsSearchigPatient = this.data.filter((patient) => patient.dni.toLowerCase().indexOf(dni) > -1);
+          this.patientList = result;
+          this.resultsSearchigPatient = this.patientList.filter((patient) => patient.dni.toLowerCase().indexOf(dni) > -1);
         } else {
           let newPatient = new Patient();
           newPatient.dni = dni;
@@ -136,6 +161,35 @@ export class PatientIntakePage implements OnInit {
         }
       });
 
+  }
+
+  patientSelected(patient: Patient) {
+    if (this.medicalAttention) {
+      this.medicalAttention.patient = patient;
+    }
+    this.resultsSearchigPatient = [];
+    this.changeStatusLookingForPatient(true);
+  }
+
+  handleInputSpecialtyName(event: any) {
+    const query = event.target.value.toLowerCase().trim();
+    if (query != '' && query.length > 4) {
+      this.resultsSearchigSpecialties = [];
+      this.searchSpecialtyByName(query);
+    } else {
+      this.medicalAttention?.setSpecialty(new Specialty());
+    }
+  }
+
+  specialtySelected(specialty: Specialty) {
+    if (this.medicalAttention) {
+      this.medicalAttention.specialty = specialty;
+    }
+    this.resultsSearchigSpecialties = [];
+  }
+
+  searchSpecialtyByName(name: string) {
+    this.resultsSearchigSpecialties = this.specialtiesList.filter((specialty) => specialty.name.toLowerCase().indexOf(name) > -1);
   }
 
   enableEditMedicalAttentionData() {
@@ -176,6 +230,11 @@ export class PatientIntakePage implements OnInit {
       user: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')])
     });
+  }
+
+  async requestPermissions(): Promise<boolean> {
+    const { camera } = await BarcodeScanner.requestPermissions();
+    return camera === 'granted' || camera === 'limited';
   }
 
   async showLoadingWithTimer(message: string, timer: number) {

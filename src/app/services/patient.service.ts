@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { URLPatients, URLPatientsByDni, headers } from '../resources/urls.resource';
+import { URLPatientsByDni, headers } from '../resources/urls.resource';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Patient } from '../models/patient.model';
-import { map, switchMap } from 'rxjs/operators';
-import { BehaviorSubject, Observable, from, of, catchError } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Observable, of, catchError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
