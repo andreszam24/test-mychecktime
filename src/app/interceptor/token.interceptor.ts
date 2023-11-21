@@ -22,17 +22,25 @@ export class TokenInterceptor implements HttpInterceptor {
     console.log('entro a interceptor')
     return this.authService.user.pipe(
       switchMap((user) => {
-        console.log('entro', user.loggedIn, user.token)
+        console.log('entro', user.loggedIn, user.token);
+        let modifiedRequest: HttpRequest<any>;
+        let Token: string | null = null;
+
         if (user.loggedIn && user.token) {
-          if (helper.isTokenExpired(user.token)) {
+          Token = AuthService.getAuthToken();
+          console.log(Token)
+          if (helper.isTokenExpired(Token)) {
             console.log('token expired');
             // token expired 
           } else {
             console.log('token valid');
+            modifiedRequest = this.addToken(request, Token!);
+
+            
             // token valid
           }
-          const modifiedRequest = this.addToken(request, user.token);
-          return next.handle(modifiedRequest);
+          return next.handle(modifiedRequest!);
+          
         } else {
           console.log('entro else')
           return next.handle(request);
@@ -46,7 +54,6 @@ export class TokenInterceptor implements HttpInterceptor {
   }
 
   private addToken(request: HttpRequest<any>, token: string): HttpRequest<any> {
-    console.log('Token', token);
     return request.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
