@@ -10,6 +10,9 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
 
+
+const helper = new JwtHelperService();
+
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
 
@@ -21,6 +24,13 @@ export class TokenInterceptor implements HttpInterceptor {
       switchMap((user) => {
         console.log('entro', user.loggedIn, user.token)
         if (user.loggedIn && user.token) {
+          if (helper.isTokenExpired(user.token)) {
+            console.log('token expired');
+            // token expired 
+          } else {
+            console.log('token valid');
+            // token valid
+          }
           const modifiedRequest = this.addToken(request, user.token);
           return next.handle(modifiedRequest);
         } else {

@@ -14,10 +14,6 @@ if (environment.production) {
   enableProdMode();
 }
 
-/*export function tokenInterceptorFactory() {
-  return new TokenInterceptor();
-}*/
-
 /*bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
@@ -35,11 +31,11 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes),
     importProvidersFrom(IonicStorageModule.forRoot()),
     provideHttpClient(withInterceptorsFromDi()),
-   /* {
+    {
       provide: HTTP_INTERCEPTORS,
-      useFactory: tokenInterceptorFactory,
+      useClass: TokenInterceptor,
       multi: true,
-    },*/
+    }
   ],
 });
 
