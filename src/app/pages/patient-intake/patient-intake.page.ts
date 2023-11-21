@@ -102,9 +102,11 @@ export class PatientIntakePage implements OnInit {
   getAllCupsCodes() { }
 
   getAllSpecialties() {
-    this.showLoadingBasic("Cargango...");
+
     this.specialtiesList = this.specialtyService.getLocalSpecialties();
+
     if (this.specialtiesList.length < 1) {
+      this.showLoadingBasic("Cargando...");
       this.specialtyService.getRemoteSpecialties()
         .pipe(
           catchError((error) => {
@@ -122,8 +124,6 @@ export class PatientIntakePage implements OnInit {
             this.loadingCtrl.dismiss();
           }
         });
-    } else {
-      this.loadingCtrl.dismiss();
     }
 
   }
@@ -139,7 +139,7 @@ export class PatientIntakePage implements OnInit {
   }
 
   patientSearchByDNI(dni: string) {
-    this.showLoadingBasic("Cargango...");
+    this.showLoadingBasic("Cargando...");
     this.patientsService.searchByDni(dni).pipe(
       catchError((error) => {
         this.loadingCtrl.dismiss();

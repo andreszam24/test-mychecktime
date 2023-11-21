@@ -23,6 +23,7 @@ export class SpecialtyService extends LocalPersistenceDataService {
         return this.http.get<Specialty[]>(URLSpecialties + AuthService.getTokenParams(), { headers, observe: 'response' }).pipe(
             map((response: HttpResponse<any>) => {
                 if (response.status === 200) {
+                    this.toSaveSpecialtiesLocally(response.body);
                     return response.body;
                 } else {
                     console.error('Error http obteniendo las especialidades: ', response.status, response.body);
@@ -43,6 +44,10 @@ export class SpecialtyService extends LocalPersistenceDataService {
             specialties = this.getLocalData(this.localDataKey);
         }
         return specialties;
+    }
+
+    toSaveSpecialtiesLocally(specialties: Array<Specialty>){
+        this.saveLocalData(this.localDataKey, specialties);
     }
 
 }
