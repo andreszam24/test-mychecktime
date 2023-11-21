@@ -19,32 +19,25 @@ export class TokenInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    console.log('entro a interceptor')
     return this.authService.user.pipe(
       switchMap((user) => {
-        console.log('entro', user.loggedIn, user.token);
         let modifiedRequest: HttpRequest<any>;
         let Token: string | null = null;
         if (user.loggedIn && user.token) {
           Token = AuthService.getAuthToken();
-          console.log(Token)
           if (helper.isTokenExpired(Token)) {
-            console.log('token expired');
             this.authService.refreshToken();
             Token = AuthService.getAuthToken();
             modifiedRequest = this.addToken(request, Token!);
           } else {
-            console.log('token valid');
             modifiedRequest = this.addToken(request, Token!);
           }
           return next.handle(modifiedRequest!);
         } else {
-          console.log('entro else')
           return next.handle(request);
         }
       }),
       catchError((error) => {
-        console.error('Interceptor error:', error);
         return next.handle(request);
       })
     );
