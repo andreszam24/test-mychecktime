@@ -13,7 +13,7 @@ import {JwtHelperService} from '@auth0/angular-jwt';
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
 
-  constructor(private authService: AuthService, private helper: JwtHelperService ) {}
+  constructor(private authService: AuthService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     console.log('entro a interceptor')
@@ -21,12 +21,6 @@ export class TokenInterceptor implements HttpInterceptor {
       switchMap((user) => {
         console.log('entro', user.loggedIn, user.token)
         if (user.loggedIn && user.token) {
-          /*if (this.helper.isTokenExpired(token)) {
-           
-          } else {
-            
-          }*/
-
           const modifiedRequest = this.addToken(request, user.token);
           return next.handle(modifiedRequest);
         } else {

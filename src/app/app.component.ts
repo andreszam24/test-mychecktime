@@ -8,6 +8,7 @@ import { InternetStatusComponent } from './components/internet-status/internet-s
 import { HttpClientModule } from '@angular/common/http';
 
 
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',

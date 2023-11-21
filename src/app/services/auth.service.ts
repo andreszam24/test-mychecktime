@@ -95,10 +95,6 @@ export class AuthService {
           }
         }),
         switchMap((token) => this.handleLoginResponse(token, rememberMe)),
-        catchError((error) => {
-          console.error('Error en la autenticación:', error);
-          return of(); // Devuelve un observable vacío en caso de error
-        })
       );
   }
 
@@ -110,7 +106,6 @@ export class AuthService {
   }
 
   checkAuthentication(): Observable<boolean> {
-    console.log('checkAuthentication');
     const token = AuthService.getAuthToken();
     return of(!!token); 
   }

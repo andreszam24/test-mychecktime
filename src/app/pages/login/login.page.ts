@@ -61,22 +61,19 @@ export class LoginPage implements OnInit {
   }
 
   async doLogin() {
+
+    this.formLogin.markAllAsTouched();
+
     if (this.formLogin.valid) {
       this.isLoading = true;
       const rememberMe = this.formLogin.get('stayInChk')?.value;
 
-      // Muestra el spinner
-      //await this.spinnerComponent.presentLoading();
-  
-
-      //await loading.present();
       this.auth.login(this.formLogin.value.user, this.formLogin.value.password,rememberMe)
       .pipe(
         catchError((error) => {
           console.log('entro a catchError', error)
           this.isLoading = false;
-          //loading.dismiss();
-          //this.loadingCtrl.dismiss();
+          this.loadingCtrl.dismiss();
           this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
           return of(null);
         })
@@ -85,16 +82,14 @@ export class LoginPage implements OnInit {
         if (res) {
           console.log(res)
           this.isLoading = false;
-          //loading.dismiss();
-          //this.loadingCtrl.dismiss();
+          this.loadingCtrl.dismiss();
           this.router.navigateByUrl('/home');
         } else {
           this.isLoading = false;
-          //loading.dismiss();
-          //this.loadingCtrl.dismiss();
+          this.loadingCtrl.dismiss();
           this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
         }
       });
-    }
+    } 
   }
 }

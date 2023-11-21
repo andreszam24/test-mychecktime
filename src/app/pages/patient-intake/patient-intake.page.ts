@@ -9,7 +9,6 @@ import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { Patient } from '../../models/patient.model';
 import { PatientService } from 'src/app/services/patient.service';
 import { of, catchError } from 'rxjs';
-import { HttpClientModule } from '@angular/common/http';
 
 
 
@@ -18,7 +17,7 @@ import { HttpClientModule } from '@angular/common/http';
   templateUrl: './patient-intake.page.html',
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
-  imports: [ HttpClientModule,IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule],
+  imports: [ IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule],
 })
 
 export class PatientIntakePage implements OnInit {
