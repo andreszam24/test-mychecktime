@@ -7,16 +7,50 @@
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
-  <ion-row>
-    <ion-col sizeLg="6" sizeMd="6" sizeXs="12"> <!--*ngFor="let city of cities"-->
-      <ion-card>
-        <img alt="" src="/src/assets/svg/" />
-        <ion-card-header>
-          <ion-card-title></ion-card-title>
-        </ion-card-header>
-      </ion-card>
-    </ion-col>
-  </ion-row>
+  <ion-list>
+    <ion-item-sliding> <!--*ngFor="let patient of patients"-->
+      <ion-item>
+        <ion-card>
+          <ion-card-content>
+            <ion-img src="../../assets/svg/pacientexhdpi.svg">
+            </ion-img>
+            <div class="circle" style="background-color: var(--ion-color-app-red);"></div>
+            <div class="content-text">
+              <h2>nombre completo</h2>
+              <p>cedula</p>
+              <p>Número de Registro institucional</p>
+              <h2 class="localizacion">localizacion</h2>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option class="summary">
+          <div class="content">
+            <ion-icon name="information-circle"></ion-icon>
+            <p>Resumen Paciente</p>
+          </div>   
+        </ion-item-option>
+      </ion-item-options>
+
+      <ion-item-options side="start">
+        <ion-item-option class="delete">
+          <div class="content">
+            <ion-icon name="trash"></ion-icon>
+            <p>Borrar</p>
+          </div>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="start">
+    <ion-fab-button [disabled]="true">
+      <ion-icon src="../../../assets/svg/person-add-outline.svg"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button (click)="goToPatientIntake()">
       <ion-icon src="../../../assets/svg/person-add-outline.svg"></ion-icon>
