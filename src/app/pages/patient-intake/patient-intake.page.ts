@@ -11,6 +11,9 @@ import { PatientService } from 'src/app/services/patient.service';
 import { of, catchError } from 'rxjs';
 import { Specialty } from 'src/app/models/specialty.model';
 import { SpecialtyService } from '../../services/specialty.service';
+import { CupsCodes } from 'src/app/models/cups-codes.model';
+import { CupsCodesService } from 'src/app/services/cups-codes.service';
+
 
 
 @Component({
@@ -33,13 +36,16 @@ export class PatientIntakePage implements OnInit {
   resultsSearchigPatient = [...this.patientList];
   specialtiesList: Specialty[] = [];
   resultsSearchigSpecialties = [...this.specialtiesList];
+  cupsCodesList: CupsCodes[] = [];
+  resultsSearchigCups = [...this.cupsCodesList];
 
   constructor(
     private alertController: AlertController,
     public fb: FormBuilder,
     private patientsService: PatientService,
     private loadingCtrl: LoadingController,
-    private specialtyService: SpecialtyService
+    private specialtyService: SpecialtyService,
+    private cupsCodesService: CupsCodesService
   ) { }
 
   ngOnInit() {
@@ -99,7 +105,30 @@ export class PatientIntakePage implements OnInit {
     this.getAllSpecialties();
   }
 
-  getAllCupsCodes() { }
+  getAllCupsCodes() {
+    this.cupsCodesList = this.cupsCodesService.getLocalCups();
+
+    if (this.cupsCodesList.length < 1) {
+      this.showLoadingBasic("Cargando...");
+      this.cupsCodesService.getRemoteCups()
+        .pipe(
+          catchError((error) => {
+            this.loadingCtrl.dismiss();
+            console.error('Ups! Algo salio mal al consultar los cups: ', error);
+            this.presentBasicAlert('Oops!', 'Parece algo salio mal consultando los CUPS y no logramos conectar con el servidor');
+            return of(null);
+          })
+        ).subscribe((result) => {
+          if (result && result.length > 0) {
+            this.loadingCtrl.dismiss();
+            this.cupsCodesList = result;
+          } else {
+            this.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de CUPS.');
+            this.loadingCtrl.dismiss();
+          }
+        });
+    }
+  }
 
   getAllSpecialties() {
 
@@ -112,7 +141,7 @@ export class PatientIntakePage implements OnInit {
           catchError((error) => {
             this.loadingCtrl.dismiss();
             console.error('Ups! Algo salio mal al consultar las especialidades: ', error);
-            this.presentBasicAlert('Oops!', 'Parece algo salio mal y no logramos conectar con el servidor');
+            this.presentBasicAlert('Oops!', 'Parece algo salio mal conusltando las especialidades y no logramos conectar con el servidor');
             return of(null);
           })
         ).subscribe((result) => {
@@ -126,6 +155,29 @@ export class PatientIntakePage implements OnInit {
         });
     }
 
+  }
+
+  handleInputCupsName(event: any) {
+    const query = event.target.value.toLowerCase().trim();
+    if (query != '' && query.length > 3) {
+      this.resultsSearchigCups = [];
+      this.searchCupsByName(query);
+    }
+  }
+
+  cupsSelected(cup: CupsCodes) {
+    if (this.medicalAttention) {
+      this.medicalAttention.procedureCodes.push(cup);
+    }
+    this.resultsSearchigCups = [];
+  }
+
+  unselectCup(cup: CupsCodes){
+    this.medicalAttention?.procedureCodes.splice(this.medicalAttention.procedureCodes.indexOf(cup),1);
+  }
+
+  searchCupsByName(name: string) {
+    this.resultsSearchigCups = this.cupsCodesList.filter((cup) => cup.code.toLowerCase().indexOf(name) > -1);
   }
 
   handleInputDNIPatient(event: any) {

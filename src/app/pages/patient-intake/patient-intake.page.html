@@ -104,7 +104,7 @@
           [preferWheel]="true"></ion-datetime>
       </ion-item>
       <div>
-        <ion-searchbar [debounce]="2500" (ionInput)="handleInputSpecialtyName($event)"
+        <ion-searchbar [debounce]="1500" (ionInput)="handleInputSpecialtyName($event)"
           placeholder="Búsqueda de especialidad">
         </ion-searchbar>
         <ion-list>
@@ -117,18 +117,18 @@
         <ion-label>{{ medicalAttention?.specialty?.name ?? '' }}</ion-label>
       </ion-item>
       <div>
-        <ion-searchbar [debounce]="2500" (ionInput)="handleInputDNIPatient($event)" placeholder="Búsqueda de CUPS">
+        <ion-searchbar [debounce]="1500" (ionInput)="handleInputCupsName($event)" placeholder="Búsqueda de CUPS">
         </ion-searchbar>
         <ion-list>
-          <ion-item *ngFor="let specialty of resultsSearchigSpecialties">
-            <ion-label (click)="specialtySelected(specialty)">{{ specialty.name }}</ion-label>
+          <ion-item *ngFor="let cup of resultsSearchigCups">
+            <ion-label (click)="cupsSelected(cup)">{{ cup.code}}</ion-label>
           </ion-item>
         </ion-list>
       </div>
       <ion-item>
         <div *ngIf="medicalAttention?.procedureCodes">
           <ion-item *ngFor="let cup of medicalAttention?.procedureCodes">
-            <ion-badge slot="start">{{ cup.code }}</ion-badge> X
+            <ion-badge slot="start">{{ cup.code }}</ion-badge> <a (click)="unselectCup(cup)">X</a>
           </ion-item>
         </div>
       </ion-item>
