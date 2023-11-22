@@ -7,6 +7,16 @@
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
+  <ion-row>
+    <ion-col sizeLg="6" sizeMd="6" sizeXs="12"> <!--*ngFor="let city of cities"-->
+      <ion-card>
+        <img alt="" src="/src/assets/svg/" />
+        <ion-card-header>
+          <ion-card-title></ion-card-title>
+        </ion-card-header>
+      </ion-card>
+    </ion-col>
+  </ion-row>
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button (click)="goToPatientIntake()">
       <ion-icon src="../../../assets/svg/person-add-outline.svg"></ion-icon>
