@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Hall de pacientes</ion-title>
+    <ion-title>Hall de pacientes - {{clinicName}}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
@@ -47,7 +47,8 @@
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="start">
     <ion-fab-button [disabled]="true">
-      <ion-icon src="../../../assets/svg/person-add-outline.svg"></ion-icon>
+      <span>0</span>
+      <ion-icon src="../../../assets/svg/board.svg"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 
