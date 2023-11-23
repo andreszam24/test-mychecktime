@@ -14,7 +14,7 @@ if (environment.production) {
   enableProdMode();
 }
 
-/*bootstrapApplication(AppComponent, {
+bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     provideIonicAngular(),
@@ -22,8 +22,8 @@ if (environment.production) {
     provideHttpClient(),
     importProvidersFrom(IonicStorageModule.forRoot()),
   ],
-});*/
-
+});
+/*
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
@@ -37,7 +37,7 @@ bootstrapApplication(AppComponent, {
       multi: true,
     }
   ],
-});
+});*/
 
 
 

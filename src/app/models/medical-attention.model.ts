@@ -1,6 +1,6 @@
 import { Patient } from './patient.model';
 import { Specialty } from './specialty.model';
-import { CupsCodes } from './cups-code.model';
+import { CupsCodes } from './cups-codes.model';
 /*import { MedicalEvent } from './medical-event.model';
 import { OperationRoom } from './operationRoom.model';
 
@@ -26,6 +26,8 @@ export class MedicalAttention {
 
   // Encabezado
   patient: Patient;
+
+
   specialty: Specialty;
   numeroResgistro: string;
   programming: string;
@@ -34,7 +36,7 @@ export class MedicalAttention {
   /*originDate: Date;
   simpleOriginDate: String;
   simpleOriginHour: String;*/
-  
+
   /*
   anestehsiologist: Array<AnesthesiologistProfile>;
   
@@ -61,4 +63,15 @@ export class MedicalAttention {
   // Volatil
   
   operatingRoom: OperationRoom;*/
+  setPatient(value: Patient) {
+    this.patient = value;
+  }
+
+  setSpecialty(value: Specialty) {
+    this.specialty = value;
+  }
+
+  setProcedureCups(value: CupsCodes[]) {
+    this.procedureCodes = value;
+  }
 }
