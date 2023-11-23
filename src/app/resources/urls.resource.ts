@@ -33,3 +33,5 @@ export const URLPatientsByDni = `${URLServer}/patientsByDni`;
 
 export const URLMedicalAttention = `${URLServer}/clinicalhistory`;
 
+export const URLCupsCodes = `${URLServer}/cupscodes`;
+export const URLSpecialties = `${URLServer}/especialidades`;

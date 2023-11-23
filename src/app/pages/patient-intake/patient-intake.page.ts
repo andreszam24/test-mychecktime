@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController } from '@ionic/angular/standalone';
+import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController, LoadingController } from '@ionic/angular/standalone';
 import { FormBuilder, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
@@ -9,6 +9,11 @@ import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { Patient } from '../../models/patient.model';
 import { PatientService } from 'src/app/services/patient.service';
 import { of, catchError } from 'rxjs';
+import { Specialty } from 'src/app/models/specialty.model';
+import { SpecialtyService } from '../../services/specialty.service';
+import { CupsCodes } from 'src/app/models/cups-codes.model';
+import { CupsCodesService } from 'src/app/services/cups-codes.service';
+
 
 
 
@@ -21,24 +26,34 @@ import { of, catchError } from 'rxjs';
 })
 
 export class PatientIntakePage implements OnInit {
-  //TODO: Borrar dummyMA = '{"patient":{"name":"Pepito","lastname":"Perez","birthday":"1922-09-19","gender":"masculino","dni":"192832"},"specialty":{"name":"CIRUGÍA GENERAL"},"procedureCodes":[{"code":"1252","name":"rodillameniscos"},{"code":"1312","name":"rodillaligamento"}],"numeroResgistro":"DE123","programming":"urgencia externa","asa":"IV"}';
+
   medicalAttention: MedicalAttention | undefined | null = new MedicalAttention();
   barcodes: Barcode[] = [];
   isSupported = false;
   manualIntake = false;
   lookingForPatient = false;
   formPatientIntake: FormGroup;
+  patientList: Patient[] = [];
+  resultsSearchigPatient = [...this.patientList];
+  specialtiesList: Specialty[] = [];
+  resultsSearchigSpecialties = [...this.specialtiesList];
+  cupsCodesList: CupsCodes[] = [];
+  resultsSearchigCups = [...this.cupsCodesList];
 
-
-  constructor(private alertController: AlertController, public fb: FormBuilder, private patientsService: PatientService) { }
+  constructor(
+    private alertController: AlertController,
+    public fb: FormBuilder,
+    private patientsService: PatientService,
+    private loadingCtrl: LoadingController,
+    private specialtyService: SpecialtyService,
+    private cupsCodesService: CupsCodesService
+  ) { }
 
   ngOnInit() {
-    this.formIntakeValidation();
     this.startBarcodeScanner();
-    //TODO: Borrar this.medicalAttention = this.parseJSONMedicalAttentionSafely(this.dummyMA);
-    // console.log(this.medicalAttention?.patient.birthday.toString().replace(/T.*/,'').split('-').reverse().join('-'));
+    this.loadMasterData();
+    this.formIntakeValidation();
   }
-
 
   private startBarcodeScanner() {
     BarcodeScanner.isSupported().then((result) => {
@@ -54,7 +69,7 @@ export class PatientIntakePage implements OnInit {
   async scan(): Promise<void> {
     const granted = await this.requestPermissions();
     if (!granted) {
-      this.presentAlert();
+      this.presentBasicAlert('¡Ups! Sin permisos', '¡Activa los permisos de la cámara para usar el escáner de códigos!');
       this.changeStatusManulIntake(true);
       return;
     }
@@ -86,67 +101,148 @@ export class PatientIntakePage implements OnInit {
     this.changeStatusLookingForPatient(false);
   }
 
-  async requestPermissions(): Promise<boolean> {
-    const { camera } = await BarcodeScanner.requestPermissions();
-    return camera === 'granted' || camera === 'limited';
+  loadMasterData() {
+    this.getAllCupsCodes();
+    this.getAllSpecialties();
   }
 
-  async presentAlert(): Promise<void> {
-    const alert = await this.alertController.create({
-      header: '¡Ups! Sin permisos',
-      message: '¡Activa los permisos de la cámara para usar el escáner de códigos!',
-      buttons: ['OK']
-    });
-    await alert.present();
+  getAllCupsCodes() {
+    this.cupsCodesList = this.cupsCodesService.getLocalCups();
+
+    if (this.cupsCodesList.length < 1) {
+      this.showLoadingBasic("Cargando...");
+      this.cupsCodesService.getRemoteCups()
+        .pipe(
+          catchError((error) => {
+            this.loadingCtrl.dismiss();
+            console.error('Ups! Algo salio mal al consultar los cups: ', error);
+            this.presentBasicAlert('Oops!', 'Parece algo salio mal consultando los CUPS y no logramos conectar con el servidor');
+            return of(null);
+          })
+        ).subscribe((result) => {
+          if (result && result.length > 0) {
+            this.loadingCtrl.dismiss();
+            this.cupsCodesList = result;
+          } else {
+            this.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de CUPS.');
+            this.loadingCtrl.dismiss();
+          }
+        });
+    }
   }
 
-  public data: Patient[] = [];
-  public resultsSearchigPatient = [...this.data];
+  getAllSpecialties() {
+
+    this.specialtiesList = this.specialtyService.getLocalSpecialties();
+
+    if (this.specialtiesList.length < 1) {
+      this.showLoadingBasic("Cargando...");
+      this.specialtyService.getRemoteSpecialties()
+        .pipe(
+          catchError((error) => {
+            this.loadingCtrl.dismiss();
+            console.error('Ups! Algo salio mal al consultar las especialidades: ', error);
+            this.presentBasicAlert('Oops!', 'Parece algo salio mal conusltando las especialidades y no logramos conectar con el servidor');
+            return of(null);
+          })
+        ).subscribe((result) => {
+          if (result && result.length > 0) {
+            this.loadingCtrl.dismiss();
+            this.specialtiesList = result;
+          } else {
+            this.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de especialidades.');
+            this.loadingCtrl.dismiss();
+          }
+        });
+    }
+
+  }
+
+  handleInputCupsName(event: any) {
+    const query = event.target.value.toLowerCase().trim();
+    if (query != '' && query.length > 3) {
+      this.resultsSearchigCups = [];
+      this.searchCupsByName(query);
+    }
+  }
+
+  cupsSelected(cup: CupsCodes) {
+    if (this.medicalAttention) {
+      this.medicalAttention.procedureCodes.push(cup);
+    }
+    this.resultsSearchigCups = [];
+  }
+
+  unselectCup(cup: CupsCodes){
+    this.medicalAttention?.procedureCodes.splice(this.medicalAttention.procedureCodes.indexOf(cup),1);
+  }
+
+  searchCupsByName(name: string) {
+    this.resultsSearchigCups = this.cupsCodesList.filter((cup) => cup.code.toLowerCase().indexOf(name) > -1);
+  }
 
   handleInputDNIPatient(event: any) {
     const query = event.target.value.toLowerCase().trim();
     if (query != '' && query.length > 5) {
       this.resultsSearchigPatient = [];
-      this.data = this.patientSearchByDNI(query);
-      this.resultsSearchigPatient = this.data.filter((patient) => patient.name.toLowerCase().indexOf(query) > -1);
+      this.patientSearchByDNI(query);
+    } else {
+      this.medicalAttention?.setPatient(new Patient());
     }
   }
 
+  patientSearchByDNI(dni: string) {
+    this.showLoadingBasic("Cargando...");
+    this.patientsService.searchByDni(dni).pipe(
+      catchError((error) => {
+        this.loadingCtrl.dismiss();
+        console.error('Ups! Algo salio mal al consultar los pacientes por DNI: ', error);
+        return of(null);
+      })
+    )
+      .subscribe((result) => {
+        if (result && result.length > 0) {
+          this.loadingCtrl.dismiss();
+          this.patientList = result;
+          this.resultsSearchigPatient = this.patientList.filter((patient) => patient.dni.toLowerCase().indexOf(dni) > -1);
+        } else {
+          let newPatient = new Patient();
+          newPatient.dni = dni;
+          this.medicalAttention?.setPatient(newPatient);
+          this.presentBasicAlert('Oops!', 'Parece que a quien buscas no se encuentra. Por favor intenta con otra búsqueda.');
+          this.loadingCtrl.dismiss();
+        }
+      });
+
+  }
+
   patientSelected(patient: Patient) {
-    console.log(patient);
+    if (this.medicalAttention) {
+      this.medicalAttention.patient = patient;
+    }
     this.resultsSearchigPatient = [];
     this.changeStatusLookingForPatient(true);
   }
 
-  patientSearchByDNI(dni: string) {
-    let patients: Patient[] = [];
-    this.patientsService.searchByDni(dni)
-      .pipe(
-        catchError((error) => {
-          //this.isLoading = false;
-          //this.loadingCtrl.dismiss();
-          //this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
-          console.log('Error', error);
-          return of(null);
-        })
-      )
-      .subscribe((res) => {
+  handleInputSpecialtyName(event: any) {
+    const query = event.target.value.toLowerCase().trim();
+    if (query != '' && query.length > 4) {
+      this.resultsSearchigSpecialties = [];
+      this.searchSpecialtyByName(query);
+    } else {
+      this.medicalAttention?.setSpecialty(new Specialty());
+    }
+  }
 
-        if (res) {
-          //this.isLoading = false;
-          console.log('ITEM:', res);
-          let patient: Patient = JSON.parse(JSON.stringify(res));
-          console.log('PACIENTe', patient);
-          patients.push(patient);
-          //this.loadingCtrl.dismiss();
-        } else {
-          //this.isLoading = false;
-          //this.loadingCtrl.dismiss();
-          //this.errorMensaje = 'El usuario no existe o las credenciales son incorrectas. Por favor, inténtalo de nuevo.';
-        }
-      });
-    console.log('array', patients);
-    return patients;
+  specialtySelected(specialty: Specialty) {
+    if (this.medicalAttention) {
+      this.medicalAttention.specialty = specialty;
+    }
+    this.resultsSearchigSpecialties = [];
+  }
+
+  searchSpecialtyByName(name: string) {
+    this.resultsSearchigSpecialties = this.specialtiesList.filter((specialty) => specialty.name.toLowerCase().indexOf(name) > -1);
   }
 
   enableEditMedicalAttentionData() {
@@ -187,6 +283,37 @@ export class PatientIntakePage implements OnInit {
       user: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')])
     });
+  }
+
+  async requestPermissions(): Promise<boolean> {
+    const { camera } = await BarcodeScanner.requestPermissions();
+    return camera === 'granted' || camera === 'limited';
+  }
+
+  async showLoadingWithTimer(message: string, timer: number) {
+    const loading = await this.loadingCtrl.create({
+      message: message,
+      duration: timer,
+    });
+
+    loading.present();
+  }
+
+  async showLoadingBasic(message: string) {
+    const loading = await this.loadingCtrl.create({
+      message: message
+    });
+
+    loading.present();
+  }
+
+  async presentBasicAlert(header: string, message: string): Promise<void> {
+    const alert = await this.alertController.create({
+      header: header,
+      message: message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
 }
