@@ -3,13 +3,8 @@ import { AuthService } from './auth.service';
 import { URLPatientsByDni, headers } from '../resources/urls.resource';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Patient } from '../models/patient.model';
-<<<<<<< HEAD
-import { catchError, map, switchMap } from 'rxjs/operators';
-import { Observable, from, of } from 'rxjs';
-=======
 import { map } from 'rxjs/operators';
 import { Observable, of, catchError } from 'rxjs';
->>>>>>> origin/develop
 
 @Injectable({
   providedIn: 'root',

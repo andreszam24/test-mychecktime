@@ -7,8 +7,8 @@
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
-  <ion-list>
-    <ion-item-sliding> <!--*ngFor="let patient of patients"-->
+  <ion-list *ngFor="let medicalAttention of attentionsInProgress">
+    <ion-item-sliding>
       <ion-item>
         <ion-card>
           <ion-card-content>
@@ -16,10 +16,10 @@
             </ion-img>
             <div class="circle" style="background-color: var(--ion-color-app-red);"></div>
             <div class="content-text">
-              <h2>nombre completo</h2>
-              <p>cedula</p>
+              <h2>{{medicalAttention.patient.name}} {{medicalAttention.patient.lastname}}</h2>
+              <p>{{medicalAttention.patient.dni}}</p>
               <p>Número de Registro institucional</p>
-              <h2 class="localizacion">localizacion</h2>
+              <h2 class="localizacion">Localización: {{ obtenerNombreDeSala(medicalAttention) }}</h2>
             </div>
           </ion-card-content>
         </ion-card>

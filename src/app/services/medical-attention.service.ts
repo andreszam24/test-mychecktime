@@ -1,40 +1,37 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { URLMedicalAttention, headers } from '../resources/urls.resource';
+import { headers, URLPendingMedicalAttention } from '../resources/urls.resource';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
-import { Patient } from '../models/patient.model';
+import { map } from 'rxjs/operators';
+import { Observable, of, catchError } from 'rxjs';
 import { MedicalAttention } from '../models/medical-attention.model';
-
-
-
-
-
-
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class MedicalAttentionService {
 
   constructor(private http: HttpClient) { }
 
-  getMedicalAttention(data: Array<MedicalAttention>): Observable<Array<Patient>> {
-    return this.http.get(URLMedicalAttention + AuthService.getTokenParams(), { headers, observe: 'response' }).pipe(
+  findPendingServices(clinicId: number): Observable<Array<MedicalAttention>> {
+    const payload = {
+      clinic_id: clinicId
+    };
+
+    return this.http.post<MedicalAttention[]>(URLPendingMedicalAttention + AuthService.getTokenParams(),payload , { headers, observe: 'response' }).pipe(
       map((response: HttpResponse<any>) => {
         if (response.status === 200) {
-          //const patients: Patient[] = response.body; 
-          //return patients;
+          return response.body;
         } else {
-          console.log('Error consumiendo servicio para obtener los pacientes: ' + response.statusText);
-          return [];
+          console.error('Error http en búsqueda de atenciones medicas pendientes: ', response.status, response.body);
+          return of(null);
         }
-      }), catchError((err, caught) => {
-        console.error('Error logico en getAllPatients', err, caught);
+      }),
+      catchError((err, caught) => {
+        console.error('Error logico en findPendingServices', err, caught);
         return of([]);
       })
-
     );
   }
 }
