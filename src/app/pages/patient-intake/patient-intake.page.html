@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content>
-  <div >
+  <div>
     <ion-card *ngIf="medicalAttention?.patient && medicalAttention?.specialty && !manualIntake">
       <ion-list [inset]="true">
         <ion-item detail="false">
@@ -68,8 +68,7 @@
           label-placement="stacked" placeholder=""></ion-input>
       </ion-item>
       <ion-item lines="none">
-        <ion-select label="Tipo de programación" placeholder="Selecciona"
-          value="{{ medicalAttention?.programming ?? '' }}">
+        <ion-select label="Tipo de programación" placeholder="Selecciona" value="{{ medicalAttention?.programming ?? '' }}">
           <ion-select-option value="cirugía electiva">Cirugía electiva</ion-select-option>
           <ion-select-option value="programada de piso">Programada de piso</ion-select-option>
           <ion-select-option value="urgencia de piso">Urgencia de piso</ion-select-option>
@@ -79,10 +78,16 @@
 
         </ion-select>
       </ion-item>
+     <!--  <ng-container>
+       *ngIf="formPatientIntake.controls['progamationType'].touched && formPatientIntake.controls['progamationType'].invalid">
+        <p class="error-message">Campo obligatorio.</p>
+      </ng-container>-->
+
       <ion-item lines="none" class="box">
         <ion-input label="Identificación del paciente" value="{{ medicalAttention?.patient?.dni ?? '' }}"
           label-placement="stacked" readonly placeholder=""></ion-input>
       </ion-item>
+
       <ion-item lines="none" class="box">
         <ion-input label="Nombre" label-placement="stacked" value="{{ medicalAttention?.patient?.name ?? '' }}"
           placeholder=""></ion-input>
@@ -117,7 +122,8 @@
         <ion-label>{{ medicalAttention?.specialty?.name ?? '' }}</ion-label>
       </ion-item>
       <div>
-        <ion-searchbar class="custom" [debounce]="1500" (ionInput)="handleInputCupsName($event)" placeholder="Búsqueda de CUPS">
+        <ion-searchbar class="custom" [debounce]="1500" (ionInput)="handleInputCupsName($event)"
+          placeholder="Búsqueda de CUPS">
         </ion-searchbar>
         <ion-list class="list">
           <ion-item lines="none" *ngFor="let cup of resultsSearchigCups">
@@ -133,8 +139,13 @@
         </div>
       </ion-item>
     </ion-list>
+
+    <div class="content-button">
+      <ion-button id="login-button" size="default" expand="full" [disabled]="!formPatientIntake.valid"
+        (click)="startMedicalAttention()">Continuar</ion-button>
+    </div>
   </div>
-  <ion-loading class="custom-loading" trigger="login-button" message="Cargando..." ></ion-loading>
+  <ion-loading class="custom-loading" trigger="login-button" message="Cargando..."></ion-loading>
 </ion-content>
 
 <ion-fab slot="fixed" vertical="bottom" horizontal="end">

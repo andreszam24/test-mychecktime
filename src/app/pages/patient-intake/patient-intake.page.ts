@@ -22,7 +22,7 @@ import { CupsCodesService } from 'src/app/services/cups-codes.service';
   templateUrl: './patient-intake.page.html',
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
-  imports: [ IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule],
+  imports: [IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule],
 })
 
 export class PatientIntakePage implements OnInit {
@@ -173,8 +173,8 @@ export class PatientIntakePage implements OnInit {
     this.resultsSearchigCups = [];
   }
 
-  unselectCup(cup: CupsCodes){
-    this.medicalAttention?.procedureCodes.splice(this.medicalAttention.procedureCodes.indexOf(cup),1);
+  unselectCup(cup: CupsCodes) {
+    this.medicalAttention?.procedureCodes.splice(this.medicalAttention.procedureCodes.indexOf(cup), 1);
   }
 
   searchCupsByName(name: string) {
@@ -216,7 +216,16 @@ export class PatientIntakePage implements OnInit {
 
   }
 
+  startMedicalAttention() {
+    this.formPatientIntake.markAllAsTouched();
+
+    if (this.formPatientIntake.valid) {
+      console.log('CONTINUA PROCESO')
+    }
+  }
+
   patientSelected(patient: Patient) {
+
     if (this.medicalAttention) {
       this.medicalAttention.patient = patient;
     }
@@ -280,7 +289,7 @@ export class PatientIntakePage implements OnInit {
 
   private formIntakeValidation() {
     this.formPatientIntake = this.fb.group({
-      user: new FormControl('', [Validators.required, Validators.email]),
+      progamationType: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z]{3,}')]),
       password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')])
     });
   }
