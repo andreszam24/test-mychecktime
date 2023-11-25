@@ -35,6 +35,7 @@ export class MedicalAttention {
   asa: string;
   procedureCodes: CupsCodes[] = [];
   operatingRoom: OperationRoom;
+  state: string;
   
   /*originDate: Date;
   simpleOriginDate: String;

@@ -14,12 +14,12 @@
           <ion-card-content>
             <ion-img src="../../assets/svg/pacientexhdpi.svg">
             </ion-img>
-            <div class="circle" style="background-color: var(--ion-color-app-red);"></div>
+            <div class="circle" [style.background-color]="getAttentionStage(medicalAttention)"></div>
             <div class="content-text">
               <h2>{{medicalAttention.patient.name}} {{medicalAttention.patient.lastname}}</h2>
               <p>{{medicalAttention.patient.dni}}</p>
               <p>Número de Registro institucional</p>
-              <h2 class="localizacion">Localización: {{ obtenerNombreDeSala(medicalAttention) }}</h2>
+              <h2 class="localizacion">Localización: {{ getRoomName(medicalAttention) }}</h2>
             </div>
           </ion-card-content>
         </ion-card>

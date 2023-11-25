@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -7,10 +7,11 @@ import { FormsModule } from '@angular/forms';
 import {InternetStatusComponent} from '../../components/internet-status/internet-status.component';
 import { AuthService } from '../../services/auth.service';
 import { Patient } from '../../models/patient.model';
-import { switchMap, finalize } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { of, catchError } from 'rxjs';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
+import { StatusService } from 'src/app/services/status.service';
 
 
 
@@ -23,6 +24,7 @@ import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-
   imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg,IonicModule, FormsModule, InternetStatusComponent, CommonModule],
 })
 export class HomePage implements OnInit {
+
   patientsLis: Patient[] = [];
   clinicName:string;
   clinicId:number;
@@ -76,16 +78,37 @@ export class HomePage implements OnInit {
       });
   }
 
-  obtenerNombreDeSala(registroMedico: MedicalAttention) {
-    let sala = 'sin ingresar a sala';
+  getRoomName(medicalRecord: MedicalAttention) {
+    let hall = 'sin ingresar a sala';
 
-    if (registroMedico.operatingRoom !== undefined) {
-      if (registroMedico.operatingRoom.name !== null && registroMedico.operatingRoom.name !== undefined) {
-        sala = registroMedico.operatingRoom.name;
+    if (medicalRecord.operatingRoom !== undefined) {
+      if (medicalRecord.operatingRoom.name !== null && medicalRecord.operatingRoom.name !== undefined) {
+        hall = medicalRecord.operatingRoom.name;
       }
     }
-    return sala;
+    return hall;
   }
+
+  getAttentionStage(sm: MedicalAttention): string {
+  const medicalAttentionStage = sm.state;
+
+  const colorMap = {
+    [StatusService.INICIO]: 'var(--ion-color-app-purple)',
+    [StatusService.FROM_OPERATING_ROOM_TO]: 'var(--ion-color-app-yellow)',
+    [StatusService.TERMINADO]: 'transparent',
+    [StatusService.CANCELADO]: 'transparent',
+  };
+
+  if (StatusService.PATIENTS_IN_PREANESTHESIA.includes(medicalAttentionStage)) {
+    return 'var(--ion-color-app-orange)';
+  } else if (StatusService.PATIENT_IN_OPERETING_ROOM.includes(medicalAttentionStage)) {
+    return 'var(--ion-color-app-red)';
+  } else if (StatusService.PATIENTS_WITH_DISCHARGE_ORDER.includes(medicalAttentionStage)) {
+    return 'var(--ion-color-app-blue)';
+  }
+
+  return colorMap[medicalAttentionStage] || 'transparent';
+}
 
   public goToPatientIntake(){
     this.router.navigateByUrl('/patient-intake');
