@@ -3,10 +3,55 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Hall de pacientes</ion-title>
+    <ion-title>Hall de pacientes - {{clinicName}}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
+  <ion-list *ngFor="let medicalAttention of attentionsInProgress">
+    <ion-item-sliding>
+      <ion-item>
+        <ion-card>
+          <ion-card-content>
+            <ion-img src="../../assets/svg/pacientexhdpi.svg">
+            </ion-img>
+            <div class="circle" [style.background-color]="getAttentionStage(medicalAttention)"></div>
+            <div class="content-text">
+              <h2>{{medicalAttention.patient.name}} {{medicalAttention.patient.lastname}}</h2>
+              <p>{{medicalAttention.patient.dni}}</p>
+              <p>Número de Registro institucional: {{ medicalAttention.numeroResgistro ? medicalAttention.numeroResgistro : '' }}</p>
+              <h2 class="localizacion">Localización: {{ getRoomName(medicalAttention) }}</h2>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option class="summary">
+          <div class="content">
+            <ion-icon name="information-circle"></ion-icon>
+            <p>Resumen Paciente</p>
+          </div>   
+        </ion-item-option>
+      </ion-item-options>
+
+      <ion-item-options side="start">
+        <ion-item-option class="delete">
+          <div class="content">
+            <ion-icon name="trash"></ion-icon>
+            <p>Borrar</p>
+          </div>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="start">
+    <ion-fab-button [disabled]="true">
+      <span>0</span>
+      <ion-icon src="../../../assets/svg/board.svg"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button (click)="goToPatientIntake()">
       <ion-icon src="../../../assets/svg/person-add-outline.svg"></ion-icon>

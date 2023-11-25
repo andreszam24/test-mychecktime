@@ -23,7 +23,7 @@ export class TokenInterceptor implements HttpInterceptor {
       switchMap((user) => {
         let modifiedRequest: HttpRequest<any>;
         let Token: string | null = null;
-        if (user.loggedIn && user.token) {
+        if (user.loggedIn && user.account) {
           Token = AuthService.getAuthToken();
           if (helper.isTokenExpired(Token)) {
             this.authService.refreshToken();

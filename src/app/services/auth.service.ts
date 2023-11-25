@@ -16,8 +16,9 @@ const TOKEN_KEY = 'jwt-token';
 })
 
 export class AuthService {
-  public user: Observable<{ loggedIn: boolean; token: string | null }>;
-  private userData = new BehaviorSubject<{ loggedIn: boolean; token: any }>({ loggedIn: false, token: null });
+  public user: Observable<{ loggedIn: boolean; account:any | null }>;
+  private userData = new BehaviorSubject<{ loggedIn: boolean; account:any;
+ }>({ loggedIn: false, account:null });
   private redirectFlag = false;
   private userCredential = {};
   private rememberMeStatus:boolean;
@@ -41,37 +42,37 @@ export class AuthService {
     );
   }
   
-  handleStoredToken(token: string | null): { loggedIn: boolean; token: any } {
+  handleStoredToken(token: string | null){
+    let accountData: any;
     if (token) {
-      let decoded = helper.decodeToken(token);
-      this.userData.next({ loggedIn: true, token: decoded });
+      const userData = this.getUser();
+      userData.subscribe(userData => {
+          accountData = userData.account;
+        });
       if (!this.redirectFlag && token === localStorage.getItem(TOKEN_KEY)) {
         this.redirectFlag = true;
         this.router.navigateByUrl('/home');
       }
-      return { loggedIn: true, token: decoded };
+      return { loggedIn: true, account: accountData };
     } else {
       console.log('No se encontró token almacenado.');
-      return { loggedIn: false, token: null };
+      return { loggedIn: false, account: null };
     }
   }
 
-  handleLoginResponse(token: any, rememberMe: boolean): Observable<any> {
-    let decoded = helper.decodeToken(token.access_token);
-    this.userData.next({ loggedIn: true, token: decoded });
-  
+  handleLoginResponse(response: any, rememberMe: boolean): Observable<any> {
+    this.userData.next({ loggedIn: true, account: response.account });
     let storageObs: Observable<any>;
-  
+
     if (rememberMe) {
-      storageObs = from(this.storage.set(TOKEN_KEY, token.access_token));
-      localStorage.setItem(TOKEN_KEY, token.access_token);
+      storageObs = from(this.storage.set(TOKEN_KEY, response.access_token));
+      localStorage.setItem(TOKEN_KEY, response.access_token);
     } else {
       storageObs = defer(() => {
-        sessionStorage.setItem(TOKEN_KEY, token.access_token);
-        return of(token.access_token);
+        sessionStorage.setItem(TOKEN_KEY, response.access_token);
+        return of(response.access_token);
       });
     }
-  
     return storageObs.pipe(map((storedToken) => this.handleStoredToken(storedToken)));
   }
   
@@ -91,7 +92,7 @@ export class AuthService {
             return of(null);
           }
         }),
-        switchMap((token) => this.handleLoginResponse(token, rememberMe)),
+        switchMap((response) => this.handleLoginResponse(response, rememberMe)),
       );
   }
 
@@ -114,7 +115,7 @@ export class AuthService {
   logout() {
     this.storage.remove(TOKEN_KEY).then(() => {
       this.router.navigateByUrl('/');
-      this.userData.next({ loggedIn: false, token: null });
+      this.userData.next({ loggedIn: false, account: null });
     });
   }
 
