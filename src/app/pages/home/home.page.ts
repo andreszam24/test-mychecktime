@@ -36,7 +36,6 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.extractUserData();
-    console.log(this.attentionsInProgress);
   }
 
   private extractUserData(){
@@ -52,7 +51,6 @@ export class HomePage implements OnInit {
 
 
   getPendingMedicalAtenttions(clinicId: number, anesthesiologistId: number) {
-    console.log('getPendingMedicalAtenttions se está ejecutando.');
     this.httpInProgressMedicalAttention.searchPendingServices(clinicId, anesthesiologistId)
       .pipe(
         catchError((error) => {
@@ -62,7 +60,6 @@ export class HomePage implements OnInit {
         switchMap((result) => {
           if (result) {
             this.attentionsInProgress = result;
-            console.log('asignacion en switchMap:', this.attentionsInProgress);
           } else {
             console.warn('La respuesta es nula o indefinida.');
           }
@@ -70,7 +67,6 @@ export class HomePage implements OnInit {
         })
       ).subscribe({
         next: (data) => {
-          console.log('Datos recibidos en la suscripción:', data);
         },
         error: (error) => {
           console.error('Error al obtener datos:', error);
