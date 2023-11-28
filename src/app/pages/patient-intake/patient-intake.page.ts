@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController, LoadingController } from '@ionic/angular/standalone';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule,Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
@@ -206,6 +206,7 @@ export class PatientIntakePage implements OnInit {
           this.patientList = result;
           this.resultsSearchigPatient = this.patientList.filter((patient) => patient.dni.toLowerCase().indexOf(dni) > -1);
         } else {
+          this.medicalAttention = new MedicalAttention();
           let newPatient = new Patient();
           newPatient.dni = dni;
           this.medicalAttention?.setPatient(newPatient);
@@ -221,13 +222,13 @@ export class PatientIntakePage implements OnInit {
 
     if (this.formPatientIntake.valid && this.medicalAttention && this.medicalAttention?.procedureCodes.length > 0 && this.medicalAttention.specialty) {
       console.log('CONTINUA PROCESO')
-    }else{
+    } else {
       this.presentBasicAlert('¡Estas olvidando algo!', 'Es necesario seleccionar una especialidad y al menos un código CUPS');
     }
   }
 
   patientSelected(patient: Patient) {
-
+    this.medicalAttention = new MedicalAttention();
     if (this.medicalAttention) {
       this.medicalAttention.patient = patient;
     }
