@@ -258,6 +258,7 @@ export class PatientIntakePage implements OnInit {
 
   enableEditMedicalAttentionData() {
     this.changeStatusManulIntake(true);
+    this.changeStatusLookingForPatient(true);
   }
 
   changeStatusManulIntake(newState: boolean) {
