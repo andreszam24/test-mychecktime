@@ -5,8 +5,8 @@
 </ion-header>
 
 <ion-content>
-  <div >
-    <ion-card *ngIf="medicalAttention?.patient && medicalAttention?.specialty && !manualIntake">
+  <div class="container-card" *ngIf="medicalAttention?.patient && medicalAttention?.specialty && !manualIntake">
+    <ion-card>
       <ion-list [inset]="true">
         <ion-item detail="false">
           <ion-avatar aria-hidden="true" slot="start">

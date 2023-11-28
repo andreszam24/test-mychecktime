@@ -34,7 +34,8 @@ ion-card{
         ion-img{
             float: left; 
             margin-right: 10px;  
-            width:15%;
+            width:11%; 
+            height: 100px;
         }
 
         h2{
@@ -55,6 +56,7 @@ ion-card{
         .localizacion{
             text-align: center;
             color: var(--ion-color-app-red);
+            text-transform: none;
         }
 
     }
