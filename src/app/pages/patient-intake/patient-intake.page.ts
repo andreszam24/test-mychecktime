@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController, LoadingController } from '@ionic/angular/standalone';
-import { FormBuilder, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule,Validators } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
@@ -22,7 +22,7 @@ import { CupsCodesService } from 'src/app/services/cups-codes.service';
   templateUrl: './patient-intake.page.html',
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
-  imports: [ IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule],
+  imports: [IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule],
 })
 
 export class PatientIntakePage implements OnInit {
@@ -173,8 +173,8 @@ export class PatientIntakePage implements OnInit {
     this.resultsSearchigCups = [];
   }
 
-  unselectCup(cup: CupsCodes){
-    this.medicalAttention?.procedureCodes.splice(this.medicalAttention.procedureCodes.indexOf(cup),1);
+  unselectCup(cup: CupsCodes) {
+    this.medicalAttention?.procedureCodes.splice(this.medicalAttention.procedureCodes.indexOf(cup), 1);
   }
 
   searchCupsByName(name: string) {
@@ -216,7 +216,18 @@ export class PatientIntakePage implements OnInit {
 
   }
 
+  startMedicalAttention() {
+    this.formPatientIntake.markAllAsTouched();
+
+    if (this.formPatientIntake.valid && this.medicalAttention && this.medicalAttention?.procedureCodes.length > 0 && this.medicalAttention.specialty) {
+      console.log('CONTINUA PROCESO')
+    }else{
+      this.presentBasicAlert('¡Estas olvidando algo!', 'Es necesario seleccionar una especialidad y al menos un código CUPS');
+    }
+  }
+
   patientSelected(patient: Patient) {
+
     if (this.medicalAttention) {
       this.medicalAttention.patient = patient;
     }
@@ -279,9 +290,9 @@ export class PatientIntakePage implements OnInit {
   }
 
   private formIntakeValidation() {
+    console.log('validando')
     this.formPatientIntake = this.fb.group({
-      user: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')])
+      progamationType: new FormControl('', [Validators.required])
     });
   }
 

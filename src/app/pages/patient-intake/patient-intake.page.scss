@@ -83,6 +83,13 @@ ion-content{
   a{
       color: #68afd7;
   }
+
+  .error-message {
+    color: red;
+    text-align: center;
+    font-size: 12px;
+    margin: 5;
+  }
 }
 
 ion-fab-button {
