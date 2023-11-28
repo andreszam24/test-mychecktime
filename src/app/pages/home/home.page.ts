@@ -75,7 +75,7 @@ export class HomePage implements OnInit {
   }
 
   getRoomName(medicalRecord: MedicalAttention) {
-    let hall = 'sin ingresar a sala';
+    let hall = 'Sin ingresar a sala';
 
     if (medicalRecord.operatingRoom !== undefined) {
       if (medicalRecord.operatingRoom.name !== null && medicalRecord.operatingRoom.name !== undefined) {
