@@ -10,7 +10,7 @@
       <ion-list [inset]="true">
         <ion-item detail="false">
           <ion-avatar aria-hidden="true" slot="start">
-            <img alt="" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+            <img alt="" src="../../../assets/icon/man-4.png" />
           </ion-avatar>
           <ion-label>
             <strong>{{ medicalAttention?.patient?.name }} {{ medicalAttention?.patient?.lastname}}</strong><br />
@@ -33,11 +33,11 @@
           </ion-label>
         </ion-item>
 
-        <ion-item detail="false">
+        <ion-item detail="false" id="cups">
           <ion-label>
             <strong>Códigos CUPS</strong><br />
             <div *ngIf="medicalAttention?.procedureCodes">
-              <ion-item *ngFor="let cup of medicalAttention?.procedureCodes">
+              <ion-item lines="none" *ngFor="let cup of medicalAttention?.procedureCodes">
                 <ion-badge slot="start">{{ cup.code }}</ion-badge>
               </ion-item>
             </div>
