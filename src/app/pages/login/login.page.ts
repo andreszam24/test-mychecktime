@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service'
 import { of, catchError } from 'rxjs';
 import { InternetStatusComponent } from 'src/app/components/internet-status/internet-status.component';
+import {HeaderComponent} from '../../components/header/header.component';
 import { IonToggle, IonItem, IonContent, IonList, IonLabel, IonFooter, IonSpinner, IonLoading } from '@ionic/angular/standalone';
 
 
@@ -16,7 +17,7 @@ import { IonToggle, IonItem, IonContent, IonList, IonLabel, IonFooter, IonSpinne
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [ HttpClientModule, IonContent, IonSpinner,IonList,IonItem,IonToggle,IonLabel,IonFooter,IonLoading,IonicModule, CommonModule, FormsModule, ReactiveFormsModule, AppSpinnerComponent, InternetStatusComponent]
+  imports: [ HttpClientModule, IonContent, IonSpinner,IonList,IonItem,IonToggle,IonLabel,IonFooter,IonLoading,IonicModule, CommonModule, FormsModule, ReactiveFormsModule, AppSpinnerComponent, InternetStatusComponent, HeaderComponent]
 })
 
 export class LoginPage implements OnInit {
