@@ -39,8 +39,9 @@ export class HomePage implements OnInit {
   }
 
   private extractUserData(){
-    return this.authService.getUser().subscribe(
+    return this.authService.user.subscribe(
       userData => {
+        console.log('userData: ',userData)
         this.clinicName = userData.account.clinics[0].name;
         this.clinicId = userData.account.clinics[0].id;
         this.anesthesiologistId = userData.account.id

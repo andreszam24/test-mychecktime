@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 
 const helper = new JwtHelperService();
 const TOKEN_KEY = 'jwt-token';
+const USER_KEY = 'user-data';
 
 @Injectable({
   providedIn: 'root',
@@ -45,10 +46,7 @@ export class AuthService {
   handleStoredToken(token: string | null){
     let accountData: any;
     if (token) {
-      const userData = this.getUser();
-      userData.subscribe(userData => {
-          accountData = userData.account;
-        });
+      accountData = this.getUser();
       if (!this.redirectFlag && token === localStorage.getItem(TOKEN_KEY)) {
         this.redirectFlag = true;
         this.router.navigateByUrl('/home');
@@ -60,6 +58,7 @@ export class AuthService {
     }
   }
 
+
   handleLoginResponse(response: any, rememberMe: boolean): Observable<any> {
     this.userData.next({ loggedIn: true, account: response.account });
     let storageObs: Observable<any>;
@@ -67,9 +66,11 @@ export class AuthService {
     if (rememberMe) {
       storageObs = from(this.storage.set(TOKEN_KEY, response.access_token));
       localStorage.setItem(TOKEN_KEY, response.access_token);
+      localStorage.setItem(USER_KEY, JSON.stringify(response.account));
     } else {
       storageObs = defer(() => {
         sessionStorage.setItem(TOKEN_KEY, response.access_token);
+        sessionStorage.setItem(USER_KEY, JSON.stringify(response.account));
         return of(response.access_token);
       });
     }
@@ -109,7 +110,9 @@ export class AuthService {
   }
 
   getUser() {
-    return this.userData.asObservable();
+    const localStorageUser = localStorage.getItem('user-data');
+    const sessionStorageUser = sessionStorage.getItem('user-data');
+    return localStorageUser ? JSON.parse(localStorageUser) : JSON.parse(sessionStorageUser ?? 'null');
   }
 
   logout() {
