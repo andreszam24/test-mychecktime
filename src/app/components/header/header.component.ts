@@ -1,18 +1,38 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonButtons,IonMenuButton,IonIcon} from '@ionic/angular/standalone';
-
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { IonHeader, IonToolbar, IonTitle, IonButtons,IonMenuButton,IonIcon,IonMenu, IonContent, IonList,IonItem,IonLabel,IonMenuToggle} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   standalone:true,
-  imports:[IonHeader,IonToolbar, IonTitle,IonButtons,IonMenuButton,IonIcon]
+  imports:[RouterLink, RouterLinkActive,IonHeader,IonToolbar, IonTitle,IonButtons,IonMenuButton,IonIcon, IonMenu, IonContent, IonList, IonItem,IonLabel,IonMenuToggle]
 })
 export class HeaderComponent  implements OnInit {
-  @Input() titleName: string = '';
+  @Input() titleName: string ;
+ 
+
   constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.showMenu()
+  }
 
+
+ 
+
+  showMenu() {
+    const mainContent = document.getElementById('menu-icon') as HTMLElement;
+    if(this.titleName == 'Ingresar'){
+      mainContent.style.display = 'none';
+    }else{
+      mainContent.style.display = 'none';
+    }
+    
+  }
+
+
+
+  
 }

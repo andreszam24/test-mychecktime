@@ -36,8 +36,6 @@ export class HomePage implements OnInit {
     ) { }
 
   ngOnInit() {
-    const mainContent = document.getElementById('menu') as HTMLElement;
-    mainContent.style.display = 'block';
     this.extractUserData();
   }
 

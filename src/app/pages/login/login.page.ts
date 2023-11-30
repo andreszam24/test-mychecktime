@@ -22,7 +22,6 @@ import { IonToggle, IonItem, IonContent, IonList, IonLabel, IonFooter, IonSpinne
 
 export class LoginPage implements OnInit {
 
-  //@ViewChild(AppSpinnerComponent) spinnerComponent: AppSpinnerComponent;
 
 
   formLogin: FormGroup;
@@ -40,8 +39,6 @@ export class LoginPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    const mainContent = document.getElementById('menu') as HTMLElement;
-    mainContent.style.display = 'none';
     this.formLogin = this.fb.group({
       user: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')]),
