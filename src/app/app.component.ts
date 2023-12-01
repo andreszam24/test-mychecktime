@@ -20,15 +20,18 @@ import { AuthService } from './services/auth.service';
 export class AppComponent {
   appPages: { title: string, url: string }[] = [];
   currentPage: string;
+  nameUser:any;
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   constructor(private auth: AuthService,private router: Router) {
     addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp,trash, informationCircle });
     this.updateAppPages(router.url);
+    this.nameUser = this.getUser(router.url);
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentPage = event.urlAfterRedirects;
         console.log('router.events',this.currentPage)
         this.updateAppPages(this.currentPage); 
+        this.nameUser = this.getUser(this.currentPage);
       }
     });
   }
@@ -40,22 +43,35 @@ export class AppComponent {
 
 
   private updateAppPages(currentUrl: string): void {
-    console.log(currentUrl)
     if (currentUrl == '/home') {
-      console.log('if updateAppPages',currentUrl)
       this.appPages = [
         { title: 'cambio de Turno', url: '/' },
         { title: 'Sincronizacion con el servidor', url: '/' },
       ];
     } 
     else {
-      console.log('else updateAppPages',currentUrl)
       this.appPages = [
         { title: 'Pacientes Pendientes', url: '/home' },
         { title: 'cambio de Turno', url: '/' },
         { title: 'Sincronizacion con el servidor', url: '/' },
       ];
     }
+  }
+
+  private getUser(currentUrl: string){
+    if(currentUrl !== '/login' && currentUrl !== 'undefined' && currentUrl !== '/' ){
+      this.auth.user.subscribe(
+        userData => {
+          console.log('userData: ',userData)
+          this.nameUser = userData.account.name;
+          console.log(this.nameUser)
+        }
+      )
+      console.log(this.nameUser)
+      return this.nameUser;
+    } else{
+      return this.nameUser = 'nombre anestesiologo'
+    } 
   }
 
 
