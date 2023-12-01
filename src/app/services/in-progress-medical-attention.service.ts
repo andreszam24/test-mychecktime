@@ -26,7 +26,6 @@ export class InProgressMedicalAttentionService {
       next: (list: MedicalAttention[]) => {
         mySubject.next(list);
         mySubject.complete(); 
-        console.log('searchPendingServices - Lista:', list);
       },
       error: (err: any) => {
         console.error('Observer got an error: ', err);
