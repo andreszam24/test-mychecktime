@@ -127,13 +127,13 @@
             placeholder="Búsqueda de CUPS">
           </ion-searchbar>
           <ion-list class="list">
-            <ion-item lines="none" *ngFor="let cup of resultsSearchigCups">
+            <ion-item lines="none" *ngFor="let cup of resultsSearchigCups" class="cups">
               <ion-label (click)="cupsSelected(cup)">{{ cup.code}}</ion-label>
             </ion-item>
           </ion-list>
         </div>
         <ion-item lines="none">
-          <div *ngIf="medicalAttention?.procedureCodes">
+          <div *ngIf="medicalAttention?.procedureCodes" id="cups-form">
             <ion-item *ngFor="let cup of medicalAttention?.procedureCodes">
               <ion-badge slot="start">{{ cup.code }}</ion-badge> <a (click)="unselectCup(cup)">X</a>
             </ion-item>

@@ -186,7 +186,7 @@ export class HomePage implements OnInit {
           )
           .subscribe(response => {
             if (response === 'OK' || response === 'no existe') {
-              this.borrarPacienteDeLista(selectedMedicalAttention);
+              this.deletePatientFromList(selectedMedicalAttention);
               this.loadingCtrl.dismiss();
               console.log('eliminado');
             } else if (response === 'cirugia') {

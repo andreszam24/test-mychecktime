@@ -73,15 +73,26 @@ ion-content{
       }
   }
 
-  ion-badge{
-      background: #68afd7;
-      color: #fff;
-      border-radius: 5px;
-      padding: 5px;
-  }
 
-  a{
-      color: #68afd7;
+  #cups-form{
+    width: 100%;
+    display: inline-flex;
+    ion-item::part(native){
+        margin: 0;
+        padding: 0;
+    }
+    ion-badge{
+        background: #68afd7;
+        color: #fff;
+        border-radius: 5px;
+        padding: 5px;
+        margin-left: 10px;
+    }
+
+    a{
+        color: #68afd7;
+        font-weight: bold;
+    }
   }
 
   .error-message {
