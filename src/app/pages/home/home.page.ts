@@ -203,7 +203,7 @@ export class HomePage implements OnInit {
     });
   }
 
-  borrarPacienteDeLista(registroMedico: MedicalAttention) {
+  deletePatientFromList(registroMedico: MedicalAttention) {
     this.attentionsInProgress = this.attentionsInProgress.filter(registro => registro._id != registroMedico._id);
   }
 }
