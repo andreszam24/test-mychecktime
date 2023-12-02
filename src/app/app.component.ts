@@ -71,15 +71,15 @@ export class AppComponent {
   private updateAppPages(currentUrl: string): void {
     if (currentUrl == '/home') {
       this.appPages = [
-        { title: 'cambio de Turno', url: '/cambio' },
-        { title: 'Sincronizacion con el servidor', url: '/Sincronizacion' },
+        { title: 'cambio de Turno', url: '/change' },
+        { title: 'Sincronizacion con el servidor', url: '/synchronization' },
       ];
     } 
     else {
       this.appPages = [
         { title: 'Pacientes Pendientes', url: '/home' },
-        { title: 'cambio de Turno', url: '/cambio' },
-        { title: 'Sincronizacion con el servidor', url: '/Sincronizacion' },
+        { title: 'cambio de Turno', url: '/change' },
+        { title: 'Sincronizacion con el servidor', url: '/synchronization' },
       ];
     }
   }
