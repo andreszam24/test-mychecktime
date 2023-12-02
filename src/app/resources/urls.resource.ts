@@ -35,3 +35,5 @@ export const URLPendingMedicalAttention = `${URLServer}/findunfinishedclinicalhi
 
 export const URLCupsCodes = `${URLServer}/cupscodes`;
 export const URLSpecialties = `${URLServer}/especialidades`;
+
+export const URLDeleteClinicalRecord = `${URLServer}/clinicalhistory/borrarRegistroClinicoPaciente`;

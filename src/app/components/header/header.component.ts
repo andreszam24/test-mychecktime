@@ -16,21 +16,12 @@ export class HeaderComponent  implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.showMenu()
   }
 
 
  
 
-  showMenu() {
-    const mainContent = document.getElementById('menu-icon') as HTMLElement;
-    if(this.titleName == 'Ingresar'){
-      mainContent.style.display = 'none';
-    }else{
-      mainContent.style.display = 'none';
-    }
-    
-  }
+ 
 
 
 

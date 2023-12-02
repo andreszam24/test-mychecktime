@@ -71,23 +71,26 @@ export class AppComponent {
   private updateAppPages(currentUrl: string): void {
     if (currentUrl == '/home') {
       this.appPages = [
-        { title: 'cambio de Turno', url: '/cambio' },
-        { title: 'Sincronizacion con el servidor', url: '/Sincronizacion' },
+        { title: 'cambio de Turno', url: '/change' },
+        { title: 'Sincronizacion con el servidor', url: '/synchronization' },
       ];
     } 
     else {
       this.appPages = [
         { title: 'Pacientes Pendientes', url: '/home' },
-        { title: 'cambio de Turno', url: '/cambio' },
-        { title: 'Sincronizacion con el servidor', url: '/Sincronizacion' },
+        { title: 'cambio de Turno', url: '/change' },
+        { title: 'Sincronizacion con el servidor', url: '/synchronization' },
       ];
     }
   }
 
   private getUser(currentUrl: string) {
+    const mainContent = document.getElementById('menu-icon') as HTMLElement;
     if (currentUrl !== '/login' && currentUrl !== 'undefined' && currentUrl !== '/') {
+      mainContent.style.display = 'none';
       return this.nameUser;
     } else {
+      mainContent.style.display = 'block';
       this.nameUser = 'error en nombre anestesiologo';
       return this.nameUser;
     }

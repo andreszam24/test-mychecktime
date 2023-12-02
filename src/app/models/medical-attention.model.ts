@@ -17,6 +17,8 @@ import { Instrumentador } from './instrumentador.model';*/
 
 export class MedicalAttention {
 
+  _id: string;
+
   /*_id: string;
 
   // Información básica

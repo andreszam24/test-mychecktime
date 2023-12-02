@@ -1,7 +1,7 @@
 import { Component,OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, LoadingController } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg} from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import {InternetStatusComponent} from '../../components/internet-status/internet-status.component';
@@ -32,12 +32,24 @@ export class HomePage implements OnInit {
   anesthesiologistId:number;
   attentionsInProgress: MedicalAttention[] = [];
 
-  constructor(private router: Router,private authService: AuthService, private httpInProgressMedicalAttention: InProgressMedicalAttentionService,
+  constructor(
+    private router: Router,
+    private authService: AuthService, 
+    private httpInProgressMedicalAttention: InProgressMedicalAttentionService,
+    private loadingCtrl: LoadingController
     ) { }
 
   ngOnInit() {
     this.extractUserData();
   }
+
+  /*private showLoading(): LoadingController {
+    let loading = this.loadingCtrl.create({
+      spinner: 'circles',
+      content: 'Conectando con el servidor para sincronizar lista de pacientes pendientes'
+    });
+    return loading;
+  }*/
 
   private extractUserData(){
     return this.authService.user.subscribe(
@@ -109,5 +121,10 @@ export class HomePage implements OnInit {
 
   public goToPatientIntake(){
     this.router.navigateByUrl('/patient-intake');
+  }
+
+
+  deletePatient(selectedMedicalAttention: MedicalAttention){
+
   }
 }
