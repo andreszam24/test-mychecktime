@@ -85,12 +85,9 @@ export class AppComponent {
   }
 
   private getUser(currentUrl: string) {
-    const mainContent = document.getElementById('menu-icon') as HTMLElement;
     if (currentUrl !== '/login' && currentUrl !== 'undefined' && currentUrl !== '/') {
-      mainContent.style.display = 'none';
       return this.nameUser;
     } else {
-      mainContent.style.display = 'block';
       this.nameUser = 'error en nombre anestesiologo';
       return this.nameUser;
     }
