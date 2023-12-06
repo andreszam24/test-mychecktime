@@ -39,6 +39,7 @@ export class PatientIntakePage implements OnInit {
   resultsSearchigSpecialties = [...this.specialtiesList];
   cupsCodesList: CupsCodes[] = [];
   resultsSearchigCups = [...this.cupsCodesList];
+  searchInputCupsValue: string = '';
 
   constructor(
     private alertController: AlertController,
@@ -159,16 +160,17 @@ export class PatientIntakePage implements OnInit {
   }
 
   handleInputCupsName(event: any) {
-    const query = event.target.value.toLowerCase().trim();
-    if (query != '' && query.length > 3) {
+    this.searchInputCupsValue = event.target.value.toLowerCase().trim();
+    if (this.searchInputCupsValue != '' && this.searchInputCupsValue.length > 2) {
       this.resultsSearchigCups = [];
-      this.searchCupsByName(query);
+      this.searchCupsByName(this.searchInputCupsValue);
     }
   }
 
   cupsSelected(cup: CupsCodes) {
     if (this.medicalAttention) {
       this.medicalAttention.procedureCodes.push(cup);
+      this.searchInputCupsValue = '';
     }
     this.resultsSearchigCups = [];
   }
