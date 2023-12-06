@@ -123,17 +123,17 @@
           <p class="error-message">Campo obligatorio.</p>
         </ng-container>
         <div>
-          <ion-searchbar class="custom" [debounce]="1500" (ionInput)="handleInputCupsName($event)"
+          <ion-searchbar [value]="searchInputCupsValue" class="custom" [debounce]="1500" (ionInput)="handleInputCupsName($event)"
             placeholder="Búsqueda de CUPS">
           </ion-searchbar>
           <ion-list class="list">
-            <ion-item lines="none" *ngFor="let cup of resultsSearchigCups" class="cups">
+            <ion-item lines="none" *ngFor="let cup of resultsSearchigCups">
               <ion-label (click)="cupsSelected(cup)">{{ cup.code}}</ion-label>
             </ion-item>
           </ion-list>
         </div>
         <ion-item lines="none">
-          <div *ngIf="medicalAttention?.procedureCodes" id="cups-form">
+          <div *ngIf="medicalAttention?.procedureCodes">
             <ion-item *ngFor="let cup of medicalAttention?.procedureCodes">
               <ion-badge slot="start">{{ cup.code }}</ion-badge> <a (click)="unselectCup(cup)">X</a>
             </ion-item>

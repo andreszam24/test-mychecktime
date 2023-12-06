@@ -71,14 +71,14 @@ export class AppComponent {
   private updateAppPages(currentUrl: string): void {
     if (currentUrl == '/home') {
       this.appPages = [
-        { title: 'cambio de Turno', url: '/change' },
+        { title: 'cambio de Turno', url: '/shift-change' },
         { title: 'Sincronizacion con el servidor', url: '/synchronization' },
       ];
     } 
     else {
       this.appPages = [
         { title: 'Pacientes Pendientes', url: '/home' },
-        { title: 'cambio de Turno', url: '/change' },
+        { title: 'cambio de Turno', url: '/shift-change' },
         { title: 'Sincronizacion con el servidor', url: '/synchronization' },
       ];
     }
@@ -88,7 +88,7 @@ export class AppComponent {
     if (currentUrl !== '/login' && currentUrl !== 'undefined' && currentUrl !== '/') {
       return this.nameUser;
     } else {
-      this.nameUser = 'error en nombre anestesiologo';
+      this.nameUser = 'No hemos podido identificarte';
       return this.nameUser;
     }
   }
