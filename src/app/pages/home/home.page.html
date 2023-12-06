@@ -18,7 +18,7 @@
             <div class="content-text">
               <h2>{{medicalAttention.patient.name}} {{medicalAttention.patient.lastname}}</h2>
               <p>{{medicalAttention.patient.dni}}</p>
-              <p>Número de Registro institucional: {{ medicalAttention.numeroResgistro ? medicalAttention.numeroResgistro : '' }}</p>
+              <p># Registro institucional: {{ medicalAttention.numeroResgistro ? medicalAttention.numeroResgistro : '' }}</p>
               <h2 class="localizacion">Localización: {{ getRoomName(medicalAttention) }}</h2>
             </div>
           </ion-card-content>
