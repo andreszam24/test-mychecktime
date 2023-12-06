@@ -1,11 +1,4 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Hall de pacientes - {{clinicName}}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header titleName="Hall de pacientes - {{clinicName}}"></app-header>
 <ion-content [fullscreen]="true">
   <ion-list *ngFor="let medicalAttention of attentionsInProgress">
     <ion-item-sliding>

@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service'
 import { of, catchError } from 'rxjs';
 import { InternetStatusComponent } from 'src/app/components/internet-status/internet-status.component';
+import {HeaderComponent} from '../../components/header/header.component';
 import { IonToggle, IonItem, IonContent, IonList, IonLabel, IonFooter, IonSpinner, IonLoading } from '@ionic/angular/standalone';
 import { CupsCodesService } from 'src/app/services/cups-codes.service';
 import { SpecialtyService } from 'src/app/services/specialty.service';
@@ -18,12 +19,11 @@ import { SpecialtyService } from 'src/app/services/specialty.service';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [ HttpClientModule, IonContent, IonSpinner,IonList,IonItem,IonToggle,IonLabel,IonFooter,IonLoading,IonicModule, CommonModule, FormsModule, ReactiveFormsModule, AppSpinnerComponent, InternetStatusComponent]
+  imports: [ HttpClientModule, IonContent, IonSpinner,IonList,IonItem,IonToggle,IonLabel,IonFooter,IonLoading,IonicModule, CommonModule, FormsModule, ReactiveFormsModule, AppSpinnerComponent, InternetStatusComponent, HeaderComponent]
 })
 
 export class LoginPage implements OnInit {
 
-  //TODO: Revisar si esto se puede borrar: @ViewChild(AppSpinnerComponent) spinnerComponent: AppSpinnerComponent;
 
 
   formLogin: FormGroup;
@@ -43,8 +43,6 @@ export class LoginPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    const mainContent = document.getElementById('menu') as HTMLElement;
-    mainContent.style.display = 'none';
     this.formLogin = this.fb.group({
       user: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')]),

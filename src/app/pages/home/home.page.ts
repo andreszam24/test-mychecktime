@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg} from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import {InternetStatusComponent} from '../../components/internet-status/internet-status.component';
+import {HeaderComponent} from '../../components/header/header.component';
 import { AuthService } from '../../services/auth.service';
 import { Patient } from '../../models/patient.model';
 import { switchMap } from 'rxjs/operators';
@@ -21,7 +22,7 @@ import { StatusService } from 'src/app/services/status.service';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg,IonicModule, FormsModule, InternetStatusComponent, CommonModule],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg,IonicModule, FormsModule, InternetStatusComponent, CommonModule, HeaderComponent],
 })
 export class HomePage implements OnInit {
 
@@ -41,7 +42,6 @@ export class HomePage implements OnInit {
   private extractUserData(){
     return this.authService.user.subscribe(
       userData => {
-        console.log('userData: ',userData)
         this.clinicName = userData.account.clinics[0].name;
         this.clinicId = userData.account.clinics[0].id;
         this.anesthesiologistId = userData.account.id
