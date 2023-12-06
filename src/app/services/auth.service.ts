@@ -116,8 +116,10 @@ export class AuthService {
   }
 
   logout() {
+    localStorage.clear();
+    sessionStorage.clear();
     this.storage.remove(TOKEN_KEY).then(() => {
-      this.router.navigateByUrl('/');
+      this.router.navigateByUrl('/login');
       this.userData.next({ loggedIn: false, account: null });
     });
   }

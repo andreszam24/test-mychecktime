@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController, LoadingController } from '@ionic/angular/standalone';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
+import {HeaderComponent} from '../../components/header/header.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { Patient } from '../../models/patient.model';
@@ -22,7 +23,7 @@ import { CupsCodesService } from 'src/app/services/cups-codes.service';
   templateUrl: './patient-intake.page.html',
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
-  imports: [IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule],
+  imports: [IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule,HeaderComponent],
 })
 
 export class PatientIntakePage implements OnInit {

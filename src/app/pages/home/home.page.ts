@@ -1,16 +1,18 @@
 import { Component,OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg} from '@ionic/angular/standalone';
+import { IonicModule, LoadingController } from '@ionic/angular';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg, AlertController} from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import {InternetStatusComponent} from '../../components/internet-status/internet-status.component';
+import {HeaderComponent} from '../../components/header/header.component';
 import { AuthService } from '../../services/auth.service';
 import { Patient } from '../../models/patient.model';
 import { switchMap } from 'rxjs/operators';
 import { of, catchError } from 'rxjs';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
+import { MedicalAttentionService } from 'src/app/services/medical-attention.service';
 import { StatusService } from 'src/app/services/status.service';
 
 
@@ -21,7 +23,7 @@ import { StatusService } from 'src/app/services/status.service';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg,IonicModule, FormsModule, InternetStatusComponent, CommonModule],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg,IonicModule, FormsModule, InternetStatusComponent, CommonModule, HeaderComponent],
 })
 export class HomePage implements OnInit {
 
@@ -31,17 +33,75 @@ export class HomePage implements OnInit {
   anesthesiologistId:number;
   attentionsInProgress: MedicalAttention[] = [];
 
-  constructor(private router: Router,private authService: AuthService, private httpInProgressMedicalAttention: InProgressMedicalAttentionService,
+  constructor(
+    private router: Router,
+    private authService: AuthService, 
+    private httpInProgressMedicalAttention: InProgressMedicalAttentionService,
+    private httpMedicalAttention:MedicalAttentionService,
+    private loadingCtrl: LoadingController,
+    private alertCtrl:AlertController
     ) { }
 
   ngOnInit() {
     this.extractUserData();
   }
 
+  async showLoading(message: string) {
+    const loading = await this.loadingCtrl.create({
+      message: message
+    });
+    loading.present();
+  }
+
+  async showOptionsModal(msg: string): Promise<boolean> {
+    return new Promise<boolean>(async (resolve) => {
+      let alert = await this.alertCtrl.create({
+        message: msg,
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            handler: () => {
+              alert.dismiss().then(() => resolve(false));
+              return false;
+            }
+          },
+          {
+            text: 'Aceptar',
+            handler: () => {
+              alert.dismiss().then(() => resolve(true));
+              return false;
+            }
+          }
+        ]
+      });
+  
+      await alert.present();
+    });
+  }
+
+  async showInformationalModal(msg: string) {
+    let alert = await this.alertCtrl.create({
+      message: msg,
+      header: 'Atención',
+      buttons: [
+        {
+          text: 'Cerrar',
+          role: 'cancel',
+          handler: () => {
+            alert.dismiss();
+            return false;
+          }
+        }
+      ]
+    });
+  
+    await alert.present();
+  }
+
   private extractUserData(){
     return this.authService.user.subscribe(
       userData => {
-        console.log('userData: ',userData)
         this.clinicName = userData.account.clinics[0].name;
         this.clinicId = userData.account.clinics[0].id;
         this.anesthesiologistId = userData.account.id
@@ -109,5 +169,41 @@ export class HomePage implements OnInit {
 
   public goToPatientIntake(){
     this.router.navigateByUrl('/patient-intake');
+  }
+
+
+  deletePatient(selectedMedicalAttention: MedicalAttention) {
+    this.showOptionsModal('¿Estás seguro de borrar este paciente?').then((userAccepted) => {
+      if (userAccepted) {
+        this.showLoading('borrando paciente');
+        this.httpMedicalAttention.deleteClinicalPatientRecord(selectedMedicalAttention)
+          .pipe(
+            catchError((error) => {
+              this.loadingCtrl.dismiss();
+              console.error('Ups! Algo salió mal, el paciente no se pudo borrar', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response === 'OK' || response === 'no existe') {
+              this.deletePatientFromList(selectedMedicalAttention);
+              this.loadingCtrl.dismiss();
+              console.log('eliminado');
+            } else if (response === 'cirugia') {
+              this.loadingCtrl.dismiss();
+              this.showInformationalModal('No puedes borrar este paciente porque ya se encuentra en quirófano');
+            } else {
+              this.loadingCtrl.dismiss();
+              console.log('SELECCIONAR-PACIENTE: Error borrando el paciente en remoto => ', response);
+            }
+          });
+      } else {
+        console.log('Operación de borrado cancelada por el usuario');
+      }
+    });
+  }
+
+  deletePatientFromList(registroMedico: MedicalAttention) {
+    this.attentionsInProgress = this.attentionsInProgress.filter(registro => registro._id != registroMedico._id);
   }
 }

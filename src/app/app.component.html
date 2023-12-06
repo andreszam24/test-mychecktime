@@ -1,14 +1,20 @@
 <ion-app>
   <ion-split-pane contentId="main-content">
-    <ion-menu contentId="main-content" type="overlay" id="menu">
+    <ion-menu contentId="main-content" type="overlay" id="menu" *ngIf="currentPage !== '/login'" side="end" itemHeight="50px">
       <ion-content>
-        <ion-list id="inbox-list">
+        <ion-list id="inbox-list" lines="none">
+          <ion-img src="../assets/icon/man-4.png"></ion-img>
+          <ion-item lines="none" id="name-user">
+            <ion-label>{{nameUser}}</ion-label>
+          </ion-item>
           <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
-            <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-              <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+            <ion-item lines="none" routerDirection="root" [routerLink]="[p.url]"  detail="false" routerLinkActive="selected">
               <ion-label>{{ p.title }}</ion-label>
             </ion-item>
           </ion-menu-toggle>
+          <ion-item (click)="doLogout()" lines="none" id="logout">
+            <ion-label>Cerrar Sesión</ion-label>
+          </ion-item>
         </ion-list>
       </ion-content>
     </ion-menu>
