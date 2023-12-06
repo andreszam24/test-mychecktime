@@ -3,44 +3,56 @@
   <div class="container-card" *ngIf="medicalAttention?.patient && medicalAttention?.specialty && !manualIntake">
     <ion-card>
       <ion-list [inset]="true">
-        <ion-item detail="false">
-          <ion-avatar aria-hidden="true" slot="start">
-            <img alt="" src="../../../assets/icon/man-4.png" />
-          </ion-avatar>
-          <ion-label>
-            <strong>{{ medicalAttention?.patient?.name }} {{ medicalAttention?.patient?.lastname}}</strong><br />
-            <ion-text>cc {{ medicalAttention?.patient?.dni }}</ion-text><br />
-            <ion-note color="medium" class="ion-text-wrap">
-              {{ medicalAttention?.patient?.gender }}
-            </ion-note>
-          </ion-label>
-          <div class="metadata-end-wrapper">
-            <ion-note color="medium"> {{ medicalAttention?.patient?.birthday }} </ion-note>
-          </div>
-          <ion-icon slot="end" (click)="enableEditMedicalAttentionData()" color="medium"
+        <ion-text>#Registro: {{ medicalAttention?.numeroResgistro }}</ion-text><br />
+        <ion-card-header>
+          <ion-row class="ion-align-items-center ion-justify-content-center">
+            <ion-col size="12" class="ion-text-center">
+              <ion-avatar aria-hidden="true">
+                <ion-img src="../../../assets/svg/man-4.svg"></ion-img>
+              </ion-avatar>
+            </ion-col>
+            <ion-col size="12" class="ion-text-center">
+                  <strong>{{ medicalAttention?.patient?.name }} {{ medicalAttention?.patient?.lastname}}</strong>
+                <div class="content-text">
+                  <ion-text>CC.{{ medicalAttention?.patient?.dni }}</ion-text>
+                  <ion-note color="medium" class="ion-text-wrap">
+                    <ion-icon name="male-female-outline"></ion-icon>
+                    {{ medicalAttention?.patient?.gender }}
+                  </ion-note>
+                </div>
+              <div class="metadata-end-wrapper">
+                <ion-note color="medium">Fecha de nacimiento: {{ medicalAttention?.patient?.birthday }}</ion-note>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-row>
+            <ion-col size="6">
+              <strong>Especialidad:</strong>
+              <ion-text>{{ medicalAttention?.specialty?.name }}</ion-text>
+            </ion-col>
+            <ion-col size="6" id="cups">
+              <strong>Códigos CUPS</strong>
+              <div *ngIf="medicalAttention?.procedureCodes">
+                <div *ngFor="let cup of medicalAttention?.procedureCodes">
+                  <ion-badge slot="start">{{ cup.code }}</ion-badge>
+                </div>
+              </div>
+            </ion-col>
+            <ion-col size="6">
+              <strong style="width: 117px;">Programacion:</strong>
+              <ion-text>{{ medicalAttention?.programming }}</ion-text>
+            </ion-col>
+            <ion-col size="6">
+              <strong>ASA:</strong>
+              <ion-text>{{ medicalAttention?.asa }}</ion-text>
+            </ion-col>
+          </ion-row>
+        </ion-card-content>
+        <ion-icon slot="end"
             src="../../../assets/svg/create-outline.svg"></ion-icon>
-        </ion-item>
-
-        <ion-item detail="false">
-          <ion-label>
-            <strong>{{ medicalAttention?.specialty?.name }}</strong><br />
-            <ion-text>#Registro: {{ medicalAttention?.numeroResgistro }}</ion-text><br />
-          </ion-label>
-        </ion-item>
-
-        <ion-item detail="false" id="cups">
-          <ion-label>
-            <strong>Códigos CUPS</strong><br />
-            <div *ngIf="medicalAttention?.procedureCodes">
-              <ion-item lines="none" *ngFor="let cup of medicalAttention?.procedureCodes">
-                <ion-badge slot="start">{{ cup.code }}</ion-badge>
-              </ion-item>
-            </div>
-          </ion-label>
-        </ion-item>
-
-      </ion-list>
-
+      </ion-list>  
     </ion-card>
   </div>
 

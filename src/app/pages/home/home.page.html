@@ -18,7 +18,7 @@
         </ion-card>
       </ion-item>
 
-      <ion-item-options side="end">
+      <ion-item-options side="end" [routerLink]="['/patient-summary', medicalAttention.patient.id]">
         <ion-item-option class="summary">
           <div class="content">
             <ion-icon name="information-circle"></ion-icon>
