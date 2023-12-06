@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { headers, URLPendingMedicalAttention } from '../resources/urls.resource';
+import { headers, URLDeleteClinicalRecord, URLPendingMedicalAttention } from '../resources/urls.resource';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable, of, catchError } from 'rxjs';
@@ -34,4 +34,27 @@ export class MedicalAttentionService {
       })
     );
   }
+
+  deleteClinicalPatientRecord(medicalAttention: MedicalAttention):Observable<string> {
+    const payload = {
+      registroClinicoId: medicalAttention._id
+    };
+
+    return this.http.post<string>(URLDeleteClinicalRecord + AuthService.getTokenParams(),payload , { headers, observe: 'response' }).pipe(
+      map((response: HttpResponse<any>) => {
+        if (response.status === 200) {
+          return response.body;
+        } else {
+          console.error('Error borrando paciente: ', response.status, response.body);
+          return of(null);
+        }
+      }),
+      catchError((err, caught) => {
+        console.error('Error logico en findPendingServices', err, caught);
+        return of('');
+      })
+    );
+
+  }
+
 }
