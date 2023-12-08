@@ -1,4 +1,4 @@
-<app-header titleName="Resumen registro clinico del pacientes"></app-header>
+<app-header titleName="Resumen registro clinico"></app-header>
 
 <ion-content [fullscreen]="true">
     <div class="container-card-patient">
@@ -22,11 +22,12 @@
                     </ion-note>
                   </div>
                   <div class="metadata-end-wrapper">
-                    <ion-note color="medium">fecha de nacimiento: {{ medicalAttention?.patient?.birthday }}</ion-note>
+                    <ion-note color="medium">fecha de nacimiento: {{ medicalAttention?.patient?.birthday | date: 'dd/MM/yyyy'}}</ion-note>
                   </div>
-                  <div>
+                  <div id="entry-time">
                     <strong>Hora de Ingreso: </strong>
-                    <ion-text></ion-text>
+                    <ion-text *ngIf="medicalAttention.admissionList !== undefined && medicalAttention.admissionList.arrivalDate !== null; else elseBlock" item-end>{{ medicalAttention.admissionList.arrivalDate | date:'medium' }}</ion-text>
+                    <ng-template #elseBlock><ion-text>Este paciente aún no ha sido ingresado a filtro</ion-text></ng-template>
                   </div>
                 </ion-col>
                 </ion-row>
@@ -39,7 +40,12 @@
                 </ion-col>
                 <ion-col size="6">
                   <strong>programación:</strong>
-                  <ion-text>{{ medicalAttention?.programming }}</ion-text>
+                  <ion-text style="text-transform: uppercase;">
+                    {{
+                      medicalAttention?.programming?.includes('Programación'||'programación')
+                        ? medicalAttention?.programming?.replace('Programación'||'programación', '')?.trim()
+                        : medicalAttention?.programming
+                    }} </ion-text>
                 </ion-col>
                 <ion-col size="12" class="procedures" *ngIf="medicalAttention?.procedureCodes">
                   <strong>Procedimientos:</strong>
@@ -55,23 +61,25 @@
                 </ion-col>
                 <ion-col size="12" class="medical-person">
                   <strong>Anestesiologo:</strong>
-                  <div>
-                    <ion-icon src="../../assets/svg/medical-anes.svg"></ion-icon>
-                    <ion-text>nombre anestesiologo</ion-text>
+                  <div class="container-anesthesiologist" *ngFor="let anesthesiologist of medicalAttention.anestehsiologist">
+                    <div class="data-medical-person">
+                      <ion-icon src="../../assets/svg/medical-anes.svg"></ion-icon>
+                      <ion-text>{{ anesthesiologist.name }} {{ anesthesiologist.lastname }}</ion-text>
+                    </div>
                   </div>
                 </ion-col>
                 <ion-col size="12" class="medical-person">
                   <strong>Cirujano:</strong>
-                  <div>
+                  <div class="data-medical-person">
                     <ion-icon src="../../assets/svg/medical-cx.svg"></ion-icon>
-                    <ion-text>nombre Cirujano</ion-text>
+                    <ion-text>{{ medicalAttention?.surgeon?.name }} {{ medicalAttention?.surgeon?.lastname }}</ion-text>
                   </div>
                 </ion-col>
                 <ion-col size="12" class="medical-person">
                   <strong>Instrumentador:</strong>
-                  <div>
+                  <div class="data-medical-person">
                     <ion-icon src="../../assets/svg/medical-ins.svg"></ion-icon>
-                    <ion-text>nombre Instrumentador</ion-text>
+                    <ion-text> {{ medicalAttention?.instrumentator?.name }} {{ medicalAttention?.instrumentator?.lastname }}</ion-text>
                   </div>
                 </ion-col>
               </ion-row>

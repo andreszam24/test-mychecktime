@@ -35,6 +35,10 @@
             margin: 0 5px;
           }
         }
+
+        #entry-time{
+          display: contents !important;
+        }
       }
   
       ion-icon {
@@ -62,7 +66,7 @@
           .procedure-item {
               display: flex;
               align-items: center;
-              justify-content: center;
+              justify-content: flex-start;
               border-radius: 50px;
               border: 1px solid #73737352;
               padding: 10px;
@@ -71,16 +75,17 @@
               float: none;
               width: 40px;
               height: 40px;
-              margin-right: 10px;
+              margin:0 10px 0 20px;
               fill: #b32b35;
             }
             .content-cups {
               display: inline-flex;
               flex-direction: column;
+              width: 70%;
               strong,
               ion-text {
-                  margin: 0;
-                text-align: justify;
+                margin: 0;
+                text-align: start;
                 text-transform: uppercase;
               }
             }
@@ -94,18 +99,26 @@
               width: 100% !important;
               margin-bottom: 10px;
             }
-  
-            div{
-              display: flex;
+
+            .container-anesthesiologist{
+              display: inline-flex;
               justify-content: center;
+              margin: 0;
+              padding: 0;
+            }
+  
+            .data-medical-person{
+              display: flex;
+              justify-content: flex-start;
               border: 1px solid #73737352;
               padding: 10px;
               margin-bottom: 10px;
               border-radius: 50px;
+              width: 100%;
               ion-icon{
                 width: 40px;
                 height: 40px;
-                margin-right: 10px;
+                margin:0 10px 0 20px;
               }
               ion-text{
                 display: flex;
@@ -113,6 +126,7 @@
                 justify-content: center;
                 height: 100%;
                 text-transform: capitalize;
+                text-align: justify;
               }
   
             }
