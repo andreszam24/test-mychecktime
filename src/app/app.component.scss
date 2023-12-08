@@ -2,7 +2,13 @@ ion-menu ion-content {
   --background: var(--ion-item-background, var(--ion-background-color, #fff));
 }
 
-
+ion-menu{
+  ion-item{
+    ion-label{
+      text-transform: capitalize;
+    }
+  }
+}
 
 ion-content::part(scroll) {
   padding: 15px 20px;

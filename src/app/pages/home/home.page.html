@@ -3,7 +3,7 @@
   <ion-list *ngFor="let medicalAttention of attentionsInProgress">
     <ion-item-sliding>
       <ion-item>
-        <ion-card>
+        <ion-card >
           <ion-card-content>
             <ion-img src="../../assets/svg/pacientexhdpi.svg">
             </ion-img>
@@ -18,7 +18,7 @@
         </ion-card>
       </ion-item>
 
-      <ion-item-options side="end">
+      <ion-item-options side="end" (click)="goToPatientSummary(medicalAttention)">
         <ion-item-option class="summary">
           <div class="content">
             <ion-icon name="information-circle"></ion-icon>

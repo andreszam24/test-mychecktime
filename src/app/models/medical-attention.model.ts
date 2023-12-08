@@ -7,9 +7,10 @@ import { Instrumentador } from './instrumentador.model';
 import { Cirujano } from './cirujano.model';
 import { AdmissionList } from './admission-list.model';
 import { OperatingRoomList } from './operating-room-list.model';
+import { MedicalEvent } from './medical-event.model';
 import { ExitOperatingRoomList } from './exit-operating-room-list.model';
 import { PatientsExitList } from './patients-exit-list.model';
-import { MedicalEvent } from './medical-event.model';
+
 
 
 export class MedicalAttention {

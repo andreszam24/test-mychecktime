@@ -13,7 +13,7 @@ export class OperatingRoomList {
   simpleCheckDate: String;
   simpleCheckHour: String;
   startAnesthesia: Date;
-  simpleStartAnesthesiaDate: string;
+  simpleStartAnesthesiaDate: String;
   simpleStartAnesthesiaHour: String;
   endStartAnesthesia: Date;
   simpleEndStartAnesthesiaDate: String;
