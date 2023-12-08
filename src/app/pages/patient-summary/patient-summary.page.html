@@ -1,5 +1,82 @@
 <app-header titleName="Resumen registro clinico del pacientes"></app-header>
 
 <ion-content [fullscreen]="true">
-
+    <div class="container-card-patient">
+        <ion-card>
+          <ion-list [inset]="true">
+            <ion-text>#Registro: {{ medicalAttention?.numeroResgistro }}</ion-text><br />
+            <ion-card-header>
+              <ion-row class="ion-align-items-center ion-justify-content-center">
+                <ion-col size="12" class="ion-text-center">
+                  <ion-avatar aria-hidden="true">
+                    <ion-img src="../../../assets/svg/man-4.svg"></ion-img>
+                  </ion-avatar>
+                </ion-col>
+                <ion-col size="12" class="ion-text-center">
+                  <strong>{{ medicalAttention?.patient?.name }} {{ medicalAttention?.patient?.lastname}}</strong>
+                  <div class="content-text">
+                    <ion-text>CC.{{ medicalAttention?.patient?.dni }}</ion-text>
+                    <ion-note color="medium" class="ion-text-wrap">
+                      <ion-icon name="male-female-outline"></ion-icon>
+                      {{ medicalAttention?.patient?.gender }}
+                    </ion-note>
+                  </div>
+                  <div class="metadata-end-wrapper">
+                    <ion-note color="medium">fecha de nacimiento: {{ medicalAttention?.patient?.birthday }}</ion-note>
+                  </div>
+                  <div>
+                    <strong>Hora de Ingreso: </strong>
+                    <ion-text></ion-text>
+                  </div>
+                </ion-col>
+                </ion-row>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-row class="ion-align-items-center ion-justify-content-center">
+                <ion-col size="6">
+                  <strong>Especialidas:</strong>
+                  <ion-text>{{ medicalAttention?.specialty?.name }}</ion-text>
+                </ion-col>
+                <ion-col size="6">
+                  <strong>programación:</strong>
+                  <ion-text>{{ medicalAttention?.programming }}</ion-text>
+                </ion-col>
+                <ion-col size="12" class="procedures" *ngIf="medicalAttention?.procedureCodes">
+                  <strong>Procedimientos:</strong>
+                  <div  *ngFor="let cup of medicalAttention?.procedureCodes">
+                    <div class="procedure-item">
+                      <ion-icon src="../../assets/svg/operating-room.svg"></ion-icon>
+                      <div class="content-cups">
+                        <strong>{{ cup.code }}</strong>
+                        <ion-text>{{ cup.name }}</ion-text>
+                      </div>
+                    </div>
+                  </div>
+                </ion-col>
+                <ion-col size="12" class="medical-person">
+                  <strong>Anestesiologo:</strong>
+                  <div>
+                    <ion-icon src="../../assets/svg/medical-anes.svg"></ion-icon>
+                    <ion-text>nombre anestesiologo</ion-text>
+                  </div>
+                </ion-col>
+                <ion-col size="12" class="medical-person">
+                  <strong>Cirujano:</strong>
+                  <div>
+                    <ion-icon src="../../assets/svg/medical-cx.svg"></ion-icon>
+                    <ion-text>nombre Cirujano</ion-text>
+                  </div>
+                </ion-col>
+                <ion-col size="12" class="medical-person">
+                  <strong>Instrumentador:</strong>
+                  <div>
+                    <ion-icon src="../../assets/svg/medical-ins.svg"></ion-icon>
+                    <ion-text>nombre Instrumentador</ion-text>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+          </ion-list>  
+        </ion-card>
+      </div>
 </ion-content>

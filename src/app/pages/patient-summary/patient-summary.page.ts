@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-import {HeaderComponent} from '../../components/header/header.component';
-import { ActivatedRoute } from '@angular/router';
+import { IonicModule, NavParams } from '@ionic/angular';
+import {HeaderComponent } from '../../components/header/header.component';
+import { MedicalAttention } from 'src/app/models/medical-attention.model';
+import { SharedDataService } from 'src/app/services/shared-data.service';
+
+
 
 
 @Component({
@@ -13,14 +16,20 @@ import { ActivatedRoute } from '@angular/router';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, HeaderComponent]
 })
-export class PatientSummaryPage implements OnInit {
-  id:any
+export class PatientSummaryPage implements OnInit{
 
-  constructor(private activatedRoute:ActivatedRoute) { }
+  medicalAttention: MedicalAttention;
+
+  constructor(
+    private sharedDataService: SharedDataService
+    ) { }
 
   ngOnInit() {
-    this.id = this.activatedRoute.snapshot.paramMap.get("id");
-    console.log("id", this.id);
+    this.getToPatientSummary()
+    
   }
 
+  getToPatientSummary(){
+    this.medicalAttention = this.sharedDataService.getDatos();
+  }
 }
