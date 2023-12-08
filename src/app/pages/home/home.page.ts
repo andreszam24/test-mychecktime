@@ -1,8 +1,8 @@
 import { Component,OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule, LoadingController } from '@ionic/angular';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg, AlertController} from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg, AlertController, NavController} from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import {InternetStatusComponent} from '../../components/internet-status/internet-status.component';
 import {HeaderComponent} from '../../components/header/header.component';
@@ -14,6 +14,7 @@ import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { MedicalAttentionService } from 'src/app/services/medical-attention.service';
 import { StatusService } from 'src/app/services/status.service';
+import { SharedDataService } from 'src/app/services/shared-data.service';
 
 
 
@@ -23,7 +24,7 @@ import { StatusService } from 'src/app/services/status.service';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg,IonicModule, FormsModule, InternetStatusComponent, CommonModule, HeaderComponent],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg,IonicModule, FormsModule, InternetStatusComponent, CommonModule, HeaderComponent,RouterLink],
 })
 export class HomePage implements OnInit {
 
@@ -39,7 +40,10 @@ export class HomePage implements OnInit {
     private httpInProgressMedicalAttention: InProgressMedicalAttentionService,
     private httpMedicalAttention:MedicalAttentionService,
     private loadingCtrl: LoadingController,
-    private alertCtrl:AlertController
+    private alertCtrl:AlertController,
+    private navCtrl: NavController,
+    private sharedDataService: SharedDataService,
+   
     ) { }
 
   ngOnInit() {
@@ -171,6 +175,12 @@ export class HomePage implements OnInit {
     this.router.navigateByUrl('/patient-intake');
   }
 
+  public goToPatientSummary(medicalAttention:MedicalAttention) {
+    const data = medicalAttention ;
+    this.sharedDataService.setDatos(data);
+    this.navCtrl.navigateForward('/patient-summary');
+
+  }
 
   deletePatient(selectedMedicalAttention: MedicalAttention) {
     this.showOptionsModal('¿Estás seguro de borrar este paciente?').then((userAccepted) => {

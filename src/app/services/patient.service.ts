@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { URLPatientsByDni, headers } from '../resources/urls.resource';
+import { URLPatientsByDni, headers, URLPatients } from '../resources/urls.resource';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Patient } from '../models/patient.model';
 import { map } from 'rxjs/operators';
@@ -33,4 +33,29 @@ export class PatientService {
     );
 
   }
+
+  getPatientById(id: number): Observable<Patient[]>{
+    const urlGetById = `${URLPatients}/${id}`;
+    return this.http.get<Patient[]>(urlGetById + AuthService.getTokenParams(), { headers, observe: 'response' }).pipe(
+      map((response: HttpResponse<any>) => {
+        if (response.status === 200) {
+          return response.body;
+        } else {
+          console.error('Error http en búsqueda de paciente por id: ', response.status, response.body);
+          return of(null);
+        }
+      }),
+      catchError((err, caught) => {
+        console.error('Error logico en getPatientById', err, caught);
+        return of([]);
+      })
+    );
+  }
+
+
+
+
+ 
+
+
 }

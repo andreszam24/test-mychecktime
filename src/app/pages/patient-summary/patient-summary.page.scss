@@ -1,0 +1,138 @@
+.container-card-patient {
+    background: #c0f5f5;
+    width: 100%;
+    padding: 10px;
+    ion-card {
+      height: fit-content;
+      box-shadow: none;
+      border-radius: 30px;
+      border-color: #68afd7;
+      strong {
+        color: black;
+        font-size: medium;
+        text-transform: capitalize;
+        width: 100%;
+      }
+      ion-col {
+        display: grid;
+        justify-content: space-around;
+      }
+  
+      ion-card-header {
+        ion-avatar {
+          margin: auto;
+        }
+        ion-icon {
+          float: none;
+          width: 15px;
+          height: 15px;
+        }
+        .content-text {
+          ion-text {
+            margin: 0 5px;
+          }
+          ion-note {
+            margin: 0 5px;
+          }
+        }
+
+        #entry-time{
+          display: contents !important;
+        }
+      }
+  
+      ion-icon {
+        fill: #68afd7;
+        stroke: #68afd7 !important;
+        float: right;
+        width: 25px;
+        height: 25px;
+      }
+  
+      ion-card-content {
+        ion-text {
+          text-align: center;
+        }
+  
+        .procedures {
+          margin-top: 16px;
+          margin-bottom: 10px;
+          justify-content: normal;
+          text-align: center;
+          strong {
+            width: 100% !important;
+            margin-bottom: 10px;
+          }
+          .procedure-item {
+              display: flex;
+              align-items: center;
+              justify-content: flex-start;
+              border-radius: 50px;
+              border: 1px solid #73737352;
+              padding: 10px;
+              margin-bottom: 10px;
+            ion-icon {
+              float: none;
+              width: 40px;
+              height: 40px;
+              margin:0 10px 0 20px;
+              fill: #b32b35;
+            }
+            .content-cups {
+              display: inline-flex;
+              flex-direction: column;
+              width: 70%;
+              strong,
+              ion-text {
+                margin: 0;
+                text-align: start;
+                text-transform: uppercase;
+              }
+            }
+          }
+        }
+  
+        .medical-person{
+          justify-content: normal;
+          text-align: center;
+          strong{
+              width: 100% !important;
+              margin-bottom: 10px;
+            }
+
+            .container-anesthesiologist{
+              display: inline-flex;
+              justify-content: center;
+              margin: 0;
+              padding: 0;
+            }
+  
+            .data-medical-person{
+              display: flex;
+              justify-content: flex-start;
+              border: 1px solid #73737352;
+              padding: 10px;
+              margin-bottom: 10px;
+              border-radius: 50px;
+              width: 100%;
+              ion-icon{
+                width: 40px;
+                height: 40px;
+                margin:0 10px 0 20px;
+              }
+              ion-text{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                text-transform: capitalize;
+                text-align: justify;
+              }
+  
+            }
+  
+        }
+      }
+    }
+  }
+  

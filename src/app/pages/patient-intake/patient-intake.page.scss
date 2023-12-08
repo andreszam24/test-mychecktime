@@ -108,26 +108,57 @@ ion-content{
         box-shadow: none;
         border-radius: 30px;
         border-color: #68afd7;
+        ion-col{
+            display: grid;
+            justify-content: space-around;
+            strong{
+                color: black;
+                font-size: medium;
+                text-transform: capitalize;
+            }
+
+        }
+        
+        ion-card-header{
+            ion-avatar{
+                margin: auto;
+            }
+            ion-icon{
+                float: none;  
+                width: 15px;
+                height: 15px;
+            }
+            .content-text{
+                ion-text{
+                    margin: 0 5px;
+                }
+                ion-note{
+                    margin: 0 5px;
+                }
+            }
+        }
     
         ion-icon{
                 fill: #68afd7;
                 stroke: #68afd7 !important;
+                float: right;
+                width: 25px;
+                height: 25px;
         }
-        ion-label{
-            strong{
-                text-transform: capitalize;
+
+        ion-card-content{
+            padding: 0;
+            ion-text{
+                text-align: center;
+                text-transform: uppercase;
             }
         }
     
         #cups{
-            ion-label{
-                ion-item{
-                    width: fit-content;
-                }
                 div{
                     display: inline-flex;
                     ion-badge{
-                        margin: 0;
+                        margin: 0 10px 0 0;
                         background: #68afd7;
                         color: #fff;
                         border-radius: 5px;
@@ -135,7 +166,6 @@ ion-content{
                     }
                 }
             }
-        }
     }
 }
 
