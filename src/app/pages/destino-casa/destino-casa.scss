@@ -1,0 +1,17 @@
+destino-casa-page {
+
+    ion-row ion-label {
+        color: $app-blue;
+    }
+
+    ion-row.together {
+        margin-top: -10px;
+    }
+
+    ion-textarea {
+        background-color: white;
+        color: #444;
+        border-radius: 25px;
+        padding: 5px;
+    }
+}

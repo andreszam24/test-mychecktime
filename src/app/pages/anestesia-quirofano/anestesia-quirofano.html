@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar text-center color="app-blue">
+    <app-encabezado-paciente></app-encabezado-paciente>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding class="aqua">
+  <button ion-button round block
+    [color]="color('StartAnesthesia')"
+    [disabled]="disabled('StartAnesthesia')"
+    (click)="goToInicoAnestesia()">
+      Inicio inducción de anestesia
+
+      <img class="icono" src="assets/imgs/mascaretaxhdpi.png"/>
+  </button>
+  <button ion-button round block 
+    [color]="color('EndStartAnesthesia')"
+    [disabled]="disabled('EndStartAnesthesia')"
+    (click)="goToFinInicioAnestesia()">
+      Fin de inducción de anestesia
+
+      <img class="icono" src="assets/imgs/tubotraxhdpi.png"/>
+  </button>
+  <button ion-button round block
+    [color]="color('StartSurgery')"
+    [disabled]="disabled('StartSurgery')"
+    (click)="goToIncisionQuirurgica()">
+      Incisión quirúrgica
+
+      <img class="icono" src="assets/imgs/bisturixhdpi.png"/>
+  </button>
+  <button ion-button round block
+    [color]="color('EndSurgery')"
+    [disabled]="disabled('EndSurgery')"
+    (click)="goToFinCirugia()">
+      Fin de cirugía
+
+      <img class="icono" src="assets/imgs/suturaxhdpi.png"/>
+  </button>
+</ion-content>
+<ion-footer no-shadow>
+  <ion-toolbar position="bottom">
+    <app-panel-eventos [mostrarCancelarEvento]="eventoCancelarVisible"></app-panel-eventos>
+  </ion-toolbar>
+</ion-footer>

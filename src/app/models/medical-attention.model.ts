@@ -2,30 +2,25 @@ import { Patient } from './patient.model';
 import { Specialty } from './specialty.model';
 import { CupsCodes } from './cups-codes.model';
 import { OperationRoom } from './operationRoom.model';
-/*import { MedicalEvent } from './medical-event.model';
-import { OperationRoom } from './operationRoom.model';
-
+import { AnesthesiologistProfile } from './anesthesiologist-profile.model';
+import { Instrumentador } from './instrumentador.model';
+import { Cirujano } from './cirujano.model';
+import { AdmissionList } from './admission-list.model';
+import { OperatingRoomList } from './operating-room-list.model';
 import { ExitOperatingRoomList } from './exit-operating-room-list.model';
 import { PatientsExitList } from './patients-exit-list.model';
-import { OperatingRoomList } from './operating-room-list.model';
-import { AdmissionList } from './admission-list.model';
-import { AnesthesiologistProfile } from './anesthesiologist-profile.model';
+import { MedicalEvent } from './medical-event.model';
 
-
-import { Cirujano } from './cirujano.model';
-import { Instrumentador } from './instrumentador.model';*/
 
 export class MedicalAttention {
 
   _id: string;
 
-  /*_id: string;
-
   // Información básica
   idPatient: number;
   idClinica: number;
-  idOperatingRoom: number;*/
-  //currentAnesthesiologist : AnesthesiologistProfile;
+  idOperatingRoom: number;
+  currentAnesthesiologist : AnesthesiologistProfile;
 
   // Encabezado
   patient: Patient;
@@ -39,11 +34,10 @@ export class MedicalAttention {
   operatingRoom: OperationRoom;
   state: string;
   
-  /*originDate: Date;
+  originDate: Date;
   simpleOriginDate: String;
-  simpleOriginHour: String;*/
+  simpleOriginHour: String;
 
-  /*
   anestehsiologist: Array<AnesthesiologistProfile>;
   
   instrumentator: Instrumentador;
@@ -61,14 +55,10 @@ export class MedicalAttention {
   // Lista de salida
   patientsExit: PatientsExitList;
 
-  state: string;
-
   // eventos
   events: Array<MedicalEvent>
 
-  // Volatil
-  
-  operatingRoom: OperationRoom;*/
+
   setPatient(value: Patient) {
     this.patient = value;
   }

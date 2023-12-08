@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar text-center color="app-blue">
+    <app-encabezado-paciente></app-encabezado-paciente>
+  </ion-toolbar>
+  
+  <ion-toolbar text-center color="app-red">
+    <ion-title>Sala de paz</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding class="aqua">
+  
+  <ion-row class="form">
+    <ion-col text-center>
+      <ion-label text-wrap>Pulse para registrar la hora de fallecimiento</ion-label>
+      <ion-datetime [(ngModel)]="fallecimientoHoraManual" name="fallecimientoHoraManual" 
+        [min]="fechaMinimaSeleccionable"
+        displayFormat="DD/MMM/YYYY HH:mm" pickerFormat="DD MMM YYYY HH mm" placeholder="DD/MM/AAAA HH:mm">
+      </ion-datetime>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+      <ion-col text-center>
+        <button
+          ion-button round icon-only
+          color="app-blue"
+          [disabled]="!isValid()"
+          (click)="goToNextPage()">
+            Continuar
+        </button>
+      </ion-col>
+    </ion-row>
+
+</ion-content>

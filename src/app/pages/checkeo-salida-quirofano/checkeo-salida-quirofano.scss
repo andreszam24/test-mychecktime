@@ -1,0 +1,62 @@
+checkeo-salida-quirofano-page {
+
+    .label {
+        background-color: white;
+        color: #444;
+        border-radius: 25px;
+        padding: 10px;
+    }
+
+    .label.no-background {
+        background-color: transparent;
+        color: $app-dark;
+    }
+
+    .label p.title {
+        color: $app-gray;
+    }
+    
+    .label.blue-box {
+        background-color: $app-blue;
+        color: white;
+        border-radius: 25px;
+        padding: 10px;
+    }
+
+    .label.blue-box p {
+        color: white;
+    }
+
+    .radio-md .radio-inner {
+        left: -1px;
+        top: -1px;
+        width: 18px;
+        height: 18px;
+        background-color: $app-red;
+        border-color: $app-red;
+    }
+
+    .radio-md .radio-icon {
+        border-color: $app-red;
+        background-color: white;
+    }
+
+    ion-input, ion-textarea, ion-datetime, ion-select {
+        border-radius: 15px;
+        -webkit-border-radius: 15px;
+    }
+
+    ion-select {
+        background-color: white;
+        color: #444;
+        border-radius: 25px;
+        padding: 5px;
+    }
+
+    ion-select.small-size-select {
+        width: 30%;
+        max-width: 30% !important;
+        margin-left: 10px;
+    }
+
+}

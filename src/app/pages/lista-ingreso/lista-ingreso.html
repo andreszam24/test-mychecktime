@@ -1,0 +1,147 @@
+<ion-header>
+  <ion-toolbar text-center color="app-blue">
+    <app-encabezado-paciente></app-encabezado-paciente>
+  </ion-toolbar>
+
+  <ion-toolbar text-center color="app-red">
+    <ion-title>Filtro</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding class="aqua">
+  
+  <form class="formulario-chequeo">
+
+    <ion-item no-lines>
+      <ion-label class="question">Hora de ingreso</ion-label>
+      <ion-datetime [(ngModel)]="model.arrivalDate" name="arrivalDate" 
+        [max]="fechaMaxima"
+        displayFormat="HH:mm"
+        pickerFormat="HH mm"
+        placeholder="HH:mm"></ion-datetime>
+    </ion-item>
+
+    <ion-item no-lines>
+      <ion-label class="question" text-center>
+        <p class="title">El paciente ha confirmado</p>
+        <p text-wrap>
+          Su identidad <br/>
+          El sitio quirurgico<br/>
+          El procedimiento <br/>
+          Su consentimiento
+        </p>
+      </ion-label>
+      <ion-checkbox [(ngModel)]="model.basicConfirmation" name="basicConfirmation" color="app-red" item-right></ion-checkbox>
+    </ion-item>
+
+    <ion-item no-lines>
+      <ion-label class="question" text-center>
+        <p class="title">Demarcación del sitio / No procede</p>
+      </ion-label>
+      <ion-checkbox [(ngModel)]="model.site" name="site" color="app-red" item-right></ion-checkbox>
+    </ion-item>
+
+    <ion-item no-lines>
+      <ion-label class="question" text-center>
+        <p text-wrap class="title">Se ha completado el control de la seguridad de la anestesia</p>
+      </ion-label>
+      <ion-checkbox [(ngModel)]="model.anesthesiaSecurity" name="anesthesiaSecurity" color="app-red" item-right></ion-checkbox>
+    </ion-item>
+
+    <ion-item no-lines>
+      <ion-label class="question" text-center>
+        <p class="title">Pulsiómetro colocado y en funcionamiento</p>
+      </ion-label>
+      <ion-checkbox [(ngModel)]="model.pulsometer" name="pulsometer" color="app-red" item-right></ion-checkbox>
+    </ion-item>
+
+    <ion-item no-lines>
+        <ion-label text-wrap text-center class="blue-box">
+          <p>
+            ¿El paciente tiene:
+          </p>
+        </ion-label>
+    </ion-item>
+
+    <ion-item no-lines>
+      <ion-label class="question" text-center>
+        <p class="title">alergias conocidas?</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-list radio-group name="allergy" [(ngModel)]="model.allergy">
+      <ion-item>
+        <ion-label>No</ion-label>
+        <ion-radio [value]="false"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap>Sí</ion-label>
+        <ion-radio [value]="true"></ion-radio>
+      </ion-item>
+    </ion-list>
+
+    <ion-item no-lines>
+      <ion-label class="question" text-center>
+        <p text-wrap class="title">Vía aérea difícil / Riesgo de aspiración?</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-list radio-group name="difficultAirway" [(ngModel)]="model.difficultAirway">
+      <ion-item>
+        <ion-label>No</ion-label>
+        <ion-radio [value]="false"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap>Sí, Hay instrumental y equipos / ayuda disponible</ion-label>
+        <ion-radio [value]="true"></ion-radio>
+      </ion-item>
+    </ion-list>
+
+    <ion-item no-lines>
+      <ion-label class="question" text-center>
+        <p text-wrap class="title">Riesgo de hemorragia > 500 ml (7 ml/kg para niños)?</p>
+      </ion-label>
+    </ion-item>
+    
+    <ion-list radio-group name="riskOfHemorrhage" [(ngModel)]="model.riskOfHemorrhage" (ionChange)="checkDate()">
+      <ion-item>
+        <ion-label>No</ion-label>
+        <ion-radio [value]="false"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap>Sí, Se ha previsto la disponibilidad de acceso intravenoso y líquidos adecuados</ion-label>
+        <ion-radio [value]="true"></ion-radio>
+      </ion-item>
+    </ion-list>
+    
+    <ion-item no-lines>
+      <ion-select class="full-size-select" [(ngModel)]="model.intervention" (ionChange)="changeInterventionDate()" name="intervencion" multiple="false" placeholder="Intervención" [selectOptions]="{title: 'Intervención'}">
+        <ion-option value="Ninguna">Ninguna</ion-option>
+        <ion-option value="Médica">Médica</ion-option>
+        <ion-option value="Bloqueo">Bloqueo</ion-option>
+        <ion-option value="Otra">Otra</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item no-lines *ngIf="flagInputOtherIntervention">
+      <ion-textarea [(ngModel)]="model.otherIntervention" name="otherIntervention" placeholder="Ingrese la intervención"></ion-textarea>
+  </ion-item>
+
+    <ion-row>
+      <ion-col text-center>
+        <button id="btnContinuar" 
+          ion-button round 
+          color="app-blue"
+          [disabled]="!isValid()"
+          (click)="goToNextPage()">Pasar al siguiente
+        </button>
+      </ion-col>
+    </ion-row>
+
+  </form>
+
+</ion-content>
+<ion-footer no-shadow>
+  <ion-toolbar position="bottom">
+    <app-panel-eventos [mostrarCancelarEvento]="true"></app-panel-eventos>
+  </ion-toolbar>
+</ion-footer>

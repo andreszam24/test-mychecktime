@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar text-center color="app-blue">
+    <app-encabezado-paciente></app-encabezado-paciente>
+  </ion-toolbar>
+  
+  <ion-toolbar text-center color="app-red">
+    <ion-title>Hospitalización</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding class="aqua">
+  
+  <ion-row class="form">
+    <ion-col text-center>
+      <ion-label text-wrap>Pulse para registar la hora en la que se envía a hospitalización</ion-label>
+      <ion-datetime [(ngModel)]="hospitalizacionDatetime" name="hospitalizacionDatetime" 
+        [min]="fechaMinimaSeleccionable"
+        displayFormat="DD/MMM/YYYY HH:mm" pickerFormat="DD MMM YYYY HH mm" placeholder="DD/MM/AAAA HH:mm">
+      </ion-datetime>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col text-center>
+      <button id="btnContinuar" 
+        ion-button round icon-only
+        color="app-blue"
+        [disabled]="!isValid()"
+        (click)="goToNextPage()">
+          Continuar
+      </button>
+    </ion-col>
+  </ion-row>
+
+</ion-content>

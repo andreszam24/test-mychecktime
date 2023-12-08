@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar text-center color="app-blue">
+    <app-encabezado-paciente></app-encabezado-paciente>
+  </ion-toolbar>
+  
+  <ion-toolbar text-center color="app-red">
+    <ion-title>UCI</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding class="aqua">
+  
+  <form class=formulario-chequeo>
+
+    <ion-row>
+      <ion-col text-center>
+        <ion-input type="text" [(ngModel)]="model.recieveName" placeholder="Nombre de quien Recibe" name="recieveName"></ion-input>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="together">
+      <ion-col text-center>
+        <ion-textarea [(ngModel)]="model.description" name="description" placeholder="Descripción"></ion-textarea>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="form">
+      <ion-col text-center>
+        <ion-label text-wrap>Pulse para registrar la hora de envío a UCI</ion-label>
+        <ion-datetime [(ngModel)]="model.envioDestinoHoraManual" name="envioDestinoHoraManual" 
+          [min]="fechaMinimaSeleccionable"
+          displayFormat="DD/MMM/YYYY HH:mm" pickerFormat="DD MMM YYYY HH mm" placeholder="DD/MM/AAAA HH:mm">
+        </ion-datetime>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col text-center>
+        <button id="btnContinuar" 
+          ion-button round 
+          color="app-blue"
+          [disabled]="!isValid()"
+          (click)="goToNextPage()">Continuar
+        </button>
+      </ion-col>
+    </ion-row>
+
+  </form>
+
+</ion-content>
