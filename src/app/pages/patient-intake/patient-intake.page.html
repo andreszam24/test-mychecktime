@@ -32,6 +32,10 @@
               <strong>Especialidad:</strong>
               <ion-text>{{ medicalAttention?.specialty?.name }}</ion-text>
             </ion-col>
+            <ion-col size="6">
+              <strong style="width: 117px;">Programacion:</strong>
+              <ion-text>{{ medicalAttention?.programming }}</ion-text>
+            </ion-col>
             <ion-col size="6" id="cups">
               <strong>Códigos CUPS</strong>
               <div *ngIf="medicalAttention?.procedureCodes">
@@ -39,10 +43,6 @@
                   <ion-badge slot="start">{{ cup.code }}</ion-badge>
                 </div>
               </div>
-            </ion-col>
-            <ion-col size="6">
-              <strong style="width: 117px;">Programacion:</strong>
-              <ion-text>{{ medicalAttention?.programming }}</ion-text>
             </ion-col>
             <ion-col size="6">
               <strong>ASA:</strong>
