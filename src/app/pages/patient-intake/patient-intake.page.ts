@@ -40,6 +40,7 @@ export class PatientIntakePage implements OnInit {
   resultsSearchigSpecialties = [...this.specialtiesList];
   cupsCodesList: CupsCodes[] = [];
   resultsSearchigCups = [...this.cupsCodesList];
+  searchInputCupsValue: string = '';
 
   constructor(
     private alertController: AlertController,
@@ -161,16 +162,17 @@ export class PatientIntakePage implements OnInit {
   }
 
   handleInputCupsName(event: any) {
-    const query = event.target.value.toLowerCase().trim();
-    if (query != '' && query.length > 3) {
+    this.searchInputCupsValue = event.target.value.toLowerCase().trim();
+    if (this.searchInputCupsValue != '' && this.searchInputCupsValue.length > 2) {
       this.resultsSearchigCups = [];
-      this.searchCupsByName(query);
+      this.searchCupsByName(this.searchInputCupsValue);
     }
   }
 
   cupsSelected(cup: CupsCodes) {
     if (this.medicalAttention) {
       this.medicalAttention.procedureCodes.push(cup);
+      this.searchInputCupsValue = '';
     }
     this.resultsSearchigCups = [];
   }
@@ -208,6 +210,7 @@ export class PatientIntakePage implements OnInit {
           this.patientList = result;
           this.resultsSearchigPatient = this.patientList.filter((patient) => patient.dni.toLowerCase().indexOf(dni) > -1);
         } else {
+          this.medicalAttention = new MedicalAttention();
           let newPatient = new Patient();
           newPatient.dni = dni;
           this.medicalAttention?.setPatient(newPatient);
@@ -223,13 +226,13 @@ export class PatientIntakePage implements OnInit {
 
     if (this.formPatientIntake.valid && this.medicalAttention && this.medicalAttention?.procedureCodes.length > 0 && this.medicalAttention.specialty) {
       console.log('CONTINUA PROCESO')
-    }else{
+    } else {
       this.presentBasicAlert('¡Estas olvidando algo!', 'Es necesario seleccionar una especialidad y al menos un código CUPS');
     }
   }
 
   patientSelected(patient: Patient) {
-
+    this.medicalAttention = new MedicalAttention();
     if (this.medicalAttention) {
       this.medicalAttention.patient = patient;
     }
@@ -260,6 +263,7 @@ export class PatientIntakePage implements OnInit {
 
   enableEditMedicalAttentionData() {
     this.changeStatusManulIntake(true);
+    this.changeStatusLookingForPatient(true);
   }
 
   changeStatusManulIntake(newState: boolean) {

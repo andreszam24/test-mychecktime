@@ -10,6 +10,8 @@ import { of, catchError } from 'rxjs';
 import { InternetStatusComponent } from 'src/app/components/internet-status/internet-status.component';
 import {HeaderComponent} from '../../components/header/header.component';
 import { IonToggle, IonItem, IonContent, IonList, IonLabel, IonFooter, IonSpinner, IonLoading } from '@ionic/angular/standalone';
+import { CupsCodesService } from 'src/app/services/cups-codes.service';
+import { SpecialtyService } from 'src/app/services/specialty.service';
 
 
 @Component({
@@ -35,7 +37,9 @@ export class LoginPage implements OnInit {
     public fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private cupsCodesService: CupsCodesService,
+    private specialtyService: SpecialtyService
   ) {}
 
   ngOnInit() {
@@ -79,6 +83,7 @@ export class LoginPage implements OnInit {
       .subscribe((res) => {
         if (res) {
           this.isLoading = false;
+          this.loadMasterData();
           this.loadingCtrl.dismiss();
           this.router.navigateByUrl('/home');
         } else {
@@ -88,5 +93,10 @@ export class LoginPage implements OnInit {
         }
       });
     } 
+  }
+
+  async loadMasterData() {
+    this.cupsCodesService.getRemoteCups().subscribe();
+    this.specialtyService.getRemoteSpecialties().subscribe();
   }
 }

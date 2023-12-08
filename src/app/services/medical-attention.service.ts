@@ -35,7 +35,6 @@ export class MedicalAttentionService {
     );
   }
 
-
   deleteClinicalPatientRecord(medicalAttention: MedicalAttention):Observable<string> {
     const payload = {
       registroClinicoId: medicalAttention._id
@@ -57,6 +56,5 @@ export class MedicalAttentionService {
     );
 
   }
-
 
 }
