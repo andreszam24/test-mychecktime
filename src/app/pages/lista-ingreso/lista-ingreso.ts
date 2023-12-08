@@ -1,14 +1,10 @@
-import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
-
-import { InProgressMedicalAttention } from './../../app/services/in-progress-medical-attention.service';
-import { StatusService } from './../../app/services/status.service';
-
-import { AdmissionList } from './../../app/models/admission-list.model';
-import { DateUtilsService } from '../../app/services/date-utils.service';
 import { DatePipe } from '@angular/common';
-import { SeleccionarQuirofanoPage } from '../seleccionar-quirofano/seleccionar-quirofano';
-import { SeleccionarPacientePage } from '../seleccionar-paciente/seleccionar-paciente';
+import { Component } from '@angular/core';
+import { NavController } from '@ionic/angular';
+import { AdmissionList } from 'src/app/models/admission-list.model';
+import { DateUtilsService } from 'src/app/services/date-utils.service';
+import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
+import { StatusService } from 'src/app/services/status.service';
 
 @Component({
   selector: 'lista-ingreso-page',
@@ -35,7 +31,7 @@ export class ListaIngresoPage {
 
   constructor(
     private navCtrl: NavController,
-    private medicalService: InProgressMedicalAttention,
+    private medicalService: InProgressMedicalAttentionService,
     public datepipe: DatePipe) {
 
       this.admissionList = new AdmissionList();
@@ -58,15 +54,15 @@ export class ListaIngresoPage {
 
   checkDate() {
     this.admissionList.checkDate = new Date();
-    this.admissionList.simpleCheckDate = this.datepipe.transform(this.admissionList.checkDate,'yyyy-MM-dd');
-    this.admissionList.simpleCheckHour = this.datepipe.transform(this.admissionList.checkDate,'HH:mm:ss');
+    this.admissionList.simpleCheckDate = this.transformSimpleDate(this.admissionList.checkDate);
+    this.admissionList.simpleCheckHour = this.transformSimpleHour(this.admissionList.checkDate);
   }
 
   changeInterventionDate() {
     
     this.admissionList.interventionDate = new Date();
-    this.admissionList.simpleInterventionDate = this.datepipe.transform(this.admissionList.interventionDate,'yyyy-MM-dd');
-    this.admissionList.simpleInterventionHour = this.datepipe.transform(this.admissionList.interventionDate,'HH:mm:ss');
+    this.admissionList.simpleInterventionDate = this.transformSimpleDate(this.admissionList.interventionDate);
+    this.admissionList.simpleInterventionHour = this.transformSimpleHour(this.admissionList.interventionDate);
     this.validarOtra(this.model.intervention);
   }
 
@@ -79,7 +75,7 @@ export class ListaIngresoPage {
      this.medicalService.saveMedicalAttention(sm, 'sync')
         .then(result => {
             if(result) {
-              this.navCtrl.push(SeleccionarPacientePage);
+              this.navCtrl.navigateForward('home');
             }
           }).catch(() => console.error('No se pudo guardar el servicio médico'));
     }).catch(() => console.log('Error consultando la atencion médica'));
@@ -87,8 +83,8 @@ export class ListaIngresoPage {
 
   private mapViewToModel() {
     this.admissionList.arrivalDate = DateUtilsService.stringHour2Date(this.model.arrivalDate);
-    this.admissionList.simpleArrivalDate = this.datepipe.transform(this.admissionList.arrivalDate,'yyyy-MM-dd');
-    this.admissionList.simpleArrivalHour = this.datepipe.transform(this.admissionList.arrivalDate,'HH:mm:ss');
+    this.admissionList.simpleArrivalDate = this.transformSimpleDate(this.admissionList.arrivalDate);
+    this.admissionList.simpleArrivalHour = this.transformSimpleHour(this.admissionList.arrivalDate);
 
     this.admissionList.basicConfirmation = this.model.basicConfirmation;
     this.admissionList.site = this.model.site;
@@ -108,11 +104,20 @@ export class ListaIngresoPage {
     return this.admissionList;
   }
 
-  validarOtra(intervention) {
+  validarOtra(intervention: string) {
       if(intervention === 'Otra'){
         this.flagInputOtherIntervention = true;
       }else{
         this.flagInputOtherIntervention = false;
       }
+  }
+
+  transformSimpleDate(date: Date){
+    return this.datepipe.transform(date,'yyyy-MM-dd') ?? '';
+    
+  }
+
+  transformSimpleHour(date: Date){
+    return this.datepipe.transform(date,'HH:mm:ss') ?? '';
   }
 }

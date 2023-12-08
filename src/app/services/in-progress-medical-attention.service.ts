@@ -4,6 +4,9 @@ import { MedicalAttention } from '../models/medical-attention.model';
 import { MedicalAttentionService } from './medical-attention.service';
 import { ServiceStatus } from '../models/service-status.model';
 import { StatusService } from './status.service';
+import { WorkingAreaService } from './working-area.service';
+import { AuthService } from './auth.service';
+import { Toast } from '@capacitor/toast';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +17,74 @@ export class InProgressMedicalAttentionService {
   private inProgressServicesKey = 'inprogress_services';
   private selectedService: string = '';
 
-  constructor(private httpMedicalAttention: MedicalAttentionService) { }
+  constructor(
+    private httpMedicalAttention: MedicalAttentionService,
+    private workingArea: WorkingAreaService,
+    private auth: AuthService,
+  ) { }
 
+
+  saveMedicalAttention(attention: MedicalAttention, sync: String): Promise<boolean> {
+    return new Promise((resolve) => {
+
+      if (attention.state === StatusService.TERMINADO || attention.state === StatusService.CANCELADO) {
+        this.saveInFinishedServices(attention);
+        this.deleteFromProgressServices(attention);
+        this.finishServiceRemoteRepository().subscribe(
+          resp => {
+            resolve(true);
+          }, e => {
+            console.log('IN-PROGRESS-MEDICAL-ATTENTION-SERVICE L221: Ocurrio un error terminando el servicio remoto ', e);
+            resolve(false);
+          });
+      } else {
+        this.replaceLocalService(attention);
+        this.updateRemoteRepository(attention, () => { });
+        resolve(true);
+      }
+      if (sync === 'sync') {
+        this.searchPendingServices(this.workingArea.getClinic().id, this.auth.getLoggedAccount().id).subscribe({
+          next: (resp) => { this.showToast("Sincronizando con servidor", 'long', 'center'); },
+          error: (e) => this.showToast('Ups! algo salio mal, por favor reintenta', 'long', 'center'),
+          complete: () => {
+
+            resolve(true);
+          }
+        });
+      }
+    });
+  }
+
+  async showToast(toastText: string, toastDuration: 'short' | 'long', toastPosition: 'top' | 'center' | 'bottom') {
+    await Toast.show({
+      text: toastText,
+      duration: toastDuration,
+      position: toastPosition,
+    });
+  };
+
+  private deleteFromProgressServices(sm: MedicalAttention) {
+    const list = this.loadServicesFromLocalRepository() || [];
+    const allServices = list.filter(s => s._id !== sm._id);
+    this.updateLocalRepository(allServices);
+  }
+
+  private saveInFinishedServices(sm: MedicalAttention) {
+    const finishedServices: Array<MedicalAttention> = this.getFinishedServicesFromLocalRepository();
+    finishedServices.push(sm);
+    localStorage.setItem(this.finishedServicesKey, JSON.stringify(finishedServices));
+  }
+
+  private updateRemoteRepository(medicalAttention: MedicalAttention, onResult: () => void) {
+    // Se invoca onResult al terminar la peticion sin importar el resultado
+    this.httpMedicalAttention.saveMedicalAttention([medicalAttention])
+      .subscribe(result => {
+        onResult();
+      }, e => {
+        console.log('No se pudo actualizar el repositorio remoto', e);
+        onResult();
+      });
+  }
   // Consulta los pacientes pendientes según la clínica seleccionada
   // y realiza una sincronización de la estructura de datos interna
   searchPendingServices(clinicId: number, anesId: number): Observable<Array<MedicalAttention>> {

@@ -1,4 +1,4 @@
-import { StatusService } from './../../app/services/status.service';
+/*import { StatusService } from './../../app/services/status.service';
 import { Component } from '@angular/core';
 
 import { NavController, MenuController, AlertController } from 'ionic-angular';
@@ -113,4 +113,4 @@ export class CkeckeoSalidaQuirofanoPage {
     alert.present();
     return;
   }
-}
+}*/

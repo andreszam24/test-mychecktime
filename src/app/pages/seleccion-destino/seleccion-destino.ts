@@ -1,4 +1,4 @@
-import { MedicalAttention } from './../../../app/models/medical-attention.model';
+/*import { MedicalAttention } from './../../../app/models/medical-attention.model';
 import { Component } from '@angular/core';
 import { NavController, MenuController, LoadingController } from 'ionic-angular';
 
@@ -151,3 +151,4 @@ export class SeleccionDestinoPage {
   }
 
 }
+*/

@@ -1,4 +1,4 @@
-import { ParametersTimeCalculation } from './../../app/models/parameters-time-calculation.model';
+/*import { ParametersTimeCalculation } from './../../app/models/parameters-time-calculation.model';
 import { AnestesiaQuirofanoPage } from './../anestesia-quirofano/anestesia-quirofano';
 import { Component } from '@angular/core';
 
@@ -344,4 +344,4 @@ export class ListaQuirofanoPage {
     
   }
 
-}
+}*/

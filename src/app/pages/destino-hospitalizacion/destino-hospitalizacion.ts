@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+/*import { Component } from '@angular/core';
 import { NavController, MenuController, LoadingController, AlertController } from 'ionic-angular';
 
 import { InProgressMedicalAttention } from './../../../app/services/in-progress-medical-attention.service';
@@ -95,4 +95,4 @@ export class DestinoHospitalizacionPage {
   isValid(): boolean {
     return !!this.hospitalizacionDatetime;
   }
-}
+}*/

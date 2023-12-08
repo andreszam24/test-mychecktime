@@ -1,4 +1,4 @@
-import { StatusService } from './../../../app/services/status.service';
+/*import { StatusService } from './../../../app/services/status.service';
 import { UCI } from './../../../app/models/uci.model';
 import { InProgressMedicalAttention } from './../../../app/services/in-progress-medical-attention.service';
 import { Component } from '@angular/core';
@@ -124,4 +124,4 @@ export class DestinoUCIPage {
     loading.present();
     return loading;
   }
-}
+}*/

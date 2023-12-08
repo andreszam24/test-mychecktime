@@ -1,12 +1,13 @@
 import { Platform } from '@ionic/angular';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { BehaviorSubject, Observable, from, of, defer} from 'rxjs';
+import { BehaviorSubject, Observable, from, of, defer } from 'rxjs';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { map, switchMap } from 'rxjs/operators';
 import { URLAuthLogin, headers, httpOptions } from '../resources/urls.resource';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
+import { User } from '../models/user.model';
 
 const helper = new JwtHelperService();
 const TOKEN_KEY = 'jwt-token';
@@ -17,13 +18,12 @@ const USER_KEY = 'user-data';
 })
 
 export class AuthService {
-  public user: Observable<{ loggedIn: boolean; account:any | null }>;
-  private userData = new BehaviorSubject<{ loggedIn: boolean; account:any;
- }>({ loggedIn: false, account:null });
+  public user: Observable<{ loggedIn: boolean; account: any | null }>;
+  private userData = new BehaviorSubject<{loggedIn: boolean; account: any;}>({ loggedIn: false, account: null });
   private redirectFlag = false;
   private userCredential = {};
-  private rememberMeStatus:boolean;
-  
+  private rememberMeStatus: boolean;
+
 
   constructor(
     private storage: Storage,
@@ -42,8 +42,8 @@ export class AuthService {
       map(() => this.handleStoredToken(AuthService.getAuthToken()))
     );
   }
-  
-  handleStoredToken(token: string | null){
+
+  handleStoredToken(token: string | null) {
     let accountData: any;
     if (token) {
       accountData = this.getUser();
@@ -76,7 +76,7 @@ export class AuthService {
     }
     return storageObs.pipe(map((storedToken) => this.handleStoredToken(storedToken)));
   }
-  
+
   login(email: string, password: string, rememberMe: boolean) {
     this.userCredential = { email, password };
     this.rememberMeStatus = rememberMe;
@@ -97,7 +97,7 @@ export class AuthService {
       );
   }
 
-  
+
   static getAuthToken(): string | null {
     const localStorageToken = localStorage.getItem('jwt-token');
     const sessionStorageToken = sessionStorage.getItem('jwt-token');
@@ -106,7 +106,7 @@ export class AuthService {
 
   checkAuthentication(): Observable<boolean> {
     const token = AuthService.getAuthToken();
-    return of(!!token); 
+    return of(!!token);
   }
 
   getUser() {
@@ -128,10 +128,14 @@ export class AuthService {
     return '?token=' + AuthService.getAuthToken();
   }
 
- refreshToken(): Observable<any> {
+  refreshToken(): Observable<any> {
     const user = this.userCredential;
     return this.http.post(URLAuthLogin, user, httpOptions).pipe(
-      map((response:any) => this.handleLoginResponse(response, this.rememberMeStatus)
-    ));
+      map((response: any) => this.handleLoginResponse(response, this.rememberMeStatus)
+      ));
+  }
+
+  getLoggedAccount(): User {
+    return JSON.parse(localStorage.getItem('user-data') ?? '');
   }
 }

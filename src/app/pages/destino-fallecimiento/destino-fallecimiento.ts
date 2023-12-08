@@ -1,4 +1,4 @@
-import { StatusService } from './../../../app/services/status.service';
+/*import { StatusService } from './../../../app/services/status.service';
 import { Component } from '@angular/core';
 import { NavController, MenuController, LoadingController, AlertController } from 'ionic-angular';
 
@@ -99,4 +99,4 @@ export class DestinoFallecimientoPage {
   isValid(): boolean {
     return !!this.fallecimientoHoraManual;
   }
-}
+}*/

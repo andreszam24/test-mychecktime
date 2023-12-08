@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+/*import { Component } from '@angular/core';
 
 
 import { CkeckeoSalidaQuirofanoPage } from './../checkeo-salida-quirofano/checkeo-salida-quirofano';
@@ -144,3 +144,4 @@ export class AnestesiaQuirofanoPage {
   }
   
 }
+*/
