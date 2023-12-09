@@ -23,7 +23,7 @@ export class MedicalAttentionService {
     return this.http.post<MedicalAttention[]>(URLPendingMedicalAttention + AuthService.getTokenParams(), payload, { headers, observe: 'response' }).pipe(
       map((response: HttpResponse<any>) => {
         if (response.status === 200) {
-          return response.body;
+          return JSON.parse(response.body);
         } else {
           console.error('Error http en búsqueda de atenciones medicas pendientes: ', response.status, response.body);
           return of(null);
@@ -62,7 +62,7 @@ export class MedicalAttentionService {
     return this.http.post(URLStatusMedicalAttention + AuthService.getTokenParams(), ids, { headers, observe: 'response' }).pipe(
       map((response: HttpResponse<any>) => {
         if (response.status === 200) {
-          return response.body;
+          return JSON.parse(response.body);
         } else {
           console.error('Error consultando el estado de la atención medica: ', response.status, response.body);
           return of(null);

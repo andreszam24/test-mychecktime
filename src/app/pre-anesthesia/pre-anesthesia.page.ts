@@ -1,19 +1,24 @@
-import { DatePipe } from '@angular/common';
-import { Component } from '@angular/core';
-import { NavController } from '@ionic/angular';
-import { AdmissionList } from 'src/app/models/admission-list.model';
-import { DateUtilsService } from 'src/app/services/date-utils.service';
-import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
-import { StatusService } from 'src/app/services/status.service';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
-  selector: 'lista-ingreso-page',
-  templateUrl: 'lista-ingreso.html'
+  selector: 'app-pre-anesthesia',
+  templateUrl: './pre-anesthesia.page.html',
+  styleUrls: ['./pre-anesthesia.page.scss'],
+  standalone: true,
+  imports: [IonicModule, CommonModule, FormsModule]
 })
-export class ListaIngresoPage {
+export class PreAnesthesiaPage implements OnInit {
 
+  constructor() { }
+
+  ngOnInit() {
+  }
+  /*
   admissionList: AdmissionList;
-  flagInputOtherIntervention: Boolean;
+  flagInputOtherIntervention: boolean;
   fechaMaxima: string;
 
   model: any = {
@@ -38,6 +43,9 @@ export class ListaIngresoPage {
       this.flagInputOtherIntervention = false;
 
       this.fechaMaxima = DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(new Date()));
+  }
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
   }
 
   isValid() {
@@ -119,5 +127,5 @@ export class ListaIngresoPage {
 
   transformSimpleHour(date: Date){
     return this.datepipe.transform(date,'HH:mm:ss') ?? '';
-  }
+  }*/
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HomePage } from '../pages/home/home.page';
-import { ListaIngresoPage } from '../pages/lista-ingreso/lista-ingreso';
-import { ListaQuirofanoPage } from '../pages/lista-quirofano/lista-quirofano';
+import { PreAnesthesiaPage } from '../pre-anesthesia/pre-anesthesia.page';
+/*import { ListaQuirofanoPage } from '../pages/lista-quirofano/lista-quirofano';
 import { AnestesiaQuirofanoPage } from '../pages/anestesia-quirofano/anestesia-quirofano';
 import { CkeckeoSalidaQuirofanoPage } from '../pages/checkeo-salida-quirofano/checkeo-salida-quirofano';
 import { SalidaQuirofanoPage } from '../pages/menu-salida/salida-quirofano';
@@ -10,14 +10,14 @@ import { DestinoCasaPage } from '../pages/destino-casa/destino-casa';
 import { DestinoHospitalizacionPage } from '../pages/destino-hospitalizacion/destino-hospitalizacion';
 import { DestinoUCIPage } from '../pages/destino-uci/destino-uci';
 import { DestinoFallecimientoPage } from '../pages/destino-fallecimiento/destino-fallecimiento';
-import { DestinoCirugiaPage } from '../pages/destino-cirugia/destino-cirugia';
+import { DestinoCirugiaPage } from '../pages/destino-cirugia/destino-cirugia';*/
 
 export class Estado {
   name: string;
   index: number;
   page: any;
 
-  public static create(index: number, name: string, page: any): Estado {
+  public static create(index: number, name: string, page: string): Estado {
     const instance = new Estado();
     instance.index = index;
     instance.name = name;
@@ -75,25 +75,25 @@ export class StatusService {
   ]
 
   static readonly ESTADOS: Array<Estado> = [
-    Estado.create(0, StatusService.INICIO, HomePage),
-    Estado.create(1, StatusService.ADMISSION_LIST, ListaIngresoPage),
+    Estado.create(0, StatusService.INICIO, 'home'),
+    Estado.create(1, StatusService.ADMISSION_LIST, 'pre-anesthesia'),
 //TODO: borrar    Estado.create(2, StatusService.SELECT_OPERATING_ROOM, SeleccionarQuirofanoPage),
-    Estado.create(3, StatusService.OPERATING_ROOM_LIST, ListaQuirofanoPage),
+    /*Estado.create(3, StatusService.OPERATING_ROOM_LIST, ListaQuirofanoPage),
     Estado.create(4, StatusService.START_ANESTHESIA, AnestesiaQuirofanoPage),
     Estado.create(5, StatusService.END_START_ANESTHESIA, AnestesiaQuirofanoPage),
     Estado.create(6, StatusService.START_SURGERY, AnestesiaQuirofanoPage),
     Estado.create(7, StatusService.END_SUGERY, AnestesiaQuirofanoPage),
     Estado.create(8, StatusService.EXIT_OPERATING_ROOM_LIST, CkeckeoSalidaQuirofanoPage),
     Estado.create(9, StatusService.FROM_OPERATING_ROOM_TO, SalidaQuirofanoPage),
-    Estado.create(10, StatusService.SELECCION_DESTINO, SeleccionDestinoPage),
-    Estado.create(11, StatusService.TERMINADO, HomePage),
-    Estado.create(12, StatusService.CANCELADO, HomePage)
+    Estado.create(10, StatusService.SELECCION_DESTINO, SeleccionDestinoPage),*/
+    Estado.create(11, StatusService.TERMINADO, 'home'),
+    Estado.create(12, StatusService.CANCELADO, 'home')
   ];
 
   static readonly ORDEN_ESTADOS: Array<Estado> = [
-    Estado.create(0, StatusService.INICIO, HomePage),
-    Estado.create(1, StatusService.ADMISSION_LIST, ListaIngresoPage),
-    Estado.create(2, StatusService.OPERATING_ROOM_LIST, ListaQuirofanoPage),
+    Estado.create(0, StatusService.INICIO, 'home'),
+    Estado.create(1, StatusService.ADMISSION_LIST, 'pre-anesthesia'),
+    /*Estado.create(2, StatusService.OPERATING_ROOM_LIST, ListaQuirofanoPage),
     Estado.create(3, StatusService.START_ANESTHESIA, AnestesiaQuirofanoPage),
     Estado.create(4, StatusService.END_START_ANESTHESIA, AnestesiaQuirofanoPage),
     Estado.create(5, StatusService.START_SURGERY, AnestesiaQuirofanoPage),
@@ -105,9 +105,9 @@ export class StatusService {
     Estado.create(10, StatusService.DESTINO_HOSPITALIZACION, DestinoHospitalizacionPage),
     Estado.create(10, StatusService.DESTINO_UCI, DestinoUCIPage),
     Estado.create(10, StatusService.DESTINO_SALA_DE_PAZ, DestinoFallecimientoPage),
-    Estado.create(10, StatusService.DESTINO_CIRUGIA, DestinoCirugiaPage),
-    Estado.create(11, StatusService.TERMINADO, HomePage),
-    Estado.create(11, StatusService.CANCELADO, HomePage)
+    Estado.create(10, StatusService.DESTINO_CIRUGIA, DestinoCirugiaPage),*/
+    Estado.create(11, StatusService.TERMINADO, 'home'),
+    Estado.create(11, StatusService.CANCELADO, 'home')
   ];
 
   constructor() { }

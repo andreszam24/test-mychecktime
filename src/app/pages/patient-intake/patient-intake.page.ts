@@ -296,7 +296,6 @@ export class PatientIntakePage implements OnInit {
   }
 
   private formIntakeValidation() {
-    console.log('validando')
     this.formPatientIntake = this.fb.group({
       progamationType: new FormControl('', [Validators.required])
     });

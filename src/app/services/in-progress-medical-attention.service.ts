@@ -30,13 +30,16 @@ export class InProgressMedicalAttentionService {
       if (attention.state === StatusService.TERMINADO || attention.state === StatusService.CANCELADO) {
         this.saveInFinishedServices(attention);
         this.deleteFromProgressServices(attention);
-        this.finishServiceRemoteRepository().subscribe(
-          resp => {
+        this.finishServiceRemoteRepository().subscribe({
+          next: (resp) => {
             resolve(true);
-          }, e => {
+          }, 
+          error: (e) => {
             console.log('IN-PROGRESS-MEDICAL-ATTENTION-SERVICE L221: Ocurrio un error terminando el servicio remoto ', e);
             resolve(false);
-          });
+          },
+          complete: () =>{}
+        });
       } else {
         this.replaceLocalService(attention);
         this.updateRemoteRepository(attention, () => { });
@@ -114,7 +117,8 @@ export class InProgressMedicalAttentionService {
                   services => {
                     // Enviar guardado de servicios locales (actualizados)
                     this.saveManyRemoteRepository(services).subscribe({
-                      next: () => { mySubject.complete(); },
+                      next: () => { 
+                        mySubject.complete(); },
                       error: (e) => {
                         console.error('Error guardando los servicios locales: ', e);
                         mySubject.complete();
@@ -126,6 +130,7 @@ export class InProgressMedicalAttentionService {
               },
               error: (e) => {
                 console.error('Error obteniendo los servicios pendientes: ', e);
+                mySubject.complete();
               },
               complete: () => {
                 mySubject.complete();
@@ -167,6 +172,23 @@ export class InProgressMedicalAttentionService {
       const locals = this.loadServicesFromLocalRepository() || [];
       resolve(this.filterAllByClinic(locals, clinicId, anesthesiologistId));
     });
+  }
+
+  getPendingMedicalAtenttions(clinicId: number, anesthesiologistId: number): Promise<Array<MedicalAttention>> {
+    return new Promise((resolve) => {
+      const locals = this.loadServicesFromLocalRepository() || [];
+      resolve(this.filterByClinic(locals, clinicId, anesthesiologistId));
+    });
+  }
+
+  private filterByClinic(attentions: MedicalAttention[], clinicId: number, anesthesiologist: number): MedicalAttention[] {
+    if (!(!!attentions)) {
+      return [];
+    }
+
+    return attentions
+      .filter(a => !!a.idClinica && a.idClinica === clinicId)
+      .filter(a => !!a.currentAnesthesiologist && a.currentAnesthesiologist.id === anesthesiologist);
   }
 
   private filterAllByClinic(attentions: MedicalAttention[], clinicId: number, anesthesiologist: number): MedicalAttention[] {
@@ -227,16 +249,16 @@ export class InProgressMedicalAttentionService {
   }
 
   private deleteFinishedServices(statuses: Array<ServiceStatus>) {
-    const finishedStatuses = statuses.filter(s => this.esEstadoFinalizado(s.status));
-    if (finishedStatuses.length > 0) {
-      let locals = this.loadServicesFromLocalRepository() || [];
-      // Excluir de la lista cada servicio en la lista de servicios finalizados
-      finishedStatuses.forEach(status => {
-        locals = locals.filter(s => s._id !== status.id);
-      });
-      // Actualizar repositorio
-      this.updateLocalRepository(locals);
-    }
+      const finishedStatuses = statuses.filter(s => this.esEstadoFinalizado(s.status) == true);
+      if (finishedStatuses.length > 0) {
+        let locals = this.loadServicesFromLocalRepository() || [];
+        // Excluir de la lista cada servicio en la lista de servicios finalizados
+        finishedStatuses.forEach(status => {
+          locals = locals.filter(s => s._id !== status.id);
+        });
+        // Actualizar repositorio
+        this.updateLocalRepository(locals);
+      }
   }
 
   private esEstadoFinalizado(estado: string): boolean {

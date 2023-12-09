@@ -5,7 +5,9 @@ import { OperationRoom } from './../models/operationRoom.model';
 import { Clinic } from './../models/clinic.model';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class WorkingAreaService extends LocalPersistenceDataService {
   
   private clinicStorageKey = 'warea_clinic';
