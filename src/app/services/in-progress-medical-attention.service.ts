@@ -112,18 +112,20 @@ export class InProgressMedicalAttentionService {
               next: (list) => {
                 // Actualizar localmente
                 this.mergeServices(list);
+                mySubject.next(list);
                 // Consultar servicios pendientes (locales) (actualizados)
                 this.getPendingMedicalAtenttionsByClinic(clinicId, anesId).then(
                   services => {
                     // Enviar guardado de servicios locales (actualizados)
                     this.saveManyRemoteRepository(services).subscribe({
-                      next: () => { 
+                      next: () => {                         
                         mySubject.complete(); },
                       error: (e) => {
                         console.error('Error guardando los servicios locales: ', e);
                         mySubject.complete();
                       },
-                      complete: () => { mySubject.complete(); }// emit complete http method 
+                      complete: () => { 
+                        mySubject.complete(); }// emit complete http method 
                     });
                   }
                 )
@@ -142,7 +144,7 @@ export class InProgressMedicalAttentionService {
             mySubject.complete();
           },
           complete: () => {
-            mySubject.complete();
+            //mySubject.complete();
           }
         });
       }

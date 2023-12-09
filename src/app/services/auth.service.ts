@@ -53,7 +53,6 @@ export class AuthService {
       }
       return { loggedIn: true, account: accountData };
     } else {
-      console.log('No se encontró token almacenado.');
       return { loggedIn: false, account: null };
     }
   }

@@ -16,6 +16,7 @@ import { SharedDataService } from 'src/app/services/shared-data.service';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { MedicalAttentionService } from 'src/app/services/medical-attention.service';
 import { WorkingAreaService } from 'src/app/services/working-area.service';
+import { InternetServiceService } from 'src/app/services/internet-service.service';
 
 
 
@@ -38,16 +39,22 @@ export class HomePage implements OnInit {
     private router: Router,
     private authService: AuthService,
     private httpInProgressMedicalAttention: InProgressMedicalAttentionService,
-    private httpMedicalAttention:MedicalAttentionService,
+    private httpMedicalAttention: MedicalAttentionService,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
     private sharedDataService: SharedDataService,
-    private workingAreaRepository: WorkingAreaService
+    private workingAreaRepository: WorkingAreaService,
+    private internetService: InternetServiceService
 
   ) { }
 
   ngOnInit() {
     this.extractUserData();
+    this.internetService.internetStatus$.subscribe((isConnected) => {
+      if (isConnected) {
+        this.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id);
+      }
+    });
   }
 
   async showLoading(message: string) {
@@ -118,40 +125,25 @@ export class HomePage implements OnInit {
 
 
   getPendingMedicalAtenttions(clinicId: number, anesthesiologistId: number) {
-    this.httpInProgressMedicalAttention.searchPendingServices(clinicId, anesthesiologistId)
-      .pipe(
-        catchError((error) => {
-          console.error('Ups! Algo salió mal al consultar atenciones médicas pendientes: ', error);
-          return of([]);
-        }),
-        switchMap((result) => {
-          console.log('RESULTADO: ', result)
-          if (result) {
-            this.attentionsInProgress = result;
-          } else {
-            console.warn('La respuesta es nula o indefinida.');
-          }
-          return of(this.attentionsInProgress);
-        })
-      ).subscribe({
-        next: (data) => {
-          console.log('DATA: ', data)
-        },
-        error: (error) => {
-          console.error('Error al obtener datos:', error);
-        }
-      });
-
-      this.searchPatientInLocal();
+    this.httpInProgressMedicalAttention.searchPendingServices(clinicId, anesthesiologistId).subscribe({
+      next: (data) => {
+        this.attentionsInProgress = data;
+      },
+      error: (error) => {
+        console.error('Ups! Algo salió mal al consultar atenciones médicas pendientes: ', error);
+      },
+      complete: () => {
+      }
+    });
   }
 
-  searchPatientInLocal() {
+ /*TODO: Probablemente se pueda borrar searchPatientInLocal() {
     this.httpInProgressMedicalAttention.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id).then(
       services => {
         this.attentionsInProgress = services;
       }
     ).catch(() => this.attentionsInProgress = []);
-  }
+  }*/
 
   getRoomName(medicalRecord: MedicalAttention) {
     let hall = 'Sin ingresar a sala';
@@ -196,33 +188,33 @@ export class HomePage implements OnInit {
 
   deletePatient(selectedMedicalAttention: MedicalAttention) {
     this.showOptionsModal('¿Estás seguro de borrar este paciente?').then((userAccepted) => {
-       if (userAccepted) {
-         this.showLoading('borrando paciente');
-         this.httpMedicalAttention.deleteClinicalPatientRecord(selectedMedicalAttention)
-           .pipe(
-             catchError((error) => {
-               this.loadingCtrl.dismiss();
-               console.error('Ups! Algo salió mal, el paciente no se pudo borrar', error);
-               return of(null);
-             })
-           )
-           .subscribe(response => {
-             if (response === 'OK' || response === 'no existe') {
-               this.deletePatientFromList(selectedMedicalAttention);
-               this.loadingCtrl.dismiss();
-               
-             } else if (response === 'cirugia') {
-               this.loadingCtrl.dismiss();
-               this.showInformationalModal('No puedes borrar este paciente porque ya se encuentra en quirófano');
-             } else {
-               this.loadingCtrl.dismiss();
-               console.log('SELECCIONAR-PACIENTE: Error borrando el paciente en remoto => ', response);
-             }
-           });
-       } else {
-         console.log('Operación de borrado cancelada por el usuario');
-       }
-     });
+      if (userAccepted) {
+        this.showLoading('borrando paciente');
+        this.httpMedicalAttention.deleteClinicalPatientRecord(selectedMedicalAttention)
+          .pipe(
+            catchError((error) => {
+              this.loadingCtrl.dismiss();
+              console.error('Ups! Algo salió mal, el paciente no se pudo borrar', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response === 'OK' || response === 'no existe') {
+              this.deletePatientFromList(selectedMedicalAttention);
+              this.loadingCtrl.dismiss();
+
+            } else if (response === 'cirugia') {
+              this.loadingCtrl.dismiss();
+              this.showInformationalModal('No puedes borrar este paciente porque ya se encuentra en quirófano');
+            } else {
+              this.loadingCtrl.dismiss();
+              console.log('SELECCIONAR-PACIENTE: Error borrando el paciente en remoto => ', response);
+            }
+          });
+      } else {
+        console.log('Operación de borrado cancelada por el usuario');
+      }
+    });
   }
 
   deletePatientFromList(registroMedico: MedicalAttention) {
