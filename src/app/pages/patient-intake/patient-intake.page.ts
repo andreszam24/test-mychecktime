@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonCardHeader, IonCardContent, IonRow, IonCol } from '@ionic/angular/standalone';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { HeaderComponent } from '../../components/header/header.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
@@ -25,17 +25,16 @@ import { LoadingService } from 'src/app/services/utilities/loading.service';
   templateUrl: './patient-intake.page.html',
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
-  imports: [IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule,HeaderComponent,IonCardHeader, IonCardContent,IonRow, IonCol],
+  imports: [IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule, HeaderComponent, IonCardHeader, IonCardContent, IonRow, IonCol],
 })
 
 export class PatientIntakePage implements OnInit {
 
-  medicalAttention: MedicalAttention | undefined | null = new MedicalAttention();
+  medicalAttention: MedicalAttention = new MedicalAttention();
   barcodes: Barcode[] = [];
   isSupported = false;
   manualIntake = false;
   lookingForPatient = false;
-  formPatientIntake: FormGroup;
   patientList: Patient[] = [];
   resultsSearchigPatient = [...this.patientList];
   specialtiesList: Specialty[] = [];
@@ -45,18 +44,17 @@ export class PatientIntakePage implements OnInit {
   searchInputCupsValue: string = '';
 
   constructor(
-    public fb: FormBuilder,
     private patientsService: PatientService,
     private loadingService: LoadingService,
     private specialtyService: SpecialtyService,
     private cupsCodesService: CupsCodesService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
     this.startBarcodeScanner();
     this.loadMasterData();
-    this.formIntakeValidation();
   }
 
   private startBarcodeScanner() {
@@ -101,6 +99,7 @@ export class PatientIntakePage implements OnInit {
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     this.medicalAttention = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
+    this.cdr.detectChanges();
     this.changeStatusManulIntake(false);
     this.changeStatusLookingForPatient(false);
   }
@@ -192,7 +191,7 @@ export class PatientIntakePage implements OnInit {
       this.resultsSearchigPatient = [];
       this.patientSearchByDNI(query);
     } else {
-      this.medicalAttention?.setPatient(new Patient());
+      this.medicalAttention.patient = new Patient();
     }
   }
 
@@ -222,13 +221,24 @@ export class PatientIntakePage implements OnInit {
 
   }
 
-  startMedicalAttention() {
-    this.formPatientIntake.markAllAsTouched();
-
-    if (this.formPatientIntake.valid && this.medicalAttention && this.medicalAttention?.procedureCodes.length > 0 && this.medicalAttention.specialty) {
-      console.log('CONTINUA PROCESO')
+  toValidateRequiredData(): boolean {
+    if (this.medicalAttention && this.medicalAttention.patient.dni && this.medicalAttention?.procedureCodes.length > 0 && this.medicalAttention.specialty) {
+      return true;
     } else {
-      this.alertService.presentBasicAlert('¡Estas olvidando algo!', 'Es necesario seleccionar una especialidad y al menos un código CUPS');
+      return false;
+    }
+  }
+
+  toValidatePatientData(type: string) {
+
+    if (this.toValidateRequiredData()) {
+      if (type == 'qr') {
+        this.saveMedicalAttention();
+      } else {
+        this.createPatient();
+      }
+    } else {
+      this.alertService.presentBasicAlert('¡Estas olvidando algo!', 'Es necesario diligenciar el DNI del paciente, además de seleccionar una especialidad y al menos un código CUPS');
     }
   }
 
@@ -247,7 +257,7 @@ export class PatientIntakePage implements OnInit {
       this.resultsSearchigSpecialties = [];
       this.searchSpecialtyByName(query);
     } else {
-      this.medicalAttention?.setSpecialty(new Specialty());
+      this.medicalAttention.specialty = new Specialty();
     }
   }
 
@@ -277,8 +287,8 @@ export class PatientIntakePage implements OnInit {
 
   private async unsupportedBarcodeMessage() {
     this.alertService.presentBasicAlert('¡Ups!',
-    'Parece que tu dispositivo no puede escanear códigos' +
-    ' con la cámara en este momento. Lamentablemente, esta función no está disponible en tu dispositivo.',
+      'Parece que tu dispositivo no puede escanear códigos' +
+      ' con la cámara en este momento. Lamentablemente, esta función no está disponible en tu dispositivo.',
     );
   }
 
@@ -293,14 +303,96 @@ export class PatientIntakePage implements OnInit {
     }
   }
 
-  private formIntakeValidation() {
-    this.formPatientIntake = this.fb.group({
-      progamationType: new FormControl('', [Validators.required])
-    });
-  }
-
   async requestPermissions(): Promise<boolean> {
     const { camera } = await BarcodeScanner.requestPermissions();
     return camera === 'granted' || camera === 'limited';
   }
+
+  createPatient(): void {
+    const patient = new Patient();
+    /*patient.name = this.formPatientIntake.value.name;
+    patient.lastname = this.formPatientIntake.value.lastname;
+    patient.dni = this.formPatientIntake.value.dni;
+    patient.birthday = new Date(this.formPatientIntake.value.birthday);
+    // this.realBirthday = this.parseBirthday(this.formPatientIntake.value.birthday);
+    patient.gender = this.formPatientIntake.value.gender;*/
+    // patient.birthday = this.parseBirthday(this.formPatientIntake.value.birthday);
+    //patient.phone = this.patientForm.value.phone;
+    // patient.email = this.patientForm.value.email;
+    this.medicalAttention.patient = patient;
+    console.log('crenado paciente');
+    this.saveMedicalAttention();
+  }
+
+  private saveMedicalAttention(): void {
+
+    console.log('escaneado: ', this.medicalAttention)
+    /*const existePaciente = this.medicalAttetionRepository.existsPatientInProgressAttentions(
+        this.workingAreaRepository.getClinic().id,
+        this.authService.getLoggedAccount().id,
+        paciente.dni
+      );
+    
+    if(existePaciente) {
+      this.showInformationalModal(`El paciente ingresado tiene un servicio médico sin finalizar. Para iniciar un nuevo servicio con este paciente debe terminar el actual.`);
+      return;
+    }
+    
+    paciente.birthday = this.realBirthday;
+    paciente.simpleBirthdayDate = this.datepipe.transform(this.patientForm.value.birthday,'yyyy-MM-dd');
+    paciente.updated_at = this.datepipe.transform(paciente.updated_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ');
+    paciente.created_at = this.datepipe.transform(paciente.created_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ');
+    if (this.medicalAttentionForm.dirty && this.medicalAttentionForm.valid) {
+      const m = new MedicalAttention();
+      m.idOperatingRoom = -1; //esta variable debería eliminarse
+      m.operatingRoom = new OperationRoom();
+      
+      m.operatingRoom.clinic_id = this.workingAreaRepository.getClinic().id;
+      
+
+      m.specialty = this.especialidadSeleccionada;
+      m.numeroResgistro = this.medicalAttentionForm.value.registro;
+
+      m.programming = this.medicalAttentionForm.value.programming;
+      m.asa = this.medicalAttentionForm.value.asa;
+      m.procedureCodes  = this.cupsSeleccionados;
+
+      m.originDate = new Date();
+      m.simpleOriginDate = this.datepipe.transform(m.originDate,'yyyy-MM-dd');
+      m.simpleOriginHour = this.datepipe.transform(m.originDate,'HH:mm:ss');
+      
+      m.idClinica = this.workingAreaRepository.getClinic().id;
+      m.currentAnesthesiologist = new AnesthesiologistProfile();
+      m.currentAnesthesiologist.id = this.authService.getLoggedAccount().id;
+      m.currentAnesthesiologist.name = this.authService.getLoggedAccount().name;
+      m.currentAnesthesiologist.lastname = this.authService.getLoggedAccount().lastname;
+      m.currentAnesthesiologist.lastnameS = this.authService.getLoggedAccount().lastnameS;
+      m.currentAnesthesiologist.gender = this.authService.getLoggedAccount().gender;
+      m.currentAnesthesiologist.phone = this.authService.getLoggedAccount().phone;
+      m.currentAnesthesiologist.email = this.authService.getLoggedAccount().email;
+      m.currentAnesthesiologist.status = this.authService.getLoggedAccount().status;
+      m.anestehsiologist = [];
+      m.anestehsiologist.push(m.currentAnesthesiologist);
+
+      m.patient = paciente;
+      m.state = StatusService.INICIO;
+      
+      const loading = this.showLoading();
+      this.medicalAttetionRepository.addMedicalAttention(m).then(
+          r => {
+            loading.dismiss();
+            this.syncPacientesPendientesDelAreaDeTrabajo();
+          }
+        ).catch(e => loading.dismiss() );
+    }*/
+  }
+
+  getBirthdayYear(): string {
+    let year = '';
+    if (this.medicalAttention && this.medicalAttention.patient.birthday) {
+      year = new Date(this.medicalAttention?.patient.birthday.toString()).getFullYear().toString();
+    }
+    return year;
+  }
+
 }

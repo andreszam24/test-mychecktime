@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormControl, FormGroup, 
 import { IonicModule, LoadingController } from '@ionic/angular';
 import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service'
+import { AuthService } from '../../services/auth.service';
 import { of, catchError } from 'rxjs';
 import { InternetStatusComponent } from 'src/app/components/internet-status/internet-status.component';
 import { HeaderComponent } from '../../components/header/header.component';
