@@ -119,7 +119,7 @@ export class PatientIntakePage implements OnInit {
           catchError((error) => {
             this.loadingCtrl.dismiss();
             console.error('Ups! Algo salio mal al consultar los cups: ', error);
-            this.presentBasicAlert('Oops!', 'Parece algo salio mal consultando los CUPS y no logramos conectar con el servidor');
+            this.alertService.presentBasicAlert('Oops!', 'Parece algo salio mal consultando los CUPS y no logramos conectar con el servidor');
             return of(null);
           })
         ).subscribe((result) => {
@@ -127,7 +127,7 @@ export class PatientIntakePage implements OnInit {
             this.loadingCtrl.dismiss();
             this.cupsCodesList = result;
           } else {
-            this.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de CUPS.');
+            this.alertService.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de CUPS.');
             this.loadingCtrl.dismiss();
           }
         });
@@ -145,7 +145,7 @@ export class PatientIntakePage implements OnInit {
           catchError((error) => {
             this.loadingCtrl.dismiss();
             console.error('Ups! Algo salio mal al consultar las especialidades: ', error);
-            this.presentBasicAlert('Oops!', 'Parece algo salio mal conusltando las especialidades y no logramos conectar con el servidor');
+            this.alertService.presentBasicAlert('Oops!', 'Parece algo salio mal conusltando las especialidades y no logramos conectar con el servidor');
             return of(null);
           })
         ).subscribe((result) => {
@@ -153,7 +153,7 @@ export class PatientIntakePage implements OnInit {
             this.loadingCtrl.dismiss();
             this.specialtiesList = result;
           } else {
-            this.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de especialidades.');
+            this.alertService.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de especialidades.');
             this.loadingCtrl.dismiss();
           }
         });
@@ -214,7 +214,7 @@ export class PatientIntakePage implements OnInit {
           let newPatient = new Patient();
           newPatient.dni = dni;
           this.medicalAttention?.setPatient(newPatient);
-          this.presentBasicAlert('Oops!', 'Parece que a quien buscas no se encuentra. Por favor intenta con otra búsqueda.');
+          this.alertService.presentBasicAlert('Oops!', 'Parece que a quien buscas no se encuentra. Por favor intenta con otra búsqueda.');
           this.loadingCtrl.dismiss();
         }
       });
