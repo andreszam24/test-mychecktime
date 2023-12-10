@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController, LoadingController, IonCardHeader, IonCardContent,IonRow, IonCol } from '@ionic/angular/standalone';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule,Validators } from '@angular/forms';
+import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonCardHeader, IonCardContent, IonRow, IonCol } from '@ionic/angular/standalone';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
-import {HeaderComponent} from '../../components/header/header.component';
+import { HeaderComponent } from '../../components/header/header.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { Patient } from '../../models/patient.model';
@@ -15,6 +15,7 @@ import { SpecialtyService } from '../../services/specialty.service';
 import { CupsCodes } from 'src/app/models/cups-codes.model';
 import { CupsCodesService } from 'src/app/services/cups-codes.service';
 import { AlertService } from 'src/app/services/utilities/alert.service';
+import { LoadingService } from 'src/app/services/utilities/loading.service';
 
 
 
@@ -46,7 +47,7 @@ export class PatientIntakePage implements OnInit {
   constructor(
     public fb: FormBuilder,
     private patientsService: PatientService,
-    private loadingCtrl: LoadingController,
+    private loadingService: LoadingService,
     private specialtyService: SpecialtyService,
     private cupsCodesService: CupsCodesService,
     private alertService: AlertService
@@ -113,22 +114,22 @@ export class PatientIntakePage implements OnInit {
     this.cupsCodesList = this.cupsCodesService.getLocalCups();
 
     if (this.cupsCodesList.length < 1) {
-      this.showLoadingBasic("Cargando...");
+      this.loadingService.showLoadingBasic("Cargando...");
       this.cupsCodesService.getRemoteCups()
         .pipe(
           catchError((error) => {
-            this.loadingCtrl.dismiss();
+            this.loadingService.dismiss();
             console.error('Ups! Algo salio mal al consultar los cups: ', error);
             this.alertService.presentBasicAlert('Oops!', 'Parece algo salio mal consultando los CUPS y no logramos conectar con el servidor');
             return of(null);
           })
         ).subscribe((result) => {
           if (result && result.length > 0) {
-            this.loadingCtrl.dismiss();
+            this.loadingService.dismiss();
             this.cupsCodesList = result;
           } else {
             this.alertService.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de CUPS.');
-            this.loadingCtrl.dismiss();
+            this.loadingService.dismiss();
           }
         });
     }
@@ -139,22 +140,22 @@ export class PatientIntakePage implements OnInit {
     this.specialtiesList = this.specialtyService.getLocalSpecialties();
 
     if (this.specialtiesList.length < 1) {
-      this.showLoadingBasic("Cargando...");
+      this.loadingService.showLoadingBasic("Cargando...");
       this.specialtyService.getRemoteSpecialties()
         .pipe(
           catchError((error) => {
-            this.loadingCtrl.dismiss();
+            this.loadingService.dismiss();
             console.error('Ups! Algo salio mal al consultar las especialidades: ', error);
             this.alertService.presentBasicAlert('Oops!', 'Parece algo salio mal conusltando las especialidades y no logramos conectar con el servidor');
             return of(null);
           })
         ).subscribe((result) => {
           if (result && result.length > 0) {
-            this.loadingCtrl.dismiss();
+            this.loadingService.dismiss();
             this.specialtiesList = result;
           } else {
             this.alertService.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de especialidades.');
-            this.loadingCtrl.dismiss();
+            this.loadingService.dismiss();
           }
         });
     }
@@ -196,17 +197,17 @@ export class PatientIntakePage implements OnInit {
   }
 
   patientSearchByDNI(dni: string) {
-    this.showLoadingBasic("Cargando...");
+    this.loadingService.showLoadingBasic("Cargando...");
     this.patientsService.searchByDni(dni).pipe(
       catchError((error) => {
-        this.loadingCtrl.dismiss();
+        this.loadingService.dismiss();
         console.error('Ups! Algo salio mal al consultar los pacientes por DNI: ', error);
         return of(null);
       })
     )
       .subscribe((result) => {
         if (result && result.length > 0) {
-          this.loadingCtrl.dismiss();
+          this.loadingService.dismiss();
           this.patientList = result;
           this.resultsSearchigPatient = this.patientList.filter((patient) => patient.dni.toLowerCase().indexOf(dni) > -1);
         } else {
@@ -215,7 +216,7 @@ export class PatientIntakePage implements OnInit {
           newPatient.dni = dni;
           this.medicalAttention?.setPatient(newPatient);
           this.alertService.presentBasicAlert('Oops!', 'Parece que a quien buscas no se encuentra. Por favor intenta con otra búsqueda.');
-          this.loadingCtrl.dismiss();
+          this.loadingService.dismiss();
         }
       });
 
@@ -301,22 +302,5 @@ export class PatientIntakePage implements OnInit {
   async requestPermissions(): Promise<boolean> {
     const { camera } = await BarcodeScanner.requestPermissions();
     return camera === 'granted' || camera === 'limited';
-  }
-
-  async showLoadingWithTimer(message: string, timer: number) {
-    const loading = await this.loadingCtrl.create({
-      message: message,
-      duration: timer,
-    });
-
-    loading.present();
-  }
-
-  async showLoadingBasic(message: string) {
-    const loading = await this.loadingCtrl.create({
-      message: message
-    });
-
-    loading.present();
   }
 }
