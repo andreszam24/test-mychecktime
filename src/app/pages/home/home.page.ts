@@ -12,11 +12,11 @@ import { switchMap } from 'rxjs/operators';
 import { of, catchError } from 'rxjs';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { StatusService } from 'src/app/services/status.service';
-import { SharedDataService } from 'src/app/services/shared-data.service';
+import { SharedDataService } from 'src/app/services/utilities/shared-data.service';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { MedicalAttentionService } from 'src/app/services/medical-attention.service';
 import { WorkingAreaService } from 'src/app/services/working-area.service';
-import { InternetServiceService } from 'src/app/services/internet-service.service';
+import { InternetServiceService } from 'src/app/services/utilities/internet-service.service';
 
 
 

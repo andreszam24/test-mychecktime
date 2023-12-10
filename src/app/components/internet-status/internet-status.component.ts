@@ -7,7 +7,7 @@ import { Toast } from '@capacitor/toast';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { WorkingAreaService } from 'src/app/services/working-area.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { InternetServiceService } from 'src/app/services/internet-service.service';
+import { InternetServiceService } from 'src/app/services/utilities/internet-service.service';
 
 
 

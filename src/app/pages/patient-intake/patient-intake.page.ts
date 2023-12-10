@@ -14,6 +14,7 @@ import { Specialty } from 'src/app/models/specialty.model';
 import { SpecialtyService } from '../../services/specialty.service';
 import { CupsCodes } from 'src/app/models/cups-codes.model';
 import { CupsCodesService } from 'src/app/services/cups-codes.service';
+import { AlertService } from 'src/app/services/utilities/alert.service';
 
 
 
@@ -43,12 +44,12 @@ export class PatientIntakePage implements OnInit {
   searchInputCupsValue: string = '';
 
   constructor(
-    private alertController: AlertController,
     public fb: FormBuilder,
     private patientsService: PatientService,
     private loadingCtrl: LoadingController,
     private specialtyService: SpecialtyService,
-    private cupsCodesService: CupsCodesService
+    private cupsCodesService: CupsCodesService,
+    private alertService: AlertService
   ) { }
 
   ngOnInit() {
@@ -71,7 +72,7 @@ export class PatientIntakePage implements OnInit {
   async scan(): Promise<void> {
     const granted = await this.requestPermissions();
     if (!granted) {
-      this.presentBasicAlert('¡Ups! Sin permisos', '¡Activa los permisos de la cámara para usar el escáner de códigos!');
+      this.alertService.presentBasicAlert('¡Ups! Sin permisos', '¡Activa los permisos de la cámara para usar el escáner de códigos!');
       this.changeStatusManulIntake(true);
       return;
     }
@@ -99,7 +100,6 @@ export class PatientIntakePage implements OnInit {
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     this.medicalAttention = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    console.log('medicalAttention: ',this.medicalAttention)
     this.changeStatusManulIntake(false);
     this.changeStatusLookingForPatient(false);
   }
@@ -227,7 +227,7 @@ export class PatientIntakePage implements OnInit {
     if (this.formPatientIntake.valid && this.medicalAttention && this.medicalAttention?.procedureCodes.length > 0 && this.medicalAttention.specialty) {
       console.log('CONTINUA PROCESO')
     } else {
-      this.presentBasicAlert('¡Estas olvidando algo!', 'Es necesario seleccionar una especialidad y al menos un código CUPS');
+      this.alertService.presentBasicAlert('¡Estas olvidando algo!', 'Es necesario seleccionar una especialidad y al menos un código CUPS');
     }
   }
 
@@ -275,13 +275,10 @@ export class PatientIntakePage implements OnInit {
   }
 
   private async unsupportedBarcodeMessage() {
-    const alert = await this.alertController.create({
-      header: '¡Ups!',
-      message: 'Parece que tu dispositivo no puede escanear códigos' +
-        ' con la cámara en este momento. Lamentablemente, esta función no está disponible en tu dispositivo.',
-      buttons: ['OK']
-    });
-    await alert.present();
+    this.alertService.presentBasicAlert('¡Ups!',
+    'Parece que tu dispositivo no puede escanear códigos' +
+    ' con la cámara en este momento. Lamentablemente, esta función no está disponible en tu dispositivo.',
+    );
   }
 
   parseJSONMedicalAttentionSafely(obj: any) {
@@ -322,14 +319,4 @@ export class PatientIntakePage implements OnInit {
 
     loading.present();
   }
-
-  async presentBasicAlert(header: string, message: string): Promise<void> {
-    const alert = await this.alertController.create({
-      header: header,
-      message: message,
-      buttons: ['OK']
-    });
-    await alert.present();
-  }
-
 }
