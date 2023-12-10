@@ -68,15 +68,13 @@
   </div>
 
   <div *ngIf="manualIntake && lookingForPatient" id="manualIntake">
-    <form id="patient-intake-form" >
+    <form id="patient-intake-form" [formGroup]="profileForm">
       <ion-list [inset]="true">
         <ion-item lines="none" class="box">
-          <ion-input label="Nº registro institucional"  value="{{ medicalAttention.numeroResgistro  }}"
-            label-placement="stacked" placeholder=""></ion-input>
+          <ion-input formControlName="registerCode" label="Nº registro institucional" label-placement="stacked" placeholder=""></ion-input>
         </ion-item>
         <ion-item lines="none">
-          <ion-select label="Tipo de programación" placeholder="Selecciona"
-            value="{{ medicalAttention.programming }}" >
+          <ion-select formControlName="programmingType" label="Tipo de programación" placeholder="Selecciona" >
             <ion-select-option value="cirugía electiva">Cirugía electiva</ion-select-option>
             <ion-select-option value="programada de piso">Programada de piso</ion-select-option>
             <ion-select-option value="urgencia de piso">Urgencia de piso</ion-select-option>
@@ -88,23 +86,20 @@
         </ion-item>
 
         <ion-item lines="none" class="box">
-          <ion-input label="Identificación del paciente"  value="{{ medicalAttention.patient.dni }}"
-            label-placement="stacked" readonly placeholder=""></ion-input>
+          <ion-input formControlName="dni" label="Identificación del paciente" label-placement="stacked" readonly placeholder=""></ion-input>
         </ion-item>
         <ng-container *ngIf="!medicalAttention.patient.dni">
         <p class="error-message">Campo obligatorio.</p>
       </ng-container>
 
         <ion-item lines="none" class="box">
-          <ion-input label="Nombre" label-placement="stacked"  value="{{ medicalAttention.patient.name }}"
-            placeholder=""></ion-input>
+          <ion-input formControlName="name" label="Nombre" label-placement="stacked" placeholder=""></ion-input>
         </ion-item>
         <ion-item lines="none" class="box">
-          <ion-input label="Apellido" label-placement="stacked"  value="{{ medicalAttention.patient.lastname }}"
-            placeholder=""></ion-input>
+          <ion-input formControlName="lastName" label="Apellido" label-placement="stacked" placeholder=""></ion-input>
         </ion-item>
         <ion-item lines="none" class="box">
-          <ion-select label="Genero"  value="{{ medicalAttention.patient.gender }}" placeholder="Selecciona">
+          <ion-select formControlName="gender" label="Genero" placeholder="Selecciona">
             <ion-select-option value="Femenino">Femenino</ion-select-option>
             <ion-select-option value="Masculino">Masculino</ion-select-option>
             <ion-select-option value="Otro">Otro</ion-select-option>
@@ -112,7 +107,7 @@
         </ion-item>
         <ion-item lines="none">
           <ion-label> Fecha de nacimiento </ion-label>
-          <ion-datetime  value="{{getBirthdayYear()}}" min="1900-03-01" presentation="year"
+          <ion-datetime formControlName="birthday" min="1900-03-01" presentation="year"
             [preferWheel]="true"></ion-datetime>
         </ion-item>
         <div>
@@ -158,8 +153,7 @@
 </ion-content>
 <footer>
   <div class="content-button">
-    <ion-button *ngIf="manualIntake" id="login-button" size="default" expand="full" (click)="toValidatePatientData('form')">Continuar</ion-button>
-    <ion-button *ngIf="!manualIntake" id="login-button" size="default" expand="full" (click)="toValidatePatientData('qr')">Continuar</ion-button>
+    <ion-button id="login-button" size="default" expand="full" (click)="toValidatePatientData()">Continuar</ion-button>
   </div>
 </footer>
 <ion-fab slot="fixed" vertical="bottom" horizontal="end">

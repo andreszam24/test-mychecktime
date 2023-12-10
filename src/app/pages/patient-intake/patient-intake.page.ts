@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonCardHeader, IonCardContent, IonRow, IonCol } from '@ionic/angular/standalone';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { HeaderComponent } from '../../components/header/header.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
@@ -42,6 +42,15 @@ export class PatientIntakePage implements OnInit {
   cupsCodesList: CupsCodes[] = [];
   resultsSearchigCups = [...this.cupsCodesList];
   searchInputCupsValue: string = '';
+  profileForm = new FormGroup({
+    registerCode: new FormControl(''),
+    programmingType: new FormControl(''),
+    dni: new FormControl(''),
+    name: new FormControl(''),
+    lastName: new FormControl(''),
+    gender: new FormControl(''),
+    birthday: new FormControl(''),
+  });
 
   constructor(
     private patientsService: PatientService,
@@ -99,6 +108,7 @@ export class PatientIntakePage implements OnInit {
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     this.medicalAttention = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
+    this.setFormPatient();
     this.cdr.detectChanges();
     this.changeStatusManulIntake(false);
     this.changeStatusLookingForPatient(false);
@@ -211,32 +221,31 @@ export class PatientIntakePage implements OnInit {
           this.resultsSearchigPatient = this.patientList.filter((patient) => patient.dni.toLowerCase().indexOf(dni) > -1);
         } else {
           this.medicalAttention = new MedicalAttention();
-          let newPatient = new Patient();
-          newPatient.dni = dni;
-          this.medicalAttention?.setPatient(newPatient);
+          this.medicalAttention.patient = new Patient();
+          this.medicalAttention.patient.dni = dni;
+          this.profileForm.patchValue({
+            dni: dni,
+          });
           this.alertService.presentBasicAlert('Oops!', 'Parece que a quien buscas no se encuentra. Por favor intenta con otra búsqueda.');
           this.loadingService.dismiss();
+          this.changeStatusManulIntake(true);
+          this.changeStatusLookingForPatient(true);
         }
       });
 
   }
 
   toValidateRequiredData(): boolean {
-    if (this.medicalAttention && this.medicalAttention.patient.dni && this.medicalAttention?.procedureCodes.length > 0 && this.medicalAttention.specialty) {
+    if (this.medicalAttention && this.medicalAttention.patient?.dni && this.medicalAttention?.procedureCodes.length > 0 && this.medicalAttention.specialty) {
       return true;
     } else {
       return false;
     }
   }
 
-  toValidatePatientData(type: string) {
-
+  toValidatePatientData() {
     if (this.toValidateRequiredData()) {
-      if (type == 'qr') {
-        this.saveMedicalAttention();
-      } else {
-        this.createPatient();
-      }
+      this.saveMedicalAttention();
     } else {
       this.alertService.presentBasicAlert('¡Estas olvidando algo!', 'Es necesario diligenciar el DNI del paciente, además de seleccionar una especialidad y al menos un código CUPS');
     }
@@ -244,9 +253,8 @@ export class PatientIntakePage implements OnInit {
 
   patientSelected(patient: Patient) {
     this.medicalAttention = new MedicalAttention();
-    if (this.medicalAttention) {
-      this.medicalAttention.patient = patient;
-    }
+    this.medicalAttention.patient = patient;
+    this.setFormPatient();
     this.resultsSearchigPatient = [];
     this.changeStatusLookingForPatient(true);
   }
@@ -308,25 +316,21 @@ export class PatientIntakePage implements OnInit {
     return camera === 'granted' || camera === 'limited';
   }
 
-  createPatient(): void {
-    const patient = new Patient();
-    /*patient.name = this.formPatientIntake.value.name;
-    patient.lastname = this.formPatientIntake.value.lastname;
-    patient.dni = this.formPatientIntake.value.dni;
-    patient.birthday = new Date(this.formPatientIntake.value.birthday);
-    // this.realBirthday = this.parseBirthday(this.formPatientIntake.value.birthday);
-    patient.gender = this.formPatientIntake.value.gender;*/
-    // patient.birthday = this.parseBirthday(this.formPatientIntake.value.birthday);
-    //patient.phone = this.patientForm.value.phone;
-    // patient.email = this.patientForm.value.email;
-    this.medicalAttention.patient = patient;
-    console.log('crenado paciente');
-    this.saveMedicalAttention();
-  }
-
   private saveMedicalAttention(): void {
 
-    console.log('escaneado: ', this.medicalAttention)
+    if (this.manualIntake) {
+      this.medicalAttention.numeroResgistro = this.profileForm.value.registerCode ?? '';
+      this.medicalAttention.programming = this.profileForm.value.programmingType ?? '';
+      this.medicalAttention.patient.dni = this.profileForm.value.dni ?? '';
+      this.medicalAttention.patient.name = this.profileForm.value.name ?? '';
+      this.medicalAttention.patient.lastname = this.profileForm.value.lastName ?? '';
+      this.medicalAttention.patient.gender = this.profileForm.value.gender ?? '';
+      this.medicalAttention.patient.birthday = new Date(this.profileForm.value.birthday ?? '');
+
+    }
+    console.warn(this.profileForm.value);
+    console.log('birth: ', this.profileForm.value.birthday);
+    console.log('medical: ', this.medicalAttention)
     /*const existePaciente = this.medicalAttetionRepository.existsPatientInProgressAttentions(
         this.workingAreaRepository.getClinic().id,
         this.authService.getLoggedAccount().id,
@@ -385,6 +389,18 @@ export class PatientIntakePage implements OnInit {
           }
         ).catch(e => loading.dismiss() );
     }*/
+  }
+
+  setFormPatient() {
+    this.profileForm.patchValue({
+      registerCode: this.medicalAttention.numeroResgistro,
+      programmingType: this.medicalAttention.programming,
+      dni: this.medicalAttention.patient.dni,
+      name: this.medicalAttention.patient.name,
+      lastName: this.medicalAttention.patient.lastname,
+      gender: this.medicalAttention.patient.gender,
+      birthday: this.getBirthdayYear()
+    });
   }
 
   getBirthdayYear(): string {
