@@ -5,12 +5,12 @@ export class Patient {
     birthday: Date;
     gender: string;
     dni: string;
-    //phone: string;
-    //email: string;
+    phone: string;
+    email: string;
     
-    //simpleBirthdayDate: String;
+    simpleBirthdayDate: String;
     
-    //updated_at: string;
-    //created_at: string;
+    updated_at: string;
+    created_at: string;
   }
   

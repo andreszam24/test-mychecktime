@@ -1,20 +1,22 @@
-import { Component,OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule, LoadingController } from '@ionic/angular';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg, AlertController, NavController} from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonCard, IonCardContent, IonList, IonItem, IonItemSliding, IonItemOption, IonItemOptions, IonImg, AlertController } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
-import {InternetStatusComponent} from '../../components/internet-status/internet-status.component';
-import {HeaderComponent} from '../../components/header/header.component';
+import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
+import { HeaderComponent } from '../../components/header/header.component';
 import { AuthService } from '../../services/auth.service';
 import { Patient } from '../../models/patient.model';
 import { switchMap } from 'rxjs/operators';
 import { of, catchError } from 'rxjs';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
+import { StatusService } from 'src/app/services/status.service';
+import { SharedDataService } from 'src/app/services/utilities/shared-data.service';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { MedicalAttentionService } from 'src/app/services/medical-attention.service';
-import { StatusService } from 'src/app/services/status.service';
-import { SharedDataService } from 'src/app/services/shared-data.service';
+import { WorkingAreaService } from 'src/app/services/working-area.service';
+import { InternetServiceService } from 'src/app/services/utilities/internet-service.service';
 
 
 
@@ -24,30 +26,35 @@ import { SharedDataService } from 'src/app/services/shared-data.service';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton,IonCard,IonCardContent,IonList,IonItem,IonItemSliding, IonItemOption, IonItemOptions,IonImg,IonicModule, FormsModule, InternetStatusComponent, CommonModule, HeaderComponent,RouterLink],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonCard, IonCardContent, IonList, IonItem, IonItemSliding, IonItemOption, IonItemOptions, IonImg, IonicModule, FormsModule, InternetStatusComponent, CommonModule, HeaderComponent, RouterLink],
 })
 export class HomePage implements OnInit {
 
   patientsLis: Patient[] = [];
-  clinicName:string;
-  clinicId:number;
-  anesthesiologistId:number;
+  clinicName: string = 'No identificamos la clínica';
+  anesthesiologistId: number;
   attentionsInProgress: MedicalAttention[] = [];
 
   constructor(
     private router: Router,
-    private authService: AuthService, 
+    private authService: AuthService,
     private httpInProgressMedicalAttention: InProgressMedicalAttentionService,
-    private httpMedicalAttention:MedicalAttentionService,
+    private httpMedicalAttention: MedicalAttentionService,
     private loadingCtrl: LoadingController,
-    private alertCtrl:AlertController,
-    private navCtrl: NavController,
+    private alertCtrl: AlertController,
     private sharedDataService: SharedDataService,
-   
-    ) { }
+    private workingAreaRepository: WorkingAreaService,
+    private internetService: InternetServiceService
+
+  ) { }
 
   ngOnInit() {
     this.extractUserData();
+    this.internetService.internetStatus$.subscribe((isConnected) => {
+      if (isConnected) {
+        this.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id);
+      }
+    });
   }
 
   async showLoading(message: string) {
@@ -79,7 +86,7 @@ export class HomePage implements OnInit {
           }
         ]
       });
-  
+
       await alert.present();
     });
   }
@@ -99,45 +106,44 @@ export class HomePage implements OnInit {
         }
       ]
     });
-  
+
     await alert.present();
   }
 
-  private extractUserData(){
-    return this.authService.user.subscribe(
-      userData => {
-        this.clinicName = userData.account.clinics[0].name;
-        this.clinicId = userData.account.clinics[0].id;
-        this.anesthesiologistId = userData.account.id
-        this.getPendingMedicalAtenttions(this.clinicId,this.anesthesiologistId);
-      }
-    )
+  private extractUserData() {
+    return this.authService.user.subscribe({
+      next: (userData) => {
+        this.workingAreaRepository.setClinic(userData.account.clinics[0]);
+        this.clinicName = this.workingAreaRepository.getClinic().name;
+        this.anesthesiologistId = userData.account.id;
+        this.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.anesthesiologistId);
+      },
+      error: (e) => console.error('Extract User Data: ', e),
+      complete: () => { },
+    });
   }
 
 
   getPendingMedicalAtenttions(clinicId: number, anesthesiologistId: number) {
-    this.httpInProgressMedicalAttention.searchPendingServices(clinicId, anesthesiologistId)
-      .pipe(
-        catchError((error) => {
-          console.error('Ups! Algo salió mal al consultar atenciones médicas pendientes: ', error);
-          return of([]);
-        }),
-        switchMap((result) => {
-          if (result) {
-            this.attentionsInProgress = result;
-          } else {
-            console.warn('La respuesta es nula o indefinida.');
-          }
-            return of(this.attentionsInProgress); 
-        })
-      ).subscribe({
-        next: (data) => {
-        },
-        error: (error) => {
-          console.error('Error al obtener datos:', error);
-        }
-      });
+    this.httpInProgressMedicalAttention.searchPendingServices(clinicId, anesthesiologistId).subscribe({
+      next: (data) => {
+        this.attentionsInProgress = data;
+      },
+      error: (error) => {
+        console.error('Ups! Algo salió mal al consultar atenciones médicas pendientes: ', error);
+      },
+      complete: () => {
+      }
+    });
   }
+
+ /*TODO: Probablemente se pueda borrar searchPatientInLocal() {
+    this.httpInProgressMedicalAttention.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id).then(
+      services => {
+        this.attentionsInProgress = services;
+      }
+    ).catch(() => this.attentionsInProgress = []);
+  }*/
 
   getRoomName(medicalRecord: MedicalAttention) {
     let hall = 'Sin ingresar a sala';
@@ -151,34 +157,32 @@ export class HomePage implements OnInit {
   }
 
   getAttentionStage(sm: MedicalAttention): string {
-  const medicalAttentionStage = sm.state;
+    const medicalAttentionStage = sm.state;
+    const colorMap = {
+      [StatusService.INICIO]: 'var(--ion-color-app-purple)',
+      [StatusService.FROM_OPERATING_ROOM_TO]: 'var(--ion-color-app-yellow)',
+      [StatusService.TERMINADO]: 'transparent',
+      [StatusService.CANCELADO]: 'transparent',
+    };
 
-  const colorMap = {
-    [StatusService.INICIO]: 'var(--ion-color-app-purple)',
-    [StatusService.FROM_OPERATING_ROOM_TO]: 'var(--ion-color-app-yellow)',
-    [StatusService.TERMINADO]: 'transparent',
-    [StatusService.CANCELADO]: 'transparent',
-  };
-
-  if (StatusService.PATIENTS_IN_PREANESTHESIA.includes(medicalAttentionStage)) {
-    return 'var(--ion-color-app-orange)';
-  } else if (StatusService.PATIENT_IN_OPERETING_ROOM.includes(medicalAttentionStage)) {
-    return 'var(--ion-color-app-red)';
-  } else if (StatusService.PATIENTS_WITH_DISCHARGE_ORDER.includes(medicalAttentionStage)) {
-    return 'var(--ion-color-app-blue)';
+    if (StatusService.PATIENTS_IN_PREANESTHESIA.includes(medicalAttentionStage)) {
+      return 'var(--ion-color-app-orange)';
+    } else if (StatusService.PATIENT_IN_OPERETING_ROOM.includes(medicalAttentionStage)) {
+      return 'var(--ion-color-app-red)';
+    } else if (StatusService.PATIENTS_WITH_DISCHARGE_ORDER.includes(medicalAttentionStage)) {
+      return 'var(--ion-color-app-blue)';
+    }
+    return colorMap[medicalAttentionStage] || 'transparent';
   }
 
-  return colorMap[medicalAttentionStage] || 'transparent';
-}
-
-  public goToPatientIntake(){
+  public goToPatientIntake() {
     this.router.navigateByUrl('/patient-intake');
   }
 
-  public goToPatientSummary(medicalAttention:MedicalAttention) {
-    const data = medicalAttention ;
+  public goToPatientSummary(medicalAttention: MedicalAttention) {
+    const data = medicalAttention;
     this.sharedDataService.setDatos(data);
-    this.navCtrl.navigateForward('/patient-summary');
+    this.router.navigateByUrl('/patient-summary');
 
   }
 
@@ -198,7 +202,7 @@ export class HomePage implements OnInit {
             if (response === 'OK' || response === 'no existe') {
               this.deletePatientFromList(selectedMedicalAttention);
               this.loadingCtrl.dismiss();
-              console.log('eliminado');
+
             } else if (response === 'cirugia') {
               this.loadingCtrl.dismiss();
               this.showInformationalModal('No puedes borrar este paciente porque ya se encuentra en quirófano');
@@ -215,5 +219,9 @@ export class HomePage implements OnInit {
 
   deletePatientFromList(registroMedico: MedicalAttention) {
     this.attentionsInProgress = this.attentionsInProgress.filter(registro => registro._id != registroMedico._id);
+  }
+
+  goToNextState() {
+    this.router.navigateByUrl('/pre-anesthesia');
   }
 }

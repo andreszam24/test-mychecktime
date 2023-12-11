@@ -1,5 +1,5 @@
 
-export class AnesthesiologistProfile {
+export class Instrumentador {
   
   // account id
   id: number;
@@ -11,5 +11,5 @@ export class AnesthesiologistProfile {
   phone: string;
   email: string;
   status: string;
-  
+  role_id: number;
 }

@@ -1,0 +1,23 @@
+lista-quirofano-page {
+    // Componente de busqueda
+    select-searchable.select-searchable {
+        background-color:$app-blue;
+        color: white;
+        padding: 10px;
+        padding-left: 35px;
+        border-radius: 25px;
+        -webkit-border-radius: 25px;
+    }
+
+    .select-searchable-label {
+        color: whitesmoke !important;
+        opacity: 0.7;
+    }
+
+     .seccion-div {
+        background: #c0f5f5;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        padding-bottom: 20px;
+    }
+}

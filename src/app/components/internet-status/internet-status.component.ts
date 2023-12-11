@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { Network, ConnectionStatus } from '@capacitor/network';
 import { Toast } from '@capacitor/toast';
+import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
+import { WorkingAreaService } from 'src/app/services/working-area.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { InternetServiceService } from 'src/app/services/utilities/internet-service.service';
 
 
 
@@ -23,7 +27,7 @@ export class InternetStatusComponent implements OnInit {
 
   @ViewChild('toastContainer', { read: ViewContainerRef }) toastContainer: ViewContainerRef;
 
-  constructor(private viewContainerRef: ViewContainerRef) { }
+  constructor(private internetService: InternetServiceService) { }
 
   async ngOnInit() {
 
@@ -41,6 +45,7 @@ export class InternetStatusComponent implements OnInit {
       this.beforeNetworkStatus = true;
       toastText = '¡Buena noticia! Hemos recuperado la conexión a Internet. ' +
         'Sincronizaremos todo tu trabajo ahora mismo.';
+        this.internetService.updateInternetStatus(true);
     } else if (!this.networkStatus.connected && this.beforeNetworkStatus) {
       this.beforeNetworkStatus = false;
       toastText = '¡Oops! Parece que hemos perdido la conexión a Internet. ' +
@@ -59,4 +64,5 @@ export class InternetStatusComponent implements OnInit {
       position: toastPosition,
     });
   };
+
 }

@@ -12,6 +12,7 @@ import { AuthService } from './auth.service';
 })
 
 export class SpecialtyService extends LocalPersistenceDataService {
+    
     private localDataKey: string = 'local_specialties';
 
     constructor(private http: HttpClient) {
@@ -49,5 +50,9 @@ export class SpecialtyService extends LocalPersistenceDataService {
     toSaveSpecialtiesLocally(specialties: Array<Specialty>){
         this.saveLocalData(this.localDataKey, specialties);
     }
+
+    getLocalSpecialtyByName(name: String): Specialty {
+        return this.getLocalSpecialties().find(s => s.name.toLowerCase() == name.toLowerCase()) ?? new Specialty();
+      }
 
 }

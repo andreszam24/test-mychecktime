@@ -1,0 +1,198 @@
+<ion-header>
+  <ion-toolbar text-center color="app-blue">
+    <app-encabezado-paciente></app-encabezado-paciente>
+  </ion-toolbar>
+
+  <ion-toolbar text-center color="app-red">
+    <ion-title>Quirófano</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding class="aqua">
+
+  <form class="formulario-chequeo">
+    <div *ngIf="mostrarBusquedaConceptos == false">
+      <div class="seccion-div">
+        <ion-item>
+          <ion-label>Búsqueda de Cirujano</ion-label>
+        </ion-item>
+        <ion-item no-lines>
+          <form id="buscarCirujano-form3">
+            <select-searchable [canSearch]="true" [items]="listaCirujanos" title="Agregar Cirujano" itemValueField="id"
+              itemTextField="name" [itemTemplate]="searchCirujanoTemplate" searchPlaceholder="Búsqueda por nombre"
+              (onSearch)="searchCirujanos($event)" (onChange)="cirujanoSelected($event)">
+            </select-searchable>
+          </form>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Cirujano Seleccionado</ion-label>
+        </ion-item>
+        <ion-item no-lines>
+          <ion-input type="text"  placeholder="Cirujano" name="surgeon" value="{{cirujanoSeleccionado.name}} {{cirujanoSeleccionado.lastname}}" readonly="">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="seccion-div">
+        <ion-item>
+          <ion-label>Búsqueda de Instrumentador</ion-label>
+        </ion-item>
+        <ion-item no-lines>
+          <form id="buscarInstrumentador-form3">
+            <select-searchable [canSearch]="true" [items]="listaInstrumentadores" title="Agregar Instrumentador" itemValueField="id"
+              itemTextField="name" [itemTemplate]="searchInstrumentadorTemplate" searchPlaceholder="Búsqueda por nombre"
+              (onSearch)="searchInstrumentadores($event)" (onChange)="instrumentadorSelected($event)">
+            </select-searchable>
+          </form>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Instrumentador Seleccionado</ion-label>
+        </ion-item>
+        <ion-item no-lines>
+          <ion-input type="text" placeholder="Instrumentador" name="instrumentator" value="{{instrumentadorSeleccionado.name}} {{instrumentadorSeleccionado.lastname}}" readonly="">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <ion-item no-lines>
+        <ion-label class="question" text-center>
+          <p class="title" text-wrap>
+            Confirmar que todos los miembros del equipo se hayan presentado por su nombre y función
+          </p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.confirmMembers" name="confirmMembers" color="app-red" item-right>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item no-lines>
+        <ion-label class="question" text-center>
+          <p class="title">
+            Cirujano, anestesista y enfermero confirman verbalemnte
+          </p>
+          <p text-wrap>
+            La identidad del paciente <br />
+            El sitio quirúrgico <br />
+            el procedimiento
+          </p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.confirmIdentity" name="confirmIdentity" color="app-red" item-right>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item no-lines>
+        <ion-label class="question" text-center>
+          <p class="title">Previsión de eventos críticos</p>
+          <p text-wrap>El cirujano revisa: Los pasos críticos o imprevistos, la diración de la operación y la pérdida de
+            sangre prevista</p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.criticalEvents" name="criticalEvents" color="app-red" item-right>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item no-lines>
+        <ion-label class="question" text-center>
+          <p class="title">El equipo de anestesia revisa</p>
+          <p text-wrap>
+            Si el paciente presenta algún problema específico
+          </p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.anesthesiaTeamReview" name="anesthesiaTeamReview" color="app-red" item-right>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item no-lines>
+        <ion-label class="question" text-center>
+          <p class="title">
+            El equipo de enfermería revisa
+          </p>
+          <p text-wrap>
+            Si se ha confirmado la esterilidad (con resultados de los indicadores) y su existen dudas o problemas
+            relacionados con el instrumental y los equipos
+          </p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.nurseTeamReview" name="nurseTeamReview" color="app-red" item-right>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item no-lines>
+        <ion-label class="question" text-wrap text-center>
+          <p text-wrap class="title">
+            ¿Se ha administrado profilaxis antibiótica en los últimos 60 minutos?
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <ion-list radio-group name="administeredProphylaxis" [(ngModel)]="model.administeredProphylaxis">
+        <ion-item>
+          <ion-label>No procede</ion-label>
+          <ion-radio [value]="false"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label text-wrap>Sí</ion-label>
+          <ion-radio [value]="true"></ion-radio>
+        </ion-item>
+      </ion-list>
+
+      <ion-item no-lines>
+        <ion-label class="question" text-center>
+          <p text-wrap class="title">¿Pueden visualizarse las imágenes dianósticas escenciales?</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-list radio-group name="diagnosticImages" [(ngModel)]="model.diagnosticImages" (ionChange)="checkDate()">
+        <ion-item>
+          <ion-label>No procede</ion-label>
+          <ion-radio [value]="false"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label text-wrap>Sí</ion-label>
+          <ion-radio [value]="true"></ion-radio>
+        </ion-item>
+      </ion-list>
+      <ion-row>
+        <ion-col text-center>
+          <button id="btnContinuar" ion-button round [disabled]="!isValid()" (click)="endPageProccess()"
+            color="app-blue">Pasar al siguiente
+          </button>
+        </ion-col>
+      </ion-row>
+    </div>
+
+    <div *ngIf="mostrarBusquedaConceptos" class="seccion-div">
+      <ion-item>
+        <ion-label>Búsqueda de conceptos de tiempo de recambio</ion-label>
+      </ion-item>
+
+      <ion-item no-lines>
+        <form id="buscarConcepto-form3">
+          <select-searchable [canSearch]="true" [items]="listaConceptosTiempoRecambio"
+            title="Agregar concepto de tiempo de recambio" itemValueField="id" itemTextField="name"
+            [itemTemplate]="searchConceptoTemplate" searchPlaceholder="Búsqueda por nombre"
+            (onSearch)="searchConceptos($event)" (onChange)="conceptoSelected($event)">
+          </select-searchable>
+        </form>
+      </ion-item>
+      <ion-item>
+        <ion-label>Concepto de Tiempo de Recambio Seleccionado</ion-label>
+      </ion-item>
+      <ion-item no-lines>
+        <ion-input type="text" placeholder="Concepto de Recambio" name="conceptoRecambio" readonly=""
+          value="{{conceptoSeleccionadoTiempoRecambio.name}}"></ion-input>
+      </ion-item>
+
+      <ion-row>
+        <ion-col text-center>
+          <button id="btnContinuar2" ion-button round (click)="procesarJustificacion()" color="app-blue">Pasar al
+            siguiente
+          </button>
+        </ion-col>
+      </ion-row>
+    </div>
+  </form>
+</ion-content>
+<ion-footer no-shadow>
+  <ion-toolbar position="bottom">
+    <app-panel-eventos [mostrarCancelarEvento]="true"></app-panel-eventos>
+  </ion-toolbar>
+</ion-footer>

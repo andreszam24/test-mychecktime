@@ -32,6 +32,8 @@ export const URLPatientsByName = `${URLServer}/patientsByName`;
 export const URLPatientsByDni = `${URLServer}/patientsByDni`;
 
 export const URLPendingMedicalAttention = `${URLServer}/findunfinishedclinicalhistorybyanes`;
+export const URLStatusMedicalAttention = `${URLServer}/clinicalhistory/status`;
+export const URLUpdateMedicalAttention = `${URLServer}/clinicalhistory`;
 
 export const URLCupsCodes = `${URLServer}/cupscodes`;
 export const URLSpecialties = `${URLServer}/especialidades`;

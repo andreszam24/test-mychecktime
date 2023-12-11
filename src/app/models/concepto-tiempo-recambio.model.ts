@@ -1,7 +1,6 @@
 
 export class ConceptoTiempoRecambio {
 
-    id: number;
-    name: String;
-  }
-  
+  id: number;
+  name: String;
+}

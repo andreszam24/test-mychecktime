@@ -18,7 +18,7 @@
 
       <ion-item id="login-password" lines="none" class="passinput">
         <ion-input formControlName="password" type="{{ passwordVisible ? 'text' : 'password' }}" placeholder="Contraseña" name="password" required pattern="[a-zA-Z0-9]{3,}" class="passinput">
-          <ion-icon slot="icon" name="{{ passwordVisible ? 'eye' : 'eye-off' }}" class="eye-icon"  (click)="togglePasswordVisibility()"></ion-icon>
+        <ion-icon slot="icon" src="../../../assets/svg/{{ passwordVisible ? 'eye-outline.svg' : 'eye-off-outline.svg'}}" class="eye-icon"  (click)="togglePasswordVisibility()"></ion-icon>
         </ion-input>
       </ion-item>
       <ng-container *ngIf="formLogin.controls['password'].touched && formLogin.controls['password'].invalid">
@@ -27,7 +27,7 @@
 
       <ion-item lines="none">
         <ion-label>Recordarme</ion-label>
-        <ion-toggle formControlName="stayInChk"></ion-toggle>
+        <ion-toggle formControlName="stayInChk" aria-label="recordarme"></ion-toggle>
       </ion-item>
 
       <div *ngIf="errorMensaje" class="error-message">{{ errorMensaje }}</div>

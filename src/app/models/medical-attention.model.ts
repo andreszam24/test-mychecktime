@@ -2,22 +2,20 @@ import { Patient } from './patient.model';
 import { Specialty } from './specialty.model';
 import { CupsCodes } from './cups-codes.model';
 import { OperationRoom } from './operationRoom.model';
+import { AnesthesiologistProfile } from './anesthesiologist-profile.model';
+import { Instrumentador } from './instrumentador.model';
+import { Cirujano } from './cirujano.model';
+import { AdmissionList } from './admission-list.model';
+import { OperatingRoomList } from './operating-room-list.model';
 import { MedicalEvent } from './medical-event.model';
 import { ExitOperatingRoomList } from './exit-operating-room-list.model';
 import { PatientsExitList } from './patients-exit-list.model';
-import { OperatingRoomList } from './operating-room-list.model';
-import { AdmissionList } from './admission-list.model';
-import { AnesthesiologistProfile } from './anesthesiologist-profile.model';
 
 
-import { Surgeon } from './surgeon.model';
-import { Instrumentation } from './instrumentation.model';
 
 export class MedicalAttention {
 
   _id: string;
-
-  
 
   // Información básica
   idPatient: number;
@@ -41,11 +39,10 @@ export class MedicalAttention {
   simpleOriginDate: String;
   simpleOriginHour: String;
 
-  
   anestehsiologist: Array<AnesthesiologistProfile>;
   
-  instrumentator: Instrumentation;
-  surgeon: Surgeon;
+  instrumentator: Instrumentador;
+  surgeon: Cirujano;
   
   // Lista de ingreso
   admissionList: AdmissionList;
@@ -58,7 +55,6 @@ export class MedicalAttention {
 
   // Lista de salida
   patientsExit: PatientsExitList;
-
 
   // eventos
   events: Array<MedicalEvent>

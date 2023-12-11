@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, NavParams } from '@ionic/angular';
 import {HeaderComponent } from '../../components/header/header.component';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
-import { SharedDataService } from 'src/app/services/shared-data.service';
+import { SharedDataService } from 'src/app/services/utilities/shared-data.service';
 
 
 

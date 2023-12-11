@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, AlertController, LoadingController, IonCardHeader, IonCardContent,IonRow, IonCol } from '@ionic/angular/standalone';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule,Validators } from '@angular/forms';
+import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonCardHeader, IonCardContent, IonRow, IonCol } from '@ionic/angular/standalone';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
-import {HeaderComponent} from '../../components/header/header.component';
+import { HeaderComponent } from '../../components/header/header.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { Patient } from '../../models/patient.model';
@@ -14,6 +14,15 @@ import { Specialty } from 'src/app/models/specialty.model';
 import { SpecialtyService } from '../../services/specialty.service';
 import { CupsCodes } from 'src/app/models/cups-codes.model';
 import { CupsCodesService } from 'src/app/services/cups-codes.service';
+import { AlertService } from 'src/app/services/utilities/alert.service';
+import { LoadingService } from 'src/app/services/utilities/loading.service';
+import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
+import { WorkingAreaService } from 'src/app/services/working-area.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { OperationRoom } from 'src/app/models/operationRoom.model';
+import { AnesthesiologistProfile } from 'src/app/models/anesthesiologist-profile.model';
+import { StatusService } from 'src/app/services/status.service';
+
 
 
 
@@ -23,17 +32,16 @@ import { CupsCodesService } from 'src/app/services/cups-codes.service';
   templateUrl: './patient-intake.page.html',
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
-  imports: [IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule,HeaderComponent,IonCardHeader, IonCardContent,IonRow, IonCol],
+  imports: [IonDatetime, DatePipe, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule, HeaderComponent, IonCardHeader, IonCardContent, IonRow, IonCol],
 })
 
 export class PatientIntakePage implements OnInit {
 
-  medicalAttention: MedicalAttention | undefined | null = new MedicalAttention();
+  medicalAttention: MedicalAttention = new MedicalAttention();
   barcodes: Barcode[] = [];
   isSupported = false;
   manualIntake = false;
   lookingForPatient = false;
-  formPatientIntake: FormGroup;
   patientList: Patient[] = [];
   resultsSearchigPatient = [...this.patientList];
   specialtiesList: Specialty[] = [];
@@ -41,20 +49,32 @@ export class PatientIntakePage implements OnInit {
   cupsCodesList: CupsCodes[] = [];
   resultsSearchigCups = [...this.cupsCodesList];
   searchInputCupsValue: string = '';
+  profileForm = new FormGroup({
+    registerCode: new FormControl(''),
+    programmingType: new FormControl(''),
+    dni: new FormControl(''),
+    name: new FormControl(''),
+    lastName: new FormControl(''),
+    gender: new FormControl(''),
+    birthday: new FormControl(''),
+  });
+  datepipe = new DatePipe('en-US');
 
   constructor(
-    private alertController: AlertController,
-    public fb: FormBuilder,
     private patientsService: PatientService,
-    private loadingCtrl: LoadingController,
+    private loadingService: LoadingService,
     private specialtyService: SpecialtyService,
-    private cupsCodesService: CupsCodesService
+    private cupsCodesService: CupsCodesService,
+    private alertService: AlertService,
+    private cdr: ChangeDetectorRef,
+    private medicalAttetionRepository: InProgressMedicalAttentionService,
+    private workingAreaRepository: WorkingAreaService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
     this.startBarcodeScanner();
     this.loadMasterData();
-    this.formIntakeValidation();
   }
 
   private startBarcodeScanner() {
@@ -71,7 +91,7 @@ export class PatientIntakePage implements OnInit {
   async scan(): Promise<void> {
     const granted = await this.requestPermissions();
     if (!granted) {
-      this.presentBasicAlert('¡Ups! Sin permisos', '¡Activa los permisos de la cámara para usar el escáner de códigos!');
+      this.alertService.presentBasicAlert('¡Ups! Sin permisos', '¡Activa los permisos de la cámara para usar el escáner de códigos!');
       this.changeStatusManulIntake(true);
       return;
     }
@@ -99,7 +119,10 @@ export class PatientIntakePage implements OnInit {
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     this.medicalAttention = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    console.log('medicalAttention: ',this.medicalAttention)
+    this.medicalAttention.specialty = this.specialtyService.getLocalSpecialtyByName(this.medicalAttention.specialty.name.trim());
+    //TODO: hacer que seleccione especialidad o cups sino se encuentran 
+    this.setFormPatient();
+    this.cdr.detectChanges();
     this.changeStatusManulIntake(false);
     this.changeStatusLookingForPatient(false);
   }
@@ -113,22 +136,22 @@ export class PatientIntakePage implements OnInit {
     this.cupsCodesList = this.cupsCodesService.getLocalCups();
 
     if (this.cupsCodesList.length < 1) {
-      this.showLoadingBasic("Cargando...");
+      this.loadingService.showLoadingBasic("Cargando...");
       this.cupsCodesService.getRemoteCups()
         .pipe(
           catchError((error) => {
-            this.loadingCtrl.dismiss();
+            this.loadingService.dismiss();
             console.error('Ups! Algo salio mal al consultar los cups: ', error);
-            this.presentBasicAlert('Oops!', 'Parece algo salio mal consultando los CUPS y no logramos conectar con el servidor');
+            this.alertService.presentBasicAlert('Oops!', 'Parece algo salio mal consultando los CUPS y no logramos conectar con el servidor');
             return of(null);
           })
         ).subscribe((result) => {
           if (result && result.length > 0) {
-            this.loadingCtrl.dismiss();
+            this.loadingService.dismiss();
             this.cupsCodesList = result;
           } else {
-            this.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de CUPS.');
-            this.loadingCtrl.dismiss();
+            this.alertService.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de CUPS.');
+            this.loadingService.dismiss();
           }
         });
     }
@@ -139,22 +162,22 @@ export class PatientIntakePage implements OnInit {
     this.specialtiesList = this.specialtyService.getLocalSpecialties();
 
     if (this.specialtiesList.length < 1) {
-      this.showLoadingBasic("Cargando...");
+      this.loadingService.showLoadingBasic("Cargando...");
       this.specialtyService.getRemoteSpecialties()
         .pipe(
           catchError((error) => {
-            this.loadingCtrl.dismiss();
+            this.loadingService.dismiss();
             console.error('Ups! Algo salio mal al consultar las especialidades: ', error);
-            this.presentBasicAlert('Oops!', 'Parece algo salio mal conusltando las especialidades y no logramos conectar con el servidor');
+            this.alertService.presentBasicAlert('Oops!', 'Parece algo salio mal conusltando las especialidades y no logramos conectar con el servidor');
             return of(null);
           })
         ).subscribe((result) => {
           if (result && result.length > 0) {
-            this.loadingCtrl.dismiss();
+            this.loadingService.dismiss();
             this.specialtiesList = result;
           } else {
-            this.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de especialidades.');
-            this.loadingCtrl.dismiss();
+            this.alertService.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de especialidades.');
+            this.loadingService.dismiss();
           }
         });
     }
@@ -191,51 +214,60 @@ export class PatientIntakePage implements OnInit {
       this.resultsSearchigPatient = [];
       this.patientSearchByDNI(query);
     } else {
-      this.medicalAttention?.setPatient(new Patient());
+      this.medicalAttention.patient = new Patient();
     }
   }
 
   patientSearchByDNI(dni: string) {
-    this.showLoadingBasic("Cargando...");
+    this.loadingService.showLoadingBasic("Cargando...");
     this.patientsService.searchByDni(dni).pipe(
       catchError((error) => {
-        this.loadingCtrl.dismiss();
+        this.loadingService.dismiss();
         console.error('Ups! Algo salio mal al consultar los pacientes por DNI: ', error);
         return of(null);
       })
     )
       .subscribe((result) => {
         if (result && result.length > 0) {
-          this.loadingCtrl.dismiss();
+          this.loadingService.dismiss();
           this.patientList = result;
           this.resultsSearchigPatient = this.patientList.filter((patient) => patient.dni.toLowerCase().indexOf(dni) > -1);
         } else {
           this.medicalAttention = new MedicalAttention();
-          let newPatient = new Patient();
-          newPatient.dni = dni;
-          this.medicalAttention?.setPatient(newPatient);
-          this.presentBasicAlert('Oops!', 'Parece que a quien buscas no se encuentra. Por favor intenta con otra búsqueda.');
-          this.loadingCtrl.dismiss();
+          this.medicalAttention.patient = new Patient();
+          this.medicalAttention.patient.dni = dni;
+          this.profileForm.patchValue({
+            dni: dni,
+          });
+          this.alertService.presentBasicAlert('Oops!', 'Parece que a quien buscas no se encuentra. Por favor intenta con otra búsqueda.');
+          this.loadingService.dismiss();
+          this.changeStatusManulIntake(true);
+          this.changeStatusLookingForPatient(true);
         }
       });
 
   }
 
-  startMedicalAttention() {
-    this.formPatientIntake.markAllAsTouched();
-
-    if (this.formPatientIntake.valid && this.medicalAttention && this.medicalAttention?.procedureCodes.length > 0 && this.medicalAttention.specialty) {
-      console.log('CONTINUA PROCESO')
+  toValidateRequiredData(): boolean {
+    if (this.medicalAttention && this.medicalAttention.patient?.dni && this.medicalAttention?.procedureCodes.length > 0 && this.medicalAttention.specialty) {
+      return true;
     } else {
-      this.presentBasicAlert('¡Estas olvidando algo!', 'Es necesario seleccionar una especialidad y al menos un código CUPS');
+      return false;
+    }
+  }
+
+  toValidatePatientData() {
+    if (this.toValidateRequiredData()) {
+      this.saveMedicalAttention();
+    } else {
+      this.alertService.presentBasicAlert('¡Estas olvidando algo!', 'Es necesario diligenciar el DNI del paciente, además de seleccionar una especialidad y al menos un código CUPS');
     }
   }
 
   patientSelected(patient: Patient) {
     this.medicalAttention = new MedicalAttention();
-    if (this.medicalAttention) {
-      this.medicalAttention.patient = patient;
-    }
+    this.medicalAttention.patient = patient;
+    this.setFormPatient();
     this.resultsSearchigPatient = [];
     this.changeStatusLookingForPatient(true);
   }
@@ -246,7 +278,7 @@ export class PatientIntakePage implements OnInit {
       this.resultsSearchigSpecialties = [];
       this.searchSpecialtyByName(query);
     } else {
-      this.medicalAttention?.setSpecialty(new Specialty());
+      this.medicalAttention.specialty = new Specialty();
     }
   }
 
@@ -275,18 +307,17 @@ export class PatientIntakePage implements OnInit {
   }
 
   private async unsupportedBarcodeMessage() {
-    const alert = await this.alertController.create({
-      header: '¡Ups!',
-      message: 'Parece que tu dispositivo no puede escanear códigos' +
-        ' con la cámara en este momento. Lamentablemente, esta función no está disponible en tu dispositivo.',
-      buttons: ['OK']
-    });
-    await alert.present();
+    this.alertService.presentBasicAlert('¡Ups!',
+      'Parece que tu dispositivo no puede escanear códigos' +
+      ' con la cámara en este momento. Lamentablemente, esta función no está disponible en tu dispositivo.',
+    );
   }
 
   parseJSONMedicalAttentionSafely(obj: any) {
     try {
-      return JSON.parse(obj);
+      obj = JSON.parse(obj);
+      obj.patient.birthday = this.parseBirthday(obj.patient.birthday);
+      return obj;
     }
     catch (e) {
       this.manualIntake = true;
@@ -295,42 +326,97 @@ export class PatientIntakePage implements OnInit {
     }
   }
 
-  private formIntakeValidation() {
-    console.log('validando')
-    this.formPatientIntake = this.fb.group({
-      progamationType: new FormControl('', [Validators.required])
-    });
-  }
-
   async requestPermissions(): Promise<boolean> {
     const { camera } = await BarcodeScanner.requestPermissions();
     return camera === 'granted' || camera === 'limited';
   }
 
-  async showLoadingWithTimer(message: string, timer: number) {
-    const loading = await this.loadingCtrl.create({
-      message: message,
-      duration: timer,
-    });
+  private saveMedicalAttention(): void {
 
-    loading.present();
+    if (this.manualIntake) {
+      this.medicalAttention.numeroResgistro = this.profileForm.value.registerCode ?? '';
+      this.medicalAttention.programming = this.profileForm.value.programmingType ?? '';
+      this.medicalAttention.patient.dni = this.profileForm.value.dni ?? '';
+      this.medicalAttention.patient.name = this.profileForm.value.name ?? '';
+      this.medicalAttention.patient.lastname = this.profileForm.value.lastName ?? '';
+      this.medicalAttention.patient.gender = this.profileForm.value.gender ?? '';
+      this.medicalAttention.patient.birthday = this.parseBirthday(this.profileForm.value.birthday + '-01-01' ?? '');
+
+    }
+
+    const existePaciente = this.medicalAttetionRepository.existsPatientInProgressAttentions(
+      this.workingAreaRepository.getClinic().id,
+      this.authService.getLoggedAccount().id,
+      this.medicalAttention.patient.dni
+    );
+
+    if (existePaciente) {
+      this.alertService.presentBasicAlert('¡Con cuidado!', 'El paciente ingresado tiene un servicio médico sin finalizar. Para iniciar un nuevo servicio con este paciente debe terminar el actual.');
+      return;
+    }
+
+    this.medicalAttention.patient.email = 'dummy@mychecktime.com';
+    this.medicalAttention.patient.phone = '12345';
+    this.medicalAttention.patient.simpleBirthdayDate = this.datepipe.transform(this.medicalAttention.patient.birthday, 'yyyy-MM-dd') ?? '';
+    this.medicalAttention.patient.updated_at = this.datepipe. transform(new Date(), 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ') ?? '';
+    this.medicalAttention.patient.created_at = this.datepipe.transform(new Date(), 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ') ?? '';
+
+
+    this.medicalAttention.idOperatingRoom = -1; //esta variable debería eliminarse
+    this.medicalAttention.operatingRoom = new OperationRoom();
+
+    this.medicalAttention.operatingRoom.clinic_id = this.workingAreaRepository.getClinic().id;
+
+    this.medicalAttention.originDate = new Date();
+    this.medicalAttention.simpleOriginDate = this.datepipe.transform(this.medicalAttention.originDate, 'yyyy-MM-dd') ?? '';
+    this.medicalAttention.simpleOriginHour = this.datepipe.transform(this.medicalAttention.originDate, 'HH:mm:ss') ?? '';
+
+    this.medicalAttention.idClinica = this.workingAreaRepository.getClinic().id;
+    this.medicalAttention.currentAnesthesiologist = new AnesthesiologistProfile();
+    this.medicalAttention.currentAnesthesiologist.id = this.authService.getLoggedAccount().id;
+    this.medicalAttention.currentAnesthesiologist.name = this.authService.getLoggedAccount().name;
+    this.medicalAttention.currentAnesthesiologist.lastname = this.authService.getLoggedAccount().lastname;
+    this.medicalAttention.currentAnesthesiologist.lastnameS = this.authService.getLoggedAccount().lastnameS;
+    this.medicalAttention.currentAnesthesiologist.gender = this.authService.getLoggedAccount().gender;
+    this.medicalAttention.currentAnesthesiologist.phone = this.authService.getLoggedAccount().phone;
+    this.medicalAttention.currentAnesthesiologist.email = this.authService.getLoggedAccount().email;
+    this.medicalAttention.currentAnesthesiologist.status = this.authService.getLoggedAccount().status;
+    this.medicalAttention.anestehsiologist = [];
+    this.medicalAttention.anestehsiologist.push(this.medicalAttention.currentAnesthesiologist);
+    this.medicalAttention.state = StatusService.INICIO;
+
+    this.loadingService.showLoadingBasic('Cargando...');
+    this.medicalAttetionRepository.addMedicalAttention(this.medicalAttention).then(
+      r => {
+        this.loadingService.dismiss();
+      }
+    ).catch(e => this.loadingService.dismiss());
+
   }
 
-  async showLoadingBasic(message: string) {
-    const loading = await this.loadingCtrl.create({
-      message: message
+  setFormPatient() {
+    this.profileForm.patchValue({
+      registerCode: this.medicalAttention.numeroResgistro,
+      programmingType: this.medicalAttention.programming,
+      dni: this.medicalAttention.patient.dni,
+      name: this.medicalAttention.patient.name,
+      lastName: this.medicalAttention.patient.lastname,
+      gender: this.medicalAttention.patient.gender,
+      birthday: this.getBirthdayYear()
     });
-
-    loading.present();
   }
 
-  async presentBasicAlert(header: string, message: string): Promise<void> {
-    const alert = await this.alertController.create({
-      header: header,
-      message: message,
-      buttons: ['OK']
-    });
-    await alert.present();
+  getBirthdayYear(): string {
+    let year = '';
+    if (this.medicalAttention && this.medicalAttention.patient.birthday) {
+      year = new Date(this.medicalAttention?.patient.birthday.toString()).getFullYear().toString();
+    }
+    return year;
+  }
+
+  private parseBirthday(bday: string): Date {
+    const tokens = bday.split('-').map(t => parseInt(t));
+    return new Date(tokens[0], tokens[1] - 1, tokens[2]);
   }
 
 }

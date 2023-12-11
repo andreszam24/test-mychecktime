@@ -51,7 +51,7 @@ export class AppComponent {
     }
     this.userSubscription = this.auth.user.subscribe(
       userData => {
-        this.nameUser = userData.account.name;
+        this.nameUser = userData?.account?.name ?? '';
       }
     );
   }
