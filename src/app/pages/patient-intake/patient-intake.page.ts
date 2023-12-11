@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonCardHeader, IonCardContent, IonRow, IonCol } from '@ionic/angular/standalone';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -16,6 +16,13 @@ import { CupsCodes } from 'src/app/models/cups-codes.model';
 import { CupsCodesService } from 'src/app/services/cups-codes.service';
 import { AlertService } from 'src/app/services/utilities/alert.service';
 import { LoadingService } from 'src/app/services/utilities/loading.service';
+import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
+import { WorkingAreaService } from 'src/app/services/working-area.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { OperationRoom } from 'src/app/models/operationRoom.model';
+import { AnesthesiologistProfile } from 'src/app/models/anesthesiologist-profile.model';
+import { StatusService } from 'src/app/services/status.service';
+
 
 
 
@@ -25,7 +32,7 @@ import { LoadingService } from 'src/app/services/utilities/loading.service';
   templateUrl: './patient-intake.page.html',
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
-  imports: [IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule, HeaderComponent, IonCardHeader, IonCardContent, IonRow, IonCol],
+  imports: [IonDatetime, DatePipe, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule, HeaderComponent, IonCardHeader, IonCardContent, IonRow, IonCol],
 })
 
 export class PatientIntakePage implements OnInit {
@@ -51,6 +58,7 @@ export class PatientIntakePage implements OnInit {
     gender: new FormControl(''),
     birthday: new FormControl(''),
   });
+  datepipe = new DatePipe('en-US');
 
   constructor(
     private patientsService: PatientService,
@@ -58,7 +66,10 @@ export class PatientIntakePage implements OnInit {
     private specialtyService: SpecialtyService,
     private cupsCodesService: CupsCodesService,
     private alertService: AlertService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private medicalAttetionRepository: InProgressMedicalAttentionService,
+    private workingAreaRepository: WorkingAreaService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -108,6 +119,8 @@ export class PatientIntakePage implements OnInit {
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     this.medicalAttention = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
+    this.medicalAttention.specialty = this.specialtyService.getLocalSpecialtyByName(this.medicalAttention.specialty.name.trim());
+    //TODO: hacer que seleccione especialidad o cups sino se encuentran 
     this.setFormPatient();
     this.cdr.detectChanges();
     this.changeStatusManulIntake(false);
@@ -302,7 +315,9 @@ export class PatientIntakePage implements OnInit {
 
   parseJSONMedicalAttentionSafely(obj: any) {
     try {
-      return JSON.parse(obj);
+      obj = JSON.parse(obj);
+      obj.patient.birthday = this.parseBirthday(obj.patient.birthday);
+      return obj;
     }
     catch (e) {
       this.manualIntake = true;
@@ -325,70 +340,58 @@ export class PatientIntakePage implements OnInit {
       this.medicalAttention.patient.name = this.profileForm.value.name ?? '';
       this.medicalAttention.patient.lastname = this.profileForm.value.lastName ?? '';
       this.medicalAttention.patient.gender = this.profileForm.value.gender ?? '';
-      this.medicalAttention.patient.birthday = new Date(this.profileForm.value.birthday ?? '');
+      this.medicalAttention.patient.birthday = this.parseBirthday(this.profileForm.value.birthday + '-01-01' ?? '');
 
     }
-    console.warn(this.profileForm.value);
-    console.log('birth: ', this.profileForm.value.birthday);
-    console.log('medical: ', this.medicalAttention)
-    /*const existePaciente = this.medicalAttetionRepository.existsPatientInProgressAttentions(
-        this.workingAreaRepository.getClinic().id,
-        this.authService.getLoggedAccount().id,
-        paciente.dni
-      );
-    
-    if(existePaciente) {
-      this.showInformationalModal(`El paciente ingresado tiene un servicio médico sin finalizar. Para iniciar un nuevo servicio con este paciente debe terminar el actual.`);
+
+    const existePaciente = this.medicalAttetionRepository.existsPatientInProgressAttentions(
+      this.workingAreaRepository.getClinic().id,
+      this.authService.getLoggedAccount().id,
+      this.medicalAttention.patient.dni
+    );
+
+    if (existePaciente) {
+      this.alertService.presentBasicAlert('¡Con cuidado!', 'El paciente ingresado tiene un servicio médico sin finalizar. Para iniciar un nuevo servicio con este paciente debe terminar el actual.');
       return;
     }
-    
-    paciente.birthday = this.realBirthday;
-    paciente.simpleBirthdayDate = this.datepipe.transform(this.patientForm.value.birthday,'yyyy-MM-dd');
-    paciente.updated_at = this.datepipe.transform(paciente.updated_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ');
-    paciente.created_at = this.datepipe.transform(paciente.created_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ');
-    if (this.medicalAttentionForm.dirty && this.medicalAttentionForm.valid) {
-      const m = new MedicalAttention();
-      m.idOperatingRoom = -1; //esta variable debería eliminarse
-      m.operatingRoom = new OperationRoom();
-      
-      m.operatingRoom.clinic_id = this.workingAreaRepository.getClinic().id;
-      
 
-      m.specialty = this.especialidadSeleccionada;
-      m.numeroResgistro = this.medicalAttentionForm.value.registro;
+    this.medicalAttention.patient.email = 'dummy@mychecktime.com';
+    this.medicalAttention.patient.phone = '12345';
+    this.medicalAttention.patient.simpleBirthdayDate = this.datepipe.transform(this.medicalAttention.patient.birthday, 'yyyy-MM-dd') ?? '';
+    this.medicalAttention.patient.updated_at = this.datepipe. transform(new Date(), 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ') ?? '';
+    this.medicalAttention.patient.created_at = this.datepipe.transform(new Date(), 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ') ?? '';
 
-      m.programming = this.medicalAttentionForm.value.programming;
-      m.asa = this.medicalAttentionForm.value.asa;
-      m.procedureCodes  = this.cupsSeleccionados;
 
-      m.originDate = new Date();
-      m.simpleOriginDate = this.datepipe.transform(m.originDate,'yyyy-MM-dd');
-      m.simpleOriginHour = this.datepipe.transform(m.originDate,'HH:mm:ss');
-      
-      m.idClinica = this.workingAreaRepository.getClinic().id;
-      m.currentAnesthesiologist = new AnesthesiologistProfile();
-      m.currentAnesthesiologist.id = this.authService.getLoggedAccount().id;
-      m.currentAnesthesiologist.name = this.authService.getLoggedAccount().name;
-      m.currentAnesthesiologist.lastname = this.authService.getLoggedAccount().lastname;
-      m.currentAnesthesiologist.lastnameS = this.authService.getLoggedAccount().lastnameS;
-      m.currentAnesthesiologist.gender = this.authService.getLoggedAccount().gender;
-      m.currentAnesthesiologist.phone = this.authService.getLoggedAccount().phone;
-      m.currentAnesthesiologist.email = this.authService.getLoggedAccount().email;
-      m.currentAnesthesiologist.status = this.authService.getLoggedAccount().status;
-      m.anestehsiologist = [];
-      m.anestehsiologist.push(m.currentAnesthesiologist);
+    this.medicalAttention.idOperatingRoom = -1; //esta variable debería eliminarse
+    this.medicalAttention.operatingRoom = new OperationRoom();
 
-      m.patient = paciente;
-      m.state = StatusService.INICIO;
-      
-      const loading = this.showLoading();
-      this.medicalAttetionRepository.addMedicalAttention(m).then(
-          r => {
-            loading.dismiss();
-            this.syncPacientesPendientesDelAreaDeTrabajo();
-          }
-        ).catch(e => loading.dismiss() );
-    }*/
+    this.medicalAttention.operatingRoom.clinic_id = this.workingAreaRepository.getClinic().id;
+
+    this.medicalAttention.originDate = new Date();
+    this.medicalAttention.simpleOriginDate = this.datepipe.transform(this.medicalAttention.originDate, 'yyyy-MM-dd') ?? '';
+    this.medicalAttention.simpleOriginHour = this.datepipe.transform(this.medicalAttention.originDate, 'HH:mm:ss') ?? '';
+
+    this.medicalAttention.idClinica = this.workingAreaRepository.getClinic().id;
+    this.medicalAttention.currentAnesthesiologist = new AnesthesiologistProfile();
+    this.medicalAttention.currentAnesthesiologist.id = this.authService.getLoggedAccount().id;
+    this.medicalAttention.currentAnesthesiologist.name = this.authService.getLoggedAccount().name;
+    this.medicalAttention.currentAnesthesiologist.lastname = this.authService.getLoggedAccount().lastname;
+    this.medicalAttention.currentAnesthesiologist.lastnameS = this.authService.getLoggedAccount().lastnameS;
+    this.medicalAttention.currentAnesthesiologist.gender = this.authService.getLoggedAccount().gender;
+    this.medicalAttention.currentAnesthesiologist.phone = this.authService.getLoggedAccount().phone;
+    this.medicalAttention.currentAnesthesiologist.email = this.authService.getLoggedAccount().email;
+    this.medicalAttention.currentAnesthesiologist.status = this.authService.getLoggedAccount().status;
+    this.medicalAttention.anestehsiologist = [];
+    this.medicalAttention.anestehsiologist.push(this.medicalAttention.currentAnesthesiologist);
+    this.medicalAttention.state = StatusService.INICIO;
+
+    this.loadingService.showLoadingBasic('Cargando...');
+    this.medicalAttetionRepository.addMedicalAttention(this.medicalAttention).then(
+      r => {
+        this.loadingService.dismiss();
+      }
+    ).catch(e => this.loadingService.dismiss());
+
   }
 
   setFormPatient() {
@@ -409,6 +412,11 @@ export class PatientIntakePage implements OnInit {
       year = new Date(this.medicalAttention?.patient.birthday.toString()).getFullYear().toString();
     }
     return year;
+  }
+
+  private parseBirthday(bday: string): Date {
+    const tokens = bday.split('-').map(t => parseInt(t));
+    return new Date(tokens[0], tokens[1] - 1, tokens[2]);
   }
 
 }

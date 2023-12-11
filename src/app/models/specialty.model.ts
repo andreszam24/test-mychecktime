@@ -1,7 +1,7 @@
 
 export class Specialty {
 
-    //id: number;
+    id: number;
     name: String;
   }
   

@@ -7,6 +7,7 @@ import { StatusService } from './status.service';
 import { WorkingAreaService } from './working-area.service';
 import { AuthService } from './auth.service';
 import { Toast } from '@capacitor/toast';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -88,6 +89,19 @@ export class InProgressMedicalAttentionService {
         onResult();
       });
   }
+
+  addMedicalAttention(attention: MedicalAttention): Promise<MedicalAttention> {
+    return new Promise((resolve) => {
+      const list = this.loadServicesFromLocalRepository();
+      attention._id = uuidv4();
+      const serviceList = list || [];
+      serviceList.push(attention);
+      this.updateLocalRepository(serviceList);
+      this.updateRemoteRepository(attention, () => {
+        resolve(attention);
+      });
+    });
+  }
   // Consulta los pacientes pendientes según la clínica seleccionada
   // y realiza una sincronización de la estructura de datos interna
   searchPendingServices(clinicId: number, anesId: number): Observable<Array<MedicalAttention>> {
@@ -151,6 +165,12 @@ export class InProgressMedicalAttentionService {
     });
 
     return mySubject.asObservable();
+  }
+
+  existsPatientInProgressAttentions(clinic: number, anesthesiologist: number, dni: string) {
+    const inProgressServices = this.filterByClinic(this.loadServicesFromLocalRepository(), clinic, anesthesiologist);
+    const inProgressServiceByPatient = inProgressServices.filter(s => !!s.patient && s.patient.dni === dni);
+    return inProgressServiceByPatient.length > 0;
   }
 
   saveManyRemoteRepository(medicalAttentions: MedicalAttention[]): Observable<boolean> {
