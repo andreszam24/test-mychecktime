@@ -8,7 +8,6 @@ import { InternetStatusComponent } from '../../components/internet-status/intern
 import { HeaderComponent } from '../../components/header/header.component';
 import { AuthService } from '../../services/auth.service';
 import { Patient } from '../../models/patient.model';
-import { switchMap } from 'rxjs/operators';
 import { of, catchError } from 'rxjs';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { StatusService } from 'src/app/services/status.service';

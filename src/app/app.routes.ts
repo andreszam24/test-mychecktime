@@ -26,7 +26,7 @@ export const routes: Routes = [
   },
   {
     path: 'pre-anesthesia',
-    loadComponent: () => import('./pre-anesthesia/pre-anesthesia.page').then( m => m.PreAnesthesiaPage)
+    loadComponent: () => import('./pages/pre-anesthesia/pre-anesthesia.page').then( m => m.PreAnesthesiaPage)
   },
 
 ];
