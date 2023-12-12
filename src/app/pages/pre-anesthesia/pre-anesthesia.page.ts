@@ -9,7 +9,7 @@ import { DateUtilsService } from 'src/app/services/utilities/date-utils.service'
 import { AdmissionList } from 'src/app/models/admission-list.model';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { StatusService } from 'src/app/services/status.service';
-import { IonSelectOption} from '@ionic/angular/standalone';
+import { IonSelectOption, IonTextarea} from '@ionic/angular/standalone';
 
 
 
@@ -19,7 +19,7 @@ import { IonSelectOption} from '@ionic/angular/standalone';
   templateUrl: './pre-anesthesia.page.html',
   styleUrls: ['./pre-anesthesia.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe, IonTextarea]
 })
 export class PreAnesthesiaPage implements OnInit {
 
@@ -28,8 +28,7 @@ export class PreAnesthesiaPage implements OnInit {
   admissionList: AdmissionList;
   flagInputOtherIntervention: boolean;
   fechaMaxima: string;
-  datepipe = new DatePipe('en-US');
-  
+
   model: any = {
     arrivalDate: null,
     basicConfirmation: false,
@@ -42,6 +41,8 @@ export class PreAnesthesiaPage implements OnInit {
     intervention: null,
     otherIntervention: ''
   };
+
+  datepipe = new DatePipe('en-US');
 
   constructor(
     private alertService: AlertService,
@@ -122,8 +123,9 @@ export class PreAnesthesiaPage implements OnInit {
   }
 
   isValid() {
+    console.log('entro a isValid')
     let valid = true;
-    for (var property in this.model) {
+    for (let property in this.model) {
       if (this.model.hasOwnProperty(property)) {
         if(this.model[property] === null) {
           valid = false;
@@ -140,7 +142,6 @@ export class PreAnesthesiaPage implements OnInit {
   }
 
   changeInterventionDate() {
-    
     this.admissionList.interventionDate = new Date();
     this.admissionList.simpleInterventionDate = this.transformSimpleDate(this.admissionList.interventionDate);
     this.admissionList.simpleInterventionHour = this.transformSimpleHour(this.admissionList.interventionDate);
@@ -148,6 +149,7 @@ export class PreAnesthesiaPage implements OnInit {
   }
 
   goToNextPage() {
+    console.log('entro a goToNextPage ')
     const admissionList = this.mapViewToModel();
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
       sm.admissionList = admissionList;
