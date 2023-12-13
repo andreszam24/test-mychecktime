@@ -8,9 +8,8 @@
   </ion-header>
 
   <div>
-    <form class="check-form">
-
-      <ion-item no-lines>
+    <form class="check-form" >
+      <ion-item no-lines >
         <ion-label class="question">Hora de ingreso</ion-label>
         <ion-datetime [(ngModel)]="model.arrivalDate" name="arrivalDate" [max]="fechaMaxima" presentation="time"
           displayFormat="HH:mm" pickerFormat="HH mm" placeholder="HH:mm"></ion-datetime>

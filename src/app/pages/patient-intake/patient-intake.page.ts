@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonCardHeader, IonCardContent, IonRow, IonCol } from '@ionic/angular/standalone';
+import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonCardHeader, IonCardContent, IonRow, IonCol, NavController } from '@ionic/angular/standalone';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { HeaderComponent } from '../../components/header/header.component';
@@ -22,6 +22,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { OperationRoom } from 'src/app/models/operationRoom.model';
 import { AnesthesiologistProfile } from 'src/app/models/anesthesiologist-profile.model';
 import { StatusService } from 'src/app/services/status.service';
+import { Router } from '@angular/router';
 
 
 
@@ -58,6 +59,7 @@ export class PatientIntakePage implements OnInit {
     gender: new FormControl(''),
     birthday: new FormControl(''),
   });
+  
   datepipe = new DatePipe('en-US');
 
   constructor(
@@ -69,7 +71,9 @@ export class PatientIntakePage implements OnInit {
     private cdr: ChangeDetectorRef,
     private medicalAttetionRepository: InProgressMedicalAttentionService,
     private workingAreaRepository: WorkingAreaService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router,
+    private navCtrl: NavController,
   ) { }
 
   ngOnInit() {
@@ -389,6 +393,7 @@ export class PatientIntakePage implements OnInit {
     this.medicalAttetionRepository.addMedicalAttention(this.medicalAttention).then(
       r => {
         this.loadingService.dismiss();
+        this.navCtrl.navigateForward('home');
       }
     ).catch(e => this.loadingService.dismiss());
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule, LoadingController } from '@ionic/angular';
@@ -16,6 +16,7 @@ import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-
 import { MedicalAttentionService } from 'src/app/services/medical-attention.service';
 import { WorkingAreaService } from 'src/app/services/working-area.service';
 import { InternetServiceService } from 'src/app/services/utilities/internet-service.service';
+import { LoadingService } from 'src/app/services/utilities/loading.service';
 
 
 
@@ -39,16 +40,19 @@ export class HomePage implements OnInit {
     private authService: AuthService,
     private httpInProgressMedicalAttention: InProgressMedicalAttentionService,
     private httpMedicalAttention: MedicalAttentionService,
-    private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
     private sharedDataService: SharedDataService,
     private workingAreaRepository: WorkingAreaService,
-    private internetService: InternetServiceService
+    private internetService: InternetServiceService,
+    private cdr: ChangeDetectorRef,
+    private loadingService: LoadingService
 
-  ) { }
+  ) { 
+    this.httpInProgressMedicalAttention.selectMedicalAttention('');
+  }
 
   ngOnInit() {
-    this.extractUserData();
+    
     this.internetService.internetStatus$.subscribe((isConnected) => {
       if (isConnected) {
         this.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id);
@@ -56,11 +60,8 @@ export class HomePage implements OnInit {
     });
   }
 
-  async showLoading(message: string) {
-    const loading = await this.loadingCtrl.create({
-      message: message
-    });
-    loading.present();
+  ionViewWillEnter() {
+    this.extractUserData();
   }
 
   async showOptionsModal(msg: string): Promise<boolean> {
@@ -127,6 +128,8 @@ export class HomePage implements OnInit {
     this.httpInProgressMedicalAttention.searchPendingServices(clinicId, anesthesiologistId).subscribe({
       next: (data) => {
         this.attentionsInProgress = data;
+        console.log(data);
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Ups! Algo salió mal al consultar atenciones médicas pendientes: ', error);
@@ -188,11 +191,11 @@ export class HomePage implements OnInit {
   deletePatient(selectedMedicalAttention: MedicalAttention) {
     this.showOptionsModal('¿Estás seguro de borrar este paciente?').then((userAccepted) => {
       if (userAccepted) {
-        this.showLoading('borrando paciente');
+        this.loadingService.showLoadingBasic('borrando paciente');
         this.httpMedicalAttention.deleteClinicalPatientRecord(selectedMedicalAttention)
           .pipe(
             catchError((error) => {
-              this.loadingCtrl.dismiss();
+              this.loadingService.dismiss();
               console.error('Ups! Algo salió mal, el paciente no se pudo borrar', error);
               return of(null);
             })
@@ -200,13 +203,14 @@ export class HomePage implements OnInit {
           .subscribe(response => {
             if (response === 'OK' || response === 'no existe') {
               this.deletePatientFromList(selectedMedicalAttention);
-              this.loadingCtrl.dismiss();
+              this.httpInProgressMedicalAttention.borrarServicioLocal(selectedMedicalAttention);
+              this.loadingService.dismiss();
 
             } else if (response === 'cirugia') {
-              this.loadingCtrl.dismiss();
+              this.loadingService.dismiss();
               this.showInformationalModal('No puedes borrar este paciente porque ya se encuentra en quirófano');
             } else {
-              this.loadingCtrl.dismiss();
+              this.loadingService.dismiss();
               console.log('SELECCIONAR-PACIENTE: Error borrando el paciente en remoto => ', response);
             }
           });
@@ -218,6 +222,17 @@ export class HomePage implements OnInit {
 
   deletePatientFromList(registroMedico: MedicalAttention) {
     this.attentionsInProgress = this.attentionsInProgress.filter(registro => registro._id != registroMedico._id);
+  }
+
+  selectAttentionServiceAndContinue(selectedMedicalAttention: MedicalAttention) {
+    this.httpInProgressMedicalAttention.selectMedicalAttention(selectedMedicalAttention._id);
+    this.goToNextState()
+
+    /*const page: any = StatusService.next(selectedMedicalAttention.state);
+
+    if (!!page) {
+      this.navCtrl.push(page);
+    }*/
   }
 
   goToNextState() {
