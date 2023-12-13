@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonicModule, LoadingController } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonCard, IonCardContent, IonList, IonItem, IonItemSliding, IonItemOption, IonItemOptions, IonImg, AlertController } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
@@ -225,14 +225,10 @@ export class HomePage implements OnInit {
   }
 
   selectAttentionServiceAndContinue(selectedMedicalAttention: MedicalAttention) {
-    this.httpInProgressMedicalAttention.selectMedicalAttention(selectedMedicalAttention._id);
-    this.goToNextState()
-
-    /*const page: any = StatusService.next(selectedMedicalAttention.state);
-
-    if (!!page) {
-      this.navCtrl.push(page);
-    }*/
+    if(selectedMedicalAttention.state == 'nueva'){
+      this.httpInProgressMedicalAttention.selectMedicalAttention(selectedMedicalAttention._id);
+      this.goToNextState()
+    }
   }
 
   goToNextState() {

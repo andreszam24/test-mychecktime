@@ -14,5 +14,13 @@ ion-header{
             left: 0;
             right: 0;
         }
+
+        ion-img{
+            width: 19px;
+            position: absolute;
+            left: 15px;
+            z-index: 10;
+            top: 10px;
+        }
     }
 }
