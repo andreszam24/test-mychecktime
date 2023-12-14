@@ -169,7 +169,7 @@ export class PreAnesthesiaPage implements OnInit {
   }
 
   goToNextPage() {
-    console.log('entro a goToNextPage ')
+    this.checkDate();
     const admissionList = this.mapViewToModel();
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
       sm.admissionList = admissionList;

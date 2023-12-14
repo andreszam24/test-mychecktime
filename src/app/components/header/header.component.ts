@@ -14,7 +14,7 @@ import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-
 export class HeaderComponent  implements OnInit {
   @Input() titleName: string ;
   patient: Patient;
-  public iconpatient:Boolean;
+  iconPatient:Boolean = false;
  
 
   constructor(
@@ -27,20 +27,22 @@ export class HeaderComponent  implements OnInit {
 
 
   headerPatient(){
+    console.log('Valor de iconPatient:', this.iconPatient);
     if(this.titleName=='paciente'){
+      this.iconPatient = true;
+      console.log('Valor de iconPatient if:', this.iconPatient);
       this.inProgressMedicalAttentio.getInProgressMedicalAtenttion().then(sm => {
         if(!!sm && !!sm.patient) {
           this.patient = sm.patient;
           this.titleName = this.patient.name + ' ' + this.patient.lastname;
-          this.iconpatient = true;
         }
       }).catch(e => {
         console.log('No pudo cargarse el servicio médico');
       });
     } else{
-      this.iconpatient = false;
+      this.iconPatient= false;
     }
-    console.log(this.iconpatient)
+    console.log('Valor de iconPatient finish:', this.iconPatient);
   }
 
 }
