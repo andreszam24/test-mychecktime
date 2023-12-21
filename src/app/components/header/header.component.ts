@@ -1,8 +1,10 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { IonHeader, IonToolbar, IonTitle, IonButtons,IonMenuButton,IonIcon,IonMenu, IonContent, IonList,IonItem,IonLabel,IonMenuToggle,IonImg} from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonButtons,IonMenuButton,IonIcon,IonMenu, IonContent, IonList,IonItem,IonLabel,IonMenuToggle,IonImg, NavController} from '@ionic/angular/standalone';
+import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { Patient } from 'src/app/models/patient.model';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
+import { SharedDataService } from 'src/app/services/utilities/shared-data.service';
 
 @Component({
   selector: 'app-header',
@@ -16,10 +18,14 @@ export class HeaderComponent  implements OnInit {
   wildcard:string;
   patient: Patient;
   iconPatient:Boolean = false;
+  medicalAttention:MedicalAttention;
+
  
 
   constructor(
     private inProgressMedicalAttentio: InProgressMedicalAttentionService,
+    private sharedDataService: SharedDataService,
+    private navCtrl: NavController,
   ) { }
 
   ngOnInit() {
@@ -29,6 +35,8 @@ export class HeaderComponent  implements OnInit {
   handleClick(wildcard:string) {
     if (wildcard == 'paciente'){
       console.log('Se hizo clic en el componente:',this.patient);
+      this.sharedDataService.setDatos(this.medicalAttention);
+      this.navCtrl.navigateForward('/patient-summary');
     }
   }
 
@@ -41,6 +49,8 @@ export class HeaderComponent  implements OnInit {
       console.log('Valor de iconPatient if:', this.iconPatient);
       this.inProgressMedicalAttentio.getInProgressMedicalAtenttion().then(sm => {
         if(!!sm && !!sm.patient) {
+          this.medicalAttention = sm;
+          console.log(this.medicalAttention);
           this.patient = sm.patient;
           this.titleName = this.patient.name + ' ' + this.patient.lastname;
         }
@@ -50,7 +60,7 @@ export class HeaderComponent  implements OnInit {
     } else{
       this.iconPatient= false;
     }
-    console.log('Valor de iconPatient finish:', this.iconPatient);
+    //console.log('Valor de iconPatient finish:', this.iconPatient);
   }
 
 }
