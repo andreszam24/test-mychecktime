@@ -6,7 +6,6 @@
       <ion-title size="large">Pre-anesthesia</ion-title>
     </ion-toolbar>
   </ion-header>
-
   <div>
     <form class="check-form" >
       <ion-item lines="none" >
@@ -120,11 +119,12 @@
           </ion-button>
         </ion-col>
       </ion-row>
-
-
     </form>
   </div>
 </ion-content>
+<ion-footer>
+    <app-events-panel [showCancelEvent] = true></app-events-panel>
+</ion-footer>
 <ion-fab slot="fixed" vertical="bottom" horizontal="end">
   <ion-fab-button (click)="scan()" [disabled]="!isSupported">
     <ion-icon src="../../../assets/svg/barcode-outline.svg"></ion-icon>
