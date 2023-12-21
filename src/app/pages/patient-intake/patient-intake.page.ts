@@ -22,8 +22,6 @@ import { AuthService } from 'src/app/services/auth.service';
 import { OperationRoom } from 'src/app/models/operationRoom.model';
 import { AnesthesiologistProfile } from 'src/app/models/anesthesiologist-profile.model';
 import { StatusService } from 'src/app/services/status.service';
-import { Router } from '@angular/router';
-
 
 
 
@@ -72,7 +70,6 @@ export class PatientIntakePage implements OnInit {
     private medicalAttetionRepository: InProgressMedicalAttentionService,
     private workingAreaRepository: WorkingAreaService,
     private authService: AuthService,
-    private router: Router,
     private navCtrl: NavController,
   ) { }
 

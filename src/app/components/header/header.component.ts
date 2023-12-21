@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IonHeader, IonToolbar, IonTitle, IonButtons,IonMenuButton,IonIcon,IonMenu, IonContent, IonList,IonItem,IonLabel,IonMenuToggle,IonImg} from '@ionic/angular/standalone';
 import { Patient } from 'src/app/models/patient.model';
@@ -13,6 +13,7 @@ import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-
 })
 export class HeaderComponent  implements OnInit {
   @Input() titleName: string ;
+  wildcard:string;
   patient: Patient;
   iconPatient:Boolean = false;
  
@@ -25,9 +26,16 @@ export class HeaderComponent  implements OnInit {
     this.headerPatient();
   }
 
+  handleClick(wildcard:string) {
+    if (wildcard == 'paciente'){
+      console.log('Se hizo clic en el componente:',this.patient);
+    }
+  }
+
 
   headerPatient(){
     console.log('Valor de iconPatient:', this.iconPatient);
+    this.wildcard = this.titleName;
     if(this.titleName=='paciente'){
       this.iconPatient = true;
       console.log('Valor de iconPatient if:', this.iconPatient);

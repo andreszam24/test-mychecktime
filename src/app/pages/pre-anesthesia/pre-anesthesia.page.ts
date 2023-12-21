@@ -183,6 +183,7 @@ export class PreAnesthesiaPage implements OnInit {
     }).catch(() => console.log('Error consultando la atencion médica'));
   }
 
+  
   private mapViewToModel() {
     this.admissionList.arrivalDate = DateUtilsService.stringHour2Date(this.model.arrivalDate);
     this.admissionList.simpleArrivalDate = this.datepipe.transform(this.admissionList.arrivalDate,'yyyy-MM-dd')!;
