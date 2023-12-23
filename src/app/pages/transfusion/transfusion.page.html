@@ -1,13 +1,41 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>transfusion</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">transfusion</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-title>Transfusión</ion-title>
+  <div>
+    <ion-icon src="../../../assets/svg/complicacionxhdpi.svg"></ion-icon>
+  </div>
+  <form>
+
+    <app-app-spinner label="Glóbulos rojos" [(count)]="redBloodCells"></app-app-spinner>
+    <app-app-spinner label="Plaquetas" [(count)]="platelets"></app-app-spinner>
+    <app-app-spinner label="Plasma" [(count)]="plasma"></app-app-spinner>
+    <app-app-spinner label="Crioprecipitado" [(count)]="cryoprecipitate"></app-app-spinner>
+
+
+    <ion-item class="others" lines="none">
+      <ion-label>Otros</ion-label>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-textarea 
+      name="descripcion"
+      [(ngModel)]="descripcion"
+      placeholder="Descripción">
+    </ion-textarea>
+    </ion-item>
+  </form>
 </ion-content>
+<ion-footer>
+  <ion-toolbar position="bottom">
+    <ion-row>
+        <ion-col>
+          <ion-button (click)="goToBackPage()"  class="back">
+            Volver
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button (click)="toContinue()"  class="continue">
+            Continuar
+          </ion-button>
+        </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

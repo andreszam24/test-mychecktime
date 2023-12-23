@@ -1,0 +1,51 @@
+/*
+
+
+
+
+
+p.tlabel {
+    background-color: white;
+    color: $app-red;
+    border-radius: 25px;
+    padding: 10px;
+}*/
+
+
+ion-item{
+    text-align: center;
+    --background: transparent;
+    ion-button{
+        --border-radius: 25px;
+        --background: white;
+        width: 40px;
+        height: 40px;
+        margin: 0 10px;
+        ion-icon{
+            height: 30px;
+            width: 30px;
+            color: var(--ion-color-app-red);
+        }
+    }
+    ion-label{
+        display: flex;
+        p{
+            border-radius: 25px;
+            padding: 10px;
+        }
+        .tlabel{
+            width: 80%;
+            margin-right: 5px;
+            background-color: white;
+            color: var(--ion-color-app-red);
+            
+        }
+        .counter{
+            width: 20%;
+            color: white;
+            margin: auto;
+            text-align: center;
+            background-color: var(--ion-color-app-red);
+        }
+    }
+}

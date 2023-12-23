@@ -1,0 +1,16 @@
+<ion-item lines="none">
+
+  <ion-button slot="start"
+    (click)="decrement()">
+    <ion-icon src="../../../assets/svg/remove-circle.svg"></ion-icon>
+  </ion-button>
+  <ion-label lines="none">
+    <p class="tlabel">{{label}}</p>
+    <p class="counter">{{counter}}</p>
+  </ion-label>
+  <ion-button slot="end"
+    (click)="increment()">
+    <ion-icon src="../../../assets/svg/add-circle.svg"></ion-icon>    
+  </ion-button>
+
+</ion-item>
