@@ -28,5 +28,9 @@ export const routes: Routes = [
     path: 'pre-anesthesia',
     loadComponent: () => import('./pre-anesthesia/pre-anesthesia.page').then( m => m.PreAnesthesiaPage)
   },
+  {
+    path: 'shift-handover',
+    loadComponent: () => import('./pages/shift-handover/shift-handover.page').then( m => m.ShiftHandoverPage)
+  },
 
 ];

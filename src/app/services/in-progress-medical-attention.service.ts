@@ -334,5 +334,9 @@ export class InProgressMedicalAttentionService {
       return [];
     }
   }
+  
+  clearInProgressServices() {
+    this.updateLocalRepository([]);
+  }
 
 }
