@@ -1,14 +1,14 @@
 <ion-content [fullscreen]="true">
   <ion-title>Transfusión</ion-title>
   <div>
-    <ion-icon src="../../../assets/svg/complicacionxhdpi.svg"></ion-icon>
+    <ion-icon src="../../../assets/svg/transfusionxhdpi.svg"></ion-icon>
   </div>
   <form>
 
-    <app-app-spinner label="Glóbulos rojos" [(count)]="redBloodCells"></app-app-spinner>
-    <app-app-spinner label="Plaquetas" [(count)]="platelets"></app-app-spinner>
+    <app-app-spinner label="Glóbulos rojos" [(count)]="globulosRojos"></app-app-spinner>
+    <app-app-spinner label="Plaquetas" [(count)]="plaquetas"></app-app-spinner>
     <app-app-spinner label="Plasma" [(count)]="plasma"></app-app-spinner>
-    <app-app-spinner label="Crioprecipitado" [(count)]="cryoprecipitate"></app-app-spinner>
+    <app-app-spinner label="Crioprecipitado" [(count)]="crioprecipitado"></app-app-spinner>
 
 
     <ion-item class="others" lines="none">

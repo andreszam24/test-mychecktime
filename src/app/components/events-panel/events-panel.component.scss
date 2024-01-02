@@ -2,3 +2,19 @@ ion-row{
     height: 100%;
     background-color: white;
 }
+
+#transfusion{
+    --background: var(--ion-color-app-red);
+}
+
+#complications{
+    --background: var(--ion-color-app-blue);
+}
+
+#adverseEvent{
+    --background: var(--ion-color-app-gray);
+}
+
+#cancellation{
+    --background: var(--ion-color-app-dark);
+}

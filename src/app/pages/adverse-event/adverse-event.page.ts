@@ -18,6 +18,7 @@ export class AdverseEventPage implements OnInit {
   model = {
     descripcion: null
   };
+  
   datepipe = new DatePipe('en-US');
 
   constructor(

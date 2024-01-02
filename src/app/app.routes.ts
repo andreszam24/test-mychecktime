@@ -27,7 +27,8 @@ export const routes: Routes = [
   {
     path: 'pre-anesthesia',
     loadComponent: () => import('./pages/pre-anesthesia/pre-anesthesia.page').then( m => m.PreAnesthesiaPage)
-  },  {
+  },
+  {
     path: 'complications',
     loadComponent: () => import('./pages/complications/complications.page').then( m => m.ComplicationsPage)
   },

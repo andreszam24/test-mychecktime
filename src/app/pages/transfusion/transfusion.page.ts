@@ -16,12 +16,18 @@ import { AppSpinnerComponent } from 'src/app/components/app-spinner/app-spinner.
 })
 export class TransfusionPage implements OnInit {
 
-  redBloodCells = 0;
-  platelets = 0;
+  globulosRojos = 0;
+  plaquetas = 0;
   plasma = 0;
-  cryoprecipitate = 0;
+  crioprecipitado = 0;
   descripcion = null;
-  paramsPrevious:any;
+  paramsPrevious:any = {
+    globulosRojos: 0,
+    plaquetas: 0,
+    plasma: 0,
+    crioprecipitado: 0,
+    descripcion: 0
+  };
   
 
   datepipe = new DatePipe('en-US');
@@ -48,10 +54,10 @@ export class TransfusionPage implements OnInit {
         
         this.paramsPrevious = eventosTransfusion[eventosTransfusion.length - 1].params;
 
-        this.redBloodCells = this.paramsPrevious['globulosRojos'];
-        this.platelets = this.paramsPrevious['plaquetas']!;
+        this.globulosRojos = this.paramsPrevious['globulosRojos'];
+        this.plaquetas = this.paramsPrevious['plaquetas']!;
         this.plasma = this.paramsPrevious['plasma']!;
-        this.cryoprecipitate = this.paramsPrevious['crioprecipitado']!;
+        this.crioprecipitado = this.paramsPrevious['crioprecipitado']!;
       }
     }).catch(e => console.log('Error consultando la atencion médica'));
 
@@ -85,34 +91,34 @@ export class TransfusionPage implements OnInit {
     event.simpleCheckDate = this.datepipe.transform(event.checkDate,'yyyy-MM-dd')!;
     event.simpleCheckHour = this.datepipe.transform(event.checkDate,'HH:mm:ss')!;
     event.params = {
-      redBloodCells: this.redBloodCells,
-      platelets: this.platelets,
+      globulosRojos: this.globulosRojos,
+      plaquetas: this.plaquetas,
       plasma: this.plasma,
-      cryoprecipitate: this.cryoprecipitate,
+      crioprecipitado: this.crioprecipitado,
       descripcion: this.descripcion
     };
     return event;
   }
 
   private validateForm() {
-    if(this.redBloodCells < 0 || this.platelets < 0 || this.plasma < 0 || this.cryoprecipitate < 0) {
+    if(this.globulosRojos < 0 || this.plaquetas < 0 || this.plasma < 0 || this.crioprecipitado < 0) {
       this.showError();
       return false;
     }
 
     if(this.paramsPrevious !== null) { 
-      if((this.redBloodCells + this.platelets + this.plasma + this.cryoprecipitate) === 0 &&
+      if((this.globulosRojos + this.plaquetas + this.plasma + this.crioprecipitado) === 0 &&
         (this.paramsPrevious['globulosRojos'] + this.paramsPrevious['plaquetas'] + this.paramsPrevious['plasma'] + this.paramsPrevious['crioprecipitado']) === 0) {
           this.showErrorFill();
           return false;
       }
-      if(this.redBloodCells === this.paramsPrevious['globulosRojos'] && this.platelets === this.paramsPrevious['plaquetas'] &&
-         this.plasma === this.paramsPrevious['plasma'] && this.cryoprecipitate === this.paramsPrevious['crioprecipitado']) {
+      if(this.globulosRojos === this.paramsPrevious['globulosRojos'] && this.plaquetas === this.paramsPrevious['plaquetas'] &&
+         this.plasma === this.paramsPrevious['plasma'] && this.crioprecipitado === this.paramsPrevious['crioprecipitado']) {
           return false;
         }
     }
 
-    if((this.redBloodCells + this.platelets + this.plasma + this.cryoprecipitate) === 0 ){
+    if((this.globulosRojos + this.plaquetas + this.plasma + this.crioprecipitado) === 0 ){
       this.showErrorFill();
       return false;
     }
