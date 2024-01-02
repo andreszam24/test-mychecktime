@@ -44,6 +44,10 @@ export const routes: Routes = [
     path: 'cancellation',
     loadComponent: () => import('./pages/cancellation/cancellation.page').then( m => m.CancellationPage)
   },
+  {
+    path: 'shift-handover',
+    loadComponent: () => import('./pages/shift-handover/shift-handover.page').then( m => m.ShiftHandoverPage)
+  },
 
 
 ];

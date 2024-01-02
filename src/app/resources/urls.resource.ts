@@ -38,3 +38,5 @@ export const URLUpdateMedicalAttention = `${URLServer}/clinicalhistory`;
 export const URLCupsCodes = `${URLServer}/cupscodes`;
 export const URLSpecialties = `${URLServer}/especialidades`;
 export const URLDeleteClinicalRecord = `${URLServer}/clinicalhistory/borrarRegistroClinicoPaciente`;
+
+export const URLAnesthesiologist = `${URLServer}/anesthesiologist`;
