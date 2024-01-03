@@ -1,0 +1,41 @@
+<ion-content [fullscreen]="true">
+  <ion-title>Transfusión</ion-title>
+  <div>
+    <ion-icon src="../../../assets/svg/transfusionxhdpi.svg"></ion-icon>
+  </div>
+  <form>
+
+    <app-app-spinner label="Glóbulos rojos" [(count)]="globulosRojos"></app-app-spinner>
+    <app-app-spinner label="Plaquetas" [(count)]="plaquetas"></app-app-spinner>
+    <app-app-spinner label="Plasma" [(count)]="plasma"></app-app-spinner>
+    <app-app-spinner label="Crioprecipitado" [(count)]="crioprecipitado"></app-app-spinner>
+
+
+    <ion-item class="others" lines="none">
+      <ion-label>Otros</ion-label>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-textarea 
+      name="descripcion"
+      [(ngModel)]="descripcion"
+      placeholder="Descripción">
+    </ion-textarea>
+    </ion-item>
+  </form>
+</ion-content>
+<ion-footer>
+  <ion-toolbar position="bottom">
+    <ion-row>
+        <ion-col>
+          <ion-button (click)="goToBackPage()"  class="back">
+            Volver
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button (click)="toContinue()"  class="continue">
+            Continuar
+          </ion-button>
+        </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

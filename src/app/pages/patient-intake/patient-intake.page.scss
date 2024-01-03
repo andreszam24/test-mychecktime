@@ -92,6 +92,11 @@ ion-content{
   }
 }
 
+#login-button{
+    --background: var(--ion-color-app-blue);
+  }
+  
+
 .container-card{
     background: #c0f5f5;
     width: 100%;

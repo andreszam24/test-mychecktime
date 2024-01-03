@@ -26,11 +26,28 @@ export const routes: Routes = [
   },
   {
     path: 'pre-anesthesia',
-    loadComponent: () => import('./pre-anesthesia/pre-anesthesia.page').then( m => m.PreAnesthesiaPage)
+    loadComponent: () => import('./pages/pre-anesthesia/pre-anesthesia.page').then( m => m.PreAnesthesiaPage)
+  },
+  {
+    path: 'complications',
+    loadComponent: () => import('./pages/complications/complications.page').then( m => m.ComplicationsPage)
+  },
+  {
+    path: 'transfusion',
+    loadComponent: () => import('./pages/transfusion/transfusion.page').then( m => m.TransfusionPage)
+  },
+  {
+    path: 'adverse-event',
+    loadComponent: () => import('./pages/adverse-event/adverse-event.page').then( m => m.AdverseEventPage)
+  },
+  {
+    path: 'cancellation',
+    loadComponent: () => import('./pages/cancellation/cancellation.page').then( m => m.CancellationPage)
   },
   {
     path: 'shift-handover',
     loadComponent: () => import('./pages/shift-handover/shift-handover.page').then( m => m.ShiftHandoverPage)
   },
+
 
 ];

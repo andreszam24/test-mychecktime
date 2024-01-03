@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HomePage } from '../pages/home/home.page';
-import { PreAnesthesiaPage } from '../pre-anesthesia/pre-anesthesia.page';
+import { PreAnesthesiaPage } from '../pages/pre-anesthesia/pre-anesthesia.page';
 /*import { ListaQuirofanoPage } from '../pages/lista-quirofano/lista-quirofano';
 import { AnestesiaQuirofanoPage } from '../pages/anestesia-quirofano/anestesia-quirofano';
 import { CkeckeoSalidaQuirofanoPage } from '../pages/checkeo-salida-quirofano/checkeo-salida-quirofano';

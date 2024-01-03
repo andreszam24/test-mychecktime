@@ -1,8 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-icon *ngIf="iconPatient" src="../../../assets/svg/pacientexhdpiWhite.svg">
+    </ion-icon>
     <ion-buttons id="menu-icon" slot="end">
       <ion-menu-button></ion-menu-button>    
     </ion-buttons>
-    <ion-title>{{titleName}}</ion-title>
+    <ion-title (click)="handleClick(wildcard)">{{titleName}}</ion-title>
   </ion-toolbar>
 </ion-header>

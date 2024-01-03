@@ -313,6 +313,10 @@ export class InProgressMedicalAttentionService {
     return JSON.parse(localStorage.getItem(this.finishedServicesKey) ?? '[]');
   }
 
+  selectMedicalAttention(atention: string) {
+    this.selectedService = atention;
+  }
+
   getInProgressMedicalAtenttion(): Promise<MedicalAttention> {
     return new Promise((resolve) => {
       const list = this.loadServicesFromLocalRepository() || [];
@@ -325,6 +329,9 @@ export class InProgressMedicalAttentionService {
     });
   }
 
+  borrarServicioLocal(sm: MedicalAttention) {
+    this.deleteFromProgressServices(sm);
+  }
   parseJSONMedicalAttentionSafely(obj: any) {
     try {
       return JSON.parse(obj);

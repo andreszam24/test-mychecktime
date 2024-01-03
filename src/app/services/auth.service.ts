@@ -59,6 +59,7 @@ export class AuthService {
 
 
   handleLoginResponse(response: any, rememberMe: boolean): Observable<any> {
+    console.log('entro a handleLoginResponse')
     this.userData.next({ loggedIn: true, account: response.account });
     let storageObs: Observable<any>;
 
@@ -129,12 +130,13 @@ export class AuthService {
 
   refreshToken(): Observable<any> {
     const user = this.userCredential;
+    console.log('usuario: ', user)
     return this.http.post(URLAuthLogin, user, httpOptions).pipe(
       map((response: any) => this.handleLoginResponse(response, this.rememberMeStatus)
       ));
   }
 
   getLoggedAccount(): User {
-    return JSON.parse(localStorage.getItem('user-data') ?? '');
+    return JSON.parse(localStorage.getItem('user-data') ?? sessionStorage.getItem('user-data') ?? '');
   }
 }

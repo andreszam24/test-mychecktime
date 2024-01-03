@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router, NavigationEnd,RouterLink, RouterLinkActive } from '@angular/router';
-import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonImg } from '@ionic/angular/standalone';
+import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonImg,MenuController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { maleFemaleOutline,mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp, informationCircle, trash } from 'ionicons/icons';
 import { InternetStatusComponent } from './components/internet-status/internet-status.component';
@@ -24,7 +24,7 @@ export class AppComponent {
   currentPage: string;
   nameUser:any;
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
-  constructor(private auth: AuthService,private router: Router) {
+  constructor(private auth: AuthService,private router: Router,private menuController: MenuController) {
     addIcons({ maleFemaleOutline, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp,trash, informationCircle });
     this.updateAppPages(router.url);
     this.nameUser = this.getUser(router.url);
@@ -69,11 +69,14 @@ export class AppComponent {
 
 
   private updateAppPages(currentUrl: string): void {
+    const menu = this.menuController.get('menu');
+    console.log(menu)
     if (currentUrl == '/home') {
       this.appPages = [
         { title: 'Cambio de turno', url: '/shift-handover' },
         { title: 'Sincronizacion con el servidor', url: '/synchronization' },
       ];
+
     } 
     else {
       this.appPages = [

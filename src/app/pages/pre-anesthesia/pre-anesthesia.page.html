@@ -1,0 +1,132 @@
+<app-header titleName="paciente"></app-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title size="large">Pre-anesthesia</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <div>
+    <form class="check-form" >
+      <ion-item lines="none" >
+        <ion-label class="title">Hora de ingreso</ion-label>
+        <ion-datetime [(ngModel)]="model.arrivalDate" name="arrivalDate" [max]="fechaMaxima" presentation="time"
+          displayFormat="HH:mm" pickerFormat="HH mm" placeholder="HH:mm"></ion-datetime>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-checkbox [(ngModel)]="model.basicConfirmation" name="basicConfirmation" item-right>
+          <p class="title">El paciente ha confirmado</p>
+          <p text-wrap>
+            Su identidad <br />
+            El sitio quirurgico<br />
+            El procedimiento <br />
+            Su consentimiento
+          </p>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-checkbox [(ngModel)]="model.site" name="site" item-right>
+          <p class="title">Demarcación del sitio / No procede</p>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-checkbox [(ngModel)]="model.anesthesiaSecurity" name="anesthesiaSecurity" item-right>
+          <p text-wrap class="title">Se ha completado el control de la seguridad de la anestesia</p>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-checkbox [(ngModel)]="model.pulsometer" name="pulsometer" item-right>
+          <p class="title">Pulsiómetro colocado y en funcionamiento</p>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item lines="none" class="header-text">
+        <ion-label>
+          <p>
+            ¿El paciente tiene:
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <ion-radio-group name="allergy" [(ngModel)]="model.allergy">
+        <ion-list-header>
+          <ion-label>alergias conocidas?</ion-label>
+        </ion-list-header>
+        <ion-list>
+          <ion-item lines="none">
+            <ion-radio [value]="false">No</ion-radio>
+          </ion-item>
+
+          <ion-item lines="none">
+            <ion-radio [value]="true">Si</ion-radio>
+          </ion-item>
+        </ion-list>
+      </ion-radio-group>
+
+      <ion-radio-group name="difficultAirway" [(ngModel)]="model.difficultAirway">
+        <ion-list-header>
+          <ion-label>Vía aérea difícil / Riesgo de aspiración?</ion-label>
+        </ion-list-header>
+        <ion-list>
+          <ion-item lines="none">
+            <ion-radio [value]="false">No</ion-radio>
+          </ion-item>
+
+          <ion-item lines="none">
+            <ion-radio [value]="true">Sí, Hay instrumental y equipos / ayuda disponible</ion-radio>
+          </ion-item>
+        </ion-list>
+      </ion-radio-group>
+
+      <ion-radio-group name="riskOfHemorrhage" [(ngModel)]="model.riskOfHemorrhage" >
+        <ion-list-header>
+          <ion-label>Riesgo de hemorragia > 500 ml (7 ml/kg para niños)?</ion-label>
+        </ion-list-header>
+        <ion-list>
+          <ion-item lines="none">
+            <ion-radio [value]="false">No</ion-radio>
+          </ion-item>
+
+          <ion-item lines="none">
+            <ion-radio [value]="true">Sí, Se ha previsto la disponibilidad de acceso intravenoso y líquidos
+              adecuados</ion-radio>
+          </ion-item>
+        </ion-list>
+      </ion-radio-group>
+
+      <ion-item lines="none">
+        <ion-select class="full-size-select" [(ngModel)]="model.intervention" (ionChange)="changeInterventionDate()"
+          name="intervencion" multiple="false" placeholder="Intervención" label="Intervención">
+          <ion-select-option value="Ninguna">Ninguna</ion-select-option>
+          <ion-select-option value="Médica">Médica</ion-select-option>
+          <ion-select-option value="Bloqueo">Bloqueo</ion-select-option>
+          <ion-select-option value="Otra">Otra</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item lines="none" *ngIf="flagInputOtherIntervention">
+        <ion-textarea [(ngModel)]="model.otherIntervention" name="otherIntervention"
+          placeholder="Ingrese la intervención"></ion-textarea>
+      </ion-item>
+
+      <ion-row>
+        <ion-col text-center>
+          <ion-button id="login-button" size="default" expand="full"  [disabled]="!isValid()"
+            (click)="goToNextPage()">Continuar
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </form>
+  </div>
+</ion-content>
+<ion-footer>
+    <app-events-panel [showCancelEvent] = true></app-events-panel>
+</ion-footer>
+<ion-fab slot="fixed" vertical="bottom" horizontal="end">
+  <ion-fab-button (click)="scan()" [disabled]="!isSupported">
+    <ion-icon src="../../../assets/svg/barcode-outline.svg"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
