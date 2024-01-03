@@ -137,6 +137,6 @@ export class AuthService {
   }
 
   getLoggedAccount(): User {
-    return JSON.parse(localStorage.getItem('user-data') ?? '');
+    return JSON.parse(localStorage.getItem('user-data') ?? sessionStorage.getItem('user-data') ?? '');
   }
 }
