@@ -26,7 +26,6 @@ export class PreAnesthesiaPage implements OnInit {
 
   barcodes: Barcode[] = [];
   isSupported = false;
-  manualIntake = false;
   admissionList: AdmissionList;
   flagInputOtherIntervention: boolean;
   fechaMaxima: string;
@@ -133,7 +132,6 @@ export class PreAnesthesiaPage implements OnInit {
       return obj;
     }
     catch (e) {
-     // this.manualIntake = true;
       console.log(e);
       return {};
     }

@@ -1,40 +1,30 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Relevo o cambio de turno</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header titleName="Relevo o cambio de turno"></app-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">shift-handover</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
   <ion-searchbar class="custom" [debounce]="2500" (ionInput)="handleInputAnesthesiologistName($event)"
       placeholder="Búsqueda anestesiólogo por nombre">
     </ion-searchbar>
     <ion-list class="list">
       <ion-item lines="none" *ngFor="let anesthesiologist of resultsSearchigAnesthesiologist">
-        <ion-img src="../../assets/svg/anesthesiologist.svg"></ion-img>
+        <ion-img src="../../assets/svg/usuarioxhdpi.svg"></ion-img>
         <ion-label (click)="anesthesiologistSelected(anesthesiologist)" id="label-patient-name">{{ anesthesiologist.name + ' ' + anesthesiologist.lastname}}</ion-label>
       </ion-item>
     </ion-list>
 
-  <ion-card *ngIf="selectedAnes">
-    <ion-item>
-      <ion-icon src="../../assets/svg/man-4.svg" item-start large></ion-icon>
-      <h2>{{selectedAnes.name}} {{selectedAnes.lastname}}</h2>
+  <ion-card *ngIf="selectedAnes" class="anes-card">
+    <ion-item lines="none">
+      <ion-icon src="../../assets/svg/usuarioxhdpi.svg" large></ion-icon>
+      <h3>{{selectedAnes.name}} {{selectedAnes.lastname}}</h3>
     </ion-item>
   
-    <ion-item>
-      <ion-icon src="../../assets/svg/mail-outline.svg" item-left large ></ion-icon>
-      <h2>{{selectedAnes.email}}</h2>
+    <ion-item lines="none" class="item-line">
+      <ion-icon src="../../assets/svg/mail-outline.svg" large ></ion-icon>
+      <h3>{{selectedAnes.email}}</h3>
     </ion-item>
   
-    <ion-item>
-      <span item-left>Servicios en progreso: </span>
-      <span item-left>{{ servicesToChangeCount }}</span>
+    <ion-item lines="none" class="span-item">
+      <p>Servicios en progreso: {{ servicesToChangeCount }}</p>
     </ion-item>
   </ion-card>
 </ion-content>
