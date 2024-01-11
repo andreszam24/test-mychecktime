@@ -65,7 +65,6 @@ export class PreAnesthesiaPage implements OnInit {
       this.isSupported = result.supported;
       this.scan();
     }).catch(async (error) => {
-      //this.changeStatusManulIntake(true);
       console.error(error.message);
       await this.unsupportedBarcodeMessage();
     });
@@ -75,7 +74,6 @@ export class PreAnesthesiaPage implements OnInit {
     const granted = await this.requestPermissions();
     if (!granted) {
       this.alertService.presentBasicAlert('¡Ups! Sin permisos', '¡Activa los permisos de la cámara para usar el escáner de códigos!');
-      //this.changeStatusManulIntake(true);
       return;
     }
 
@@ -92,9 +90,6 @@ export class PreAnesthesiaPage implements OnInit {
         });
       }
     }).catch(error => {
-     /* if (!this.medicalAttention?.patient) {
-        this.changeStatusManulIntake(true);
-      }*/
       console.error(error.message);
     });
 

@@ -47,7 +47,15 @@ export const routes: Routes = [
   {
     path: 'shift-handover',
     loadComponent: () => import('./pages/shift-handover/shift-handover.page').then( m => m.ShiftHandoverPage)
+  },  {
+    path: 'select-operating-room',
+    loadComponent: () => import('./pages/select-operating-room/select-operating-room.page').then( m => m.SelectOperatingRoomPage)
   },
+  {
+    path: 'check-patient-info',
+    loadComponent: () => import('./pages/check-patient-info/check-patient-info.page').then( m => m.CheckPatientInfoPage)
+  },
+
 
 
 ];

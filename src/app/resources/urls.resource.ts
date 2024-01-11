@@ -40,3 +40,5 @@ export const URLSpecialties = `${URLServer}/especialidades`;
 export const URLDeleteClinicalRecord = `${URLServer}/clinicalhistory/borrarRegistroClinicoPaciente`;
 
 export const URLAnesthesiologist = `${URLServer}/anesthesiologist`;
+
+export const URLOperationRooms = `${URLServer}/operatingrooms`;

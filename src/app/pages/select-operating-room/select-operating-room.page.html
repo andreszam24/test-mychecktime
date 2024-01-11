@@ -1,0 +1,13 @@
+<app-header titleName="Seleccione el quirófano"></app-header>
+
+<ion-content [fullscreen]="true">
+  <ion-item lines="none" class="select-qr">
+    <ion-icon (click)="scan()"  src="../../../assets/svg/Item-select-qr.svg"></ion-icon>
+    <p>{{ textItem }}</p>
+  </ion-item>
+</ion-content>
+<footer>
+  <div class="content-button">
+    <ion-button class="back" size="default" expand="full" (click)="goToBackPage()">Volver</ion-button>
+  </div>
+</footer>

@@ -226,11 +226,14 @@ export class HomePage implements OnInit {
   selectAttentionServiceAndContinue(selectedMedicalAttention: MedicalAttention) {
     if(selectedMedicalAttention.state == 'nueva'){
       this.httpInProgressMedicalAttention.selectMedicalAttention(selectedMedicalAttention._id);
-      this.goToNextState()
+      this.goToNextState('/pre-anesthesia')
+    } else if(selectedMedicalAttention.state == 'AdmissionList'){
+      this.httpInProgressMedicalAttention.selectMedicalAttention(selectedMedicalAttention._id);
+      this.goToNextState('/select-operating-room')
     }
   }
 
-  goToNextState() {
-    this.router.navigateByUrl('/pre-anesthesia');
+  goToNextState(page:string) {
+    this.router.navigateByUrl(page);
   }
 }
