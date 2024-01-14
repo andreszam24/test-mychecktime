@@ -223,15 +223,24 @@ export class HomePage implements OnInit {
     this.attentionsInProgress = this.attentionsInProgress.filter(registro => registro._id != registroMedico._id);
   }
 
+  
   selectAttentionServiceAndContinue(selectedMedicalAttention: MedicalAttention) {
-    if(selectedMedicalAttention.state == 'nueva'){
-      this.httpInProgressMedicalAttention.selectMedicalAttention(selectedMedicalAttention._id);
-      this.goToNextState('/pre-anesthesia')
-    } else if(selectedMedicalAttention.state == 'AdmissionList'){
-      this.httpInProgressMedicalAttention.selectMedicalAttention(selectedMedicalAttention._id);
-      this.goToNextState('/select-operating-room')
+    const stateRouteMap: { [key: string]: string } = {
+        'nueva': '/pre-anesthesia',
+        'AdmissionList': '/select-operating-room',
+        'SelectOperatingRoom': '/check-patient-info'
+    };
+
+    const nextState = stateRouteMap[selectedMedicalAttention.state];
+
+    if (nextState) {
+        this.httpInProgressMedicalAttention.selectMedicalAttention(selectedMedicalAttention._id);
+        this.goToNextState(nextState);
+    } else {
+        console.error('Estado no manejado:', selectedMedicalAttention.state);
     }
-  }
+}
+
 
   goToNextState(page:string) {
     this.router.navigateByUrl(page);

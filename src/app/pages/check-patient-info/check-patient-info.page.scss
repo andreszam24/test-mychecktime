@@ -1,0 +1,51 @@
+ion-content{
+    ion-row{
+        margin-top: 20%;
+        height: 70%;
+        ion-col{
+            text-align: center;
+        }
+        .select-qr{
+            ion-icon{
+                width: 150px;
+                height: 200px;
+            }
+        }
+        .Valid-data-input{
+            ion-item{
+                height: 100%;
+                text-align: center;
+                width: 70%;
+                margin: auto;
+                margin-bottom: 15px;
+            }
+        }
+    }
+    p{
+        width: 85%;
+        margin: auto;
+        text-align: center;
+    }
+}
+ion-footer{
+    ion-toolbar{
+        --background: transparent;
+    }
+    ion-row{
+        ion-col{
+            text-align: center;
+            ion-button{
+                --border-radius: 40px;
+                width: 160px;
+                height: 36px;
+
+            }
+            .back{
+                --background:var(--ion-color-app-red)
+            }
+            .continue{
+                --background:var(--ion-color-app-blue)
+            }
+        }
+    }
+}

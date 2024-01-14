@@ -9,6 +9,7 @@ import { Clinic } from 'src/app/models/clinic.model';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { StatusService } from 'src/app/services/status.service';
 import { WorkingAreaService } from 'src/app/services/working-area.service';
+import { OperationRoomService } from 'src/app/services/operation-room.service';
 
 
 @Component({
@@ -27,11 +28,11 @@ export class SelectOperatingRoomPage implements OnInit {
   currentClinic: Clinic;
   datepipe = new DatePipe('en-US');
 
-
   constructor(
     private navCtrl: NavController,
     private medicalService: InProgressMedicalAttentionService,
     private workingArea: WorkingAreaService,
+    private operationRoomService:OperationRoomService
   ) { }
 
   ngOnInit() {
@@ -74,7 +75,7 @@ export class SelectOperatingRoomPage implements OnInit {
         this.textItem = '¡Ups! Parece que hay un problema con tu dispositivo o cámara. Asegúrate de que estén funcionando correctamente y vuelve a intentarlo.';
     } else {
         console.error(error.message);
-        this.textItem = '¡Ups! Parece que ocurrió un problema con el QR.';
+        this.textItem = error.message;
     }
     });
 
@@ -85,17 +86,45 @@ export class SelectOperatingRoomPage implements OnInit {
     let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
     if(qr && qr.operatingRoom){
       this.selectedOperationRoom = qr.operatingRoom;
-      this.goToNextPage()
+      this.verifySelectedOperatingRoomQR(); 
     } else {
-      throw new Error('El contenido del código QR no es válido para sala de operaciones.');     
+      throw new Error('¡Ups! Parece que ocurrió un problema con el QR');     
     }
   }
 
+  verifySelectedOperatingRoomQR(){
+    if(this.doesMatch()){
+      this.goToNextPage();
+    } else {
+      throw new Error('¡Ups! Parece que ocurrió un problema, el contenido del código QR no corresponde a una sala valida para esta clinica');     
+    }
+  }
+
+  doesMatch(): boolean {
+    let operationRoomsLists = this.operationRoomService.getLocalRooms();
+    const matchingOperationRoom = operationRoomsLists.find(operationRoom => 
+        operationRoom.id === this.selectedOperationRoom.id && operationRoom.clinic_id === this.selectedOperationRoom.clinic_id && operationRoom.clinic.name === this.selectedOperationRoom.clinic.name
+    );
+    if (matchingOperationRoom) {
+        this.selectedOperationRoom = matchingOperationRoom;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
   goToNextPage() {
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
-      sm.operatingRoom.id = this.selectedOperationRoom.id;
-      sm.operatingRoom.name = this.selectedOperationRoom.name;
+      sm.operatingRoom = this.selectedOperationRoom;
       sm.idOperatingRoom = this.selectedOperationRoom.id;
+
+      sm.operatingRoom.updated_at = this.datepipe.transform(sm.operatingRoom.updated_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ')!;
+      sm.operatingRoom.created_at = this.datepipe.transform(sm.operatingRoom.created_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ')!;
+
+      sm.operatingRoom.clinic.updated_at = this.datepipe.transform(sm.operatingRoom.clinic.updated_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ')!;
+      sm.operatingRoom.clinic.created_at = this.datepipe.transform(sm.operatingRoom.clinic.created_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ')!;
+
       sm.state = StatusService.SELECT_OPERATING_ROOM;
      this.medicalService.saveMedicalAttention(sm, 'sync')
         .then(result => {
