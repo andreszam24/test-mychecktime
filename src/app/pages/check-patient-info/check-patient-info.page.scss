@@ -1,7 +1,7 @@
 ion-content{
     ion-row{
         margin-top: 20%;
-        height: 70%;
+        margin-bottom: 20%;
         ion-col{
             text-align: center;
         }
@@ -13,7 +13,7 @@ ion-content{
         }
         .Valid-data-input{
             ion-item{
-                height: 100%;
+                height: 66%;
                 text-align: center;
                 width: 70%;
                 margin: auto;
@@ -27,9 +27,10 @@ ion-content{
         text-align: center;
     }
 }
+
 ion-footer{
     ion-toolbar{
-        --background: transparent;
+        --background: white
     }
     ion-row{
         ion-col{

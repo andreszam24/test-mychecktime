@@ -128,6 +128,7 @@ export class HomePage implements OnInit {
     this.httpInProgressMedicalAttention.searchPendingServices(clinicId, anesthesiologistId).subscribe({
       next: (data) => {
         this.attentionsInProgress = data;
+        this.attentionsInProgress.sort((a, b) => a.patient.id - b.patient.id);
         this.cdr.detectChanges();
       },
       error: (error) => {

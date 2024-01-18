@@ -101,8 +101,7 @@ export class CheckPatientInfoPage implements OnInit {
 
   verifyDataPatient(){
     if(this.doesMatch()){
-      console.log('match')
-      //this.goToNextPage();
+      this.goToNextPage();
     } else {
       throw new Error('¡Ups! Parece que ocurrió un problema, el contenido del código QR no corresponde al paciente, verifica la identidad antes de continuar');     
     }
@@ -146,15 +145,16 @@ export class CheckPatientInfoPage implements OnInit {
       let patientDni = this.medicalServiceInProgressDataPatient.dni.slice(-4);
       console.log(patientDni)
       if(patientDni === this.inputData){
-        console.log(patientDni, '=', this.inputData)
-        //this.goToBackPage();
+        this.goToNextPage();
       } else{
         this.textItem = 'los ultimos 4 digitos no coinciden con el paciente programado, debes validar identidad del paciente';
       }     
     }
   }
 
-  
-    
+  validarInputData(): boolean {
+    return /^[0-9]{4}$/.test(this.inputData);
+  }
+
 
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { catchError, map, Observable, of, Subject } from 'rxjs';
 import { MedicalAttention } from '../models/medical-attention.model';
 import { MedicalAttentionService } from './medical-attention.service';
 import { ServiceStatus } from '../models/service-status.model';
@@ -8,6 +8,9 @@ import { WorkingAreaService } from './working-area.service';
 import { AuthService } from './auth.service';
 import { Toast } from '@capacitor/toast';
 import { v4 as uuidv4 } from 'uuid';
+import { ParametersTimeCalculation } from '../models/parameters-time-calculation.model';
+import { URLChangePatientTime, headers } from '../resources/urls.resource';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +22,7 @@ export class InProgressMedicalAttentionService {
   private selectedService: string = '';
 
   constructor(
+    private http: HttpClient,
     private httpMedicalAttention: MedicalAttentionService,
     private workingArea: WorkingAreaService,
     private auth: AuthService,
@@ -79,6 +83,23 @@ export class InProgressMedicalAttentionService {
     localStorage.setItem(this.finishedServicesKey, JSON.stringify(finishedServices));
   }
 
+  calculateChangePatientTime(parameters: ParametersTimeCalculation): Observable<string> {
+    return this.http.post<string>(URLChangePatientTime + AuthService.getTokenParams(), parameters, { headers, observe: 'response' }).pipe(
+      map((response: HttpResponse<string>) => { // Update the type here
+        if (response.status === 200) {
+          return JSON.stringify(response.body).replace(/\\/g, "");
+        } else {
+          console.error('HTTP error calculateChangePatientTime: ', response.status, response.body);
+          return ''; 
+        }
+      }),
+      catchError((err, caught) => {
+        console.error('in-progress-medical-attention: calculateChangePatientTime =>', err, caught);
+        return of(''); 
+      })
+    );
+  }
+
   private updateRemoteRepository(medicalAttention: MedicalAttention, onResult: () => void) {
     // Se invoca onResult al terminar la peticion sin importar el resultado
     this.httpMedicalAttention.saveMedicalAttention([medicalAttention])
@@ -102,8 +123,7 @@ export class InProgressMedicalAttentionService {
       });
     });
   }
-  // Consulta los pacientes pendientes según la clínica seleccionada
-  // y realiza una sincronización de la estructura de datos interna
+
   searchPendingServices(clinicId: number, anesId: number): Observable<Array<MedicalAttention>> {
     const mySubject = new Subject<Array<MedicalAttention>>();
     const locals = this.loadServicesFromLocalRepository() || [];
@@ -332,6 +352,7 @@ export class InProgressMedicalAttentionService {
   borrarServicioLocal(sm: MedicalAttention) {
     this.deleteFromProgressServices(sm);
   }
+
   parseJSONMedicalAttentionSafely(obj: any) {
     try {
       return JSON.parse(obj);

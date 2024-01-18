@@ -7,10 +7,13 @@
         </ion-col>
         <ion-col class="Valid-data-input" size="12">
             <ion-item>
-                <ion-input [(ngModel)]="inputData" ion-input labelPlacement="stacked" label="Manual" placeholder="Ingresa 4 ultimos digitos">
+                <ion-input [(ngModel)]="inputData" ion-input labelPlacement="stacked" label="Manual" placeholder="Ingresa 4 ultimos digitos" pattern="[0-9]*" maxlength="4" required>
                 <ion-icon slot="start" src="../../../assets/svg/person-circle-outline.svg" aria-hidden="true"></ion-icon>
                 </ion-input>
               </ion-item>
+              <ion-note color="danger" *ngIf="inputData && !validarInputData()">
+                ¡El input debe contener exactamente 4 números!
+              </ion-note>
         </ion-col>
         <p>{{ textItem }}</p>
       </ion-row>
