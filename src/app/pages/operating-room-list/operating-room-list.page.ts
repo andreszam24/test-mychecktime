@@ -22,8 +22,6 @@ import { AuthService } from 'src/app/services/auth.service';
 import { LoadingService } from 'src/app/services/utilities/loading.service';
 import { Toast } from '@capacitor/toast';
 import { AlertController, Platform, IonAlert } from '@ionic/angular/standalone';
-import { Capacitor } from '@capacitor/core';
-import { Media, MediaAsset } from '@capacitor-community/media';
 
 
 
@@ -39,9 +37,10 @@ export class OperatingRoomListPage implements OnInit {
   @ViewChild('audioPlayer') audioPlayer: ElementRef;
   @ViewChild('audioAlert') audioAlert: IonAlert;
 
+  
+
   private audio: any;
   public showContinueButton = false;
-
   showSearchConcepts:boolean =  false;
   operatingRoomList: OperatingRoomList;
   recambio: Recambio;
@@ -86,31 +85,36 @@ export class OperatingRoomListPage implements OnInit {
     this.getListConceptTimeReplacement();
   }
 
-  ngOnInit() {
-    this.presentAudioAlert();
+ngOnInit() {
+    
   }
 
-  async presentAudioAlert() {
-    await this.audioAlert.present();
-    this.playAudio();
+  ionViewDidEnter(){
+    if (this.alertCtrl.getTop() != null) {
+      this.playAudio();}
   }
 
-  
+  public alertButtons = [
+    {
+      text: 'Volver',
+      cssClass: 'alert-button-cancel',
+      role: 'cancel',
+      handler: () => {
+        this.navCtrl.navigateForward('home');
+      },
+    },
+  ];
 
-  
   playAudio() {
-    const audio: HTMLAudioElement = document.getElementById('audio-validate') as HTMLAudioElement;
-    if (audio) {
-      audio.play().catch(error => {
-        console.error('Error al reproducir el audio:', error);
-      });
-      audio.addEventListener('ended', async () => {
-        console.log('fin')
+    this.audio = this.audioPlayer.nativeElement as HTMLAudioElement;
+    if (this.audio) {
+      this.audio.play();
+      this.audio.addEventListener('ended', async () => {
+        this.audioAlert.dismiss();
+        console.log('fin');
       });
     }
   }
-
- 
 
 
   private getListOfSurgeons(){

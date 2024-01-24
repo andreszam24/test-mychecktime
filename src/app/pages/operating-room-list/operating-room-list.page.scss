@@ -1,6 +1,7 @@
 ion-fab-button {
     --background: var(--ion-color-app-blue);
   }
+
 ion-content{
     ion-header{
         ion-toolbar{
@@ -17,6 +18,22 @@ ion-content{
         }
     }
 }
+
+#audio-alert{
+    --height: 220px!important;
+    --min-height:220px!important;
+    --max-height:220px!important;
+    --min-width: 90%;
+    --max-width: 90%;
+    --width: 90%;
+} 
+
+#audio-validate{
+    z-index: 11 !important;
+    position: absolute !important;
+    width: 70% !important;
+}
+
 
 ion-footer{
     height: 10%;

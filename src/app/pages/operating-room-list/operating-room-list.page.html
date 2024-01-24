@@ -6,7 +6,13 @@
       <ion-title size="large">Quirófano</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-alert #audioAlert header="validaci'on de lista de quirofano" >
+  <ion-alert 
+      id="audio-alert" 
+      backdropDismiss=false 
+      isOpen=true #audioAlert 
+      header="Validación lista de quirofano" 
+      [buttons]="alertButtons" 
+      class="alert-audio">
     <audio id="audio-validate" src="./../../../assets/audio/audio.mp3" controls="controls" #audioPlayer></audio>
   </ion-alert>
   <form>

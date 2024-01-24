@@ -24,3 +24,27 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+
+.alert-audio .alert-title{
+    text-align: center;
+}
+
+.alert-audio .alert-title{
+    text-align: center;
+}
+
+.alert-audio .custom-alert {
+    position: absolute;
+    bottom: 6px;
+  }
+
+  .alert-audio .alert-button-group {
+    position: absolute;
+    bottom: 6px;
+  }
+
+  .alert-audio .alert-button-cancel{
+    background-color: var(--ion-color-app-blue);
+    color: #ffff;
+    border-radius: 4px;
+  }
