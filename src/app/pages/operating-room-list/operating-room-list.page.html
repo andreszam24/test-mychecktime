@@ -6,12 +6,9 @@
       <ion-title size="large">Quirófano</ion-title>
     </ion-toolbar>
   </ion-header>
-
-  <div *ngIf="showSearchConcepts">
-
-  </div>
-
-
+  <ion-alert #audioAlert header="validaci'on de lista de quirofano" >
+    <audio id="audio-validate" src="./../../../assets/audio/audio.mp3" controls="controls" #audioPlayer></audio>
+  </ion-alert>
   <form>
     
    <!-- 
@@ -196,7 +193,7 @@
     </div>-->
   </form>
 </ion-content>
-<ion-footer>
+<!--<ion-footer>
   <app-events-panel [showCancelEvent] = true></app-events-panel>
-</ion-footer>
+</ion-footer>-->
 

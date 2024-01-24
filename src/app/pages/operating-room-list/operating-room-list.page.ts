@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, NavController } from '@ionic/angular';
 import { HeaderComponent } from 'src/app/components/header/header.component';
 import { EventsPanelComponent } from '../../components/events-panel/events-panel.component';
-import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { AlertService } from 'src/app/services/utilities/alert.service';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { ConceptTimeReplacementService } from 'src/app/services/concept-time-replacement.service';
@@ -22,7 +21,10 @@ import { StatusService } from 'src/app/services/status.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { LoadingService } from 'src/app/services/utilities/loading.service';
 import { Toast } from '@capacitor/toast';
-import { AlertController } from '@ionic/angular/standalone';
+import { AlertController, Platform, IonAlert } from '@ionic/angular/standalone';
+import { Capacitor } from '@capacitor/core';
+import { Media, MediaAsset } from '@capacitor-community/media';
+
 
 
 
@@ -34,9 +36,12 @@ import { AlertController } from '@ionic/angular/standalone';
   imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent]
 })
 export class OperatingRoomListPage implements OnInit {
+  @ViewChild('audioPlayer') audioPlayer: ElementRef;
+  @ViewChild('audioAlert') audioAlert: IonAlert;
 
-  barcodes: Barcode[] = [];
-  isSupported = false;
+  private audio: any;
+  public showContinueButton = false;
+
   showSearchConcepts:boolean =  false;
   operatingRoomList: OperatingRoomList;
   recambio: Recambio;
@@ -72,7 +77,8 @@ export class OperatingRoomListPage implements OnInit {
     private surgeonService: SurgeonService,
     private instrumentTechnicianService: InstrumentTechnicianService,
     private loadingService: LoadingService,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private platform: Platform
   ) { 
     this.operatingRoomList = new OperatingRoomList();
     this.getListOfSurgeons();
@@ -81,10 +87,32 @@ export class OperatingRoomListPage implements OnInit {
   }
 
   ngOnInit() {
+    this.presentAudioAlert();
+  }
 
+  async presentAudioAlert() {
+    await this.audioAlert.present();
+    this.playAudio();
+  }
+
+  
+
+  
+  playAudio() {
+    const audio: HTMLAudioElement = document.getElementById('audio-validate') as HTMLAudioElement;
+    if (audio) {
+      audio.play().catch(error => {
+        console.error('Error al reproducir el audio:', error);
+      });
+      audio.addEventListener('ended', async () => {
+        console.log('fin')
+      });
+    }
   }
 
  
+
+
   private getListOfSurgeons(){
     this.listSurgeons = this.surgeonService.getLocalSurgeons();
     if(this.listSurgeons.length == 0){

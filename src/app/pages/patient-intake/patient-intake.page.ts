@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonCardHeader, IonCardContent, IonRow, IonCol, NavController } from '@ionic/angular/standalone';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { IonDatetime, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonCardHeader, IonCardContent, IonRow, IonCol, NavController, AlertController } from '@ionic/angular/standalone';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { HeaderComponent } from '../../components/header/header.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
@@ -48,6 +48,8 @@ export class PatientIntakePage implements OnInit {
   cupsCodesList: CupsCodes[] = [];
   resultsSearchigCups = [...this.cupsCodesList];
   searchInputCupsValue: string = '';
+  currentYear = new Date().getFullYear();
+  invalidYear:boolean = false;
   profileForm = new FormGroup({
     registerCode: new FormControl(''),
     programmingType: new FormControl(''),
@@ -70,7 +72,7 @@ export class PatientIntakePage implements OnInit {
     private medicalAttetionRepository: InProgressMedicalAttentionService,
     private workingAreaRepository: WorkingAreaService,
     private authService: AuthService,
-    private navCtrl: NavController,
+    private navCtrl: NavController
   ) { }
 
   ngOnInit() {
@@ -201,6 +203,11 @@ export class PatientIntakePage implements OnInit {
     this.resultsSearchigCups = [];
   }
 
+  moreDetailsCup(cup: CupsCodes){
+    this.alertService.presentBasicAlert('Detalle de código',(cup.code + ' - ' + cup.name))
+    return;
+  }
+
   unselectCup(cup: CupsCodes) {
     this.medicalAttention?.procedureCodes.splice(this.medicalAttention.procedureCodes.indexOf(cup), 1);
   }
@@ -249,8 +256,19 @@ export class PatientIntakePage implements OnInit {
 
   }
 
+  yearValidator():boolean {
+      let inputYear= this.profileForm.value.birthday!;
+      if (inputYear == null || inputYear.trim() === '') {
+        this.profileForm.value.birthday = '1800';
+        return true;
+      }
+      const numericInputYear = parseInt(inputYear, 10);
+      const regex = /^(1800|[1-9]\d{3}|1[89]\d{2}|20[01]\d|202[0-4])$/;
+      return regex.test(inputYear) && numericInputYear <= this.currentYear && numericInputYear >= 1800;
+  }
+
   toValidateRequiredData(): boolean {
-    if (this.medicalAttention && this.medicalAttention.patient?.dni && this.medicalAttention?.procedureCodes.length > 0 && this.medicalAttention.specialty) {
+    if (this.medicalAttention?.patient?.dni && this.medicalAttention?.procedureCodes.length > 0 && this.medicalAttention?.specialty) {
       return true;
     } else {
       return false;
@@ -258,7 +276,7 @@ export class PatientIntakePage implements OnInit {
   }
 
   toValidatePatientData() {
-    if (this.toValidateRequiredData()) {
+    if (this.toValidateRequiredData() && this.yearValidator()) {
       this.saveMedicalAttention();
     } else {
       this.alertService.presentBasicAlert('¡Estas olvidando algo!', 'Es necesario diligenciar el DNI del paciente, además de seleccionar una especialidad y al menos un código CUPS');
@@ -341,8 +359,7 @@ export class PatientIntakePage implements OnInit {
       this.medicalAttention.patient.name = this.profileForm.value.name ?? '';
       this.medicalAttention.patient.lastname = this.profileForm.value.lastName ?? '';
       this.medicalAttention.patient.gender = this.profileForm.value.gender ?? '';
-      this.medicalAttention.patient.birthday = this.parseBirthday(this.profileForm.value.birthday + '-01-01' ?? '');
-
+      this.medicalAttention.patient.birthday = this.parseBirthday(this.profileForm.value.birthday + '-01-01' ?? "1800-01-01") ;
     }
 
     const existePaciente = this.medicalAttetionRepository.existsPatientInProgressAttentions(

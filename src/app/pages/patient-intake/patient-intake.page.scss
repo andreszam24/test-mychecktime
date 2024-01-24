@@ -1,5 +1,5 @@
 .select-label-placement-start {
-  font-size: smaller;
+  font-size: large;
 }
 
 ion-header {
@@ -22,11 +22,15 @@ ion-searchbar.custom {
   --color: #fff;
   --placeholder-color: #fff;
   --icon-color: #fff;
-
   --border-radius: 20px;
+  padding-top: 20px;
+  input{
+    font-size: large !important;  
+ }
 }
 
 ion-content{
+    --background:var(--ion-color-app-aqua);
 
   .list{
     background: transparent;
@@ -50,15 +54,64 @@ ion-content{
 }
 
   #manualIntake{
-      background: transparent;
+      background:var(--ion-color-app-aqua);
       ion-list{
           background: transparent;
+          margin-top: 0;
+          padding-top: 0;
+          margin-bottom: 10px;
+          .seccion-div {
+            background: #c0f5f5;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            padding: 15px;
+
+            ion-searchbar.custom {
+                padding-top: 5px;
+              }
+
+            #cups{
+                --background: transparent;
+                display: inline-flex;
+                flex-wrap: wrap;
+                flex-direction: column;
+                div{
+                    height: 30px;
+                    margin: 10px;
+                    background: var(--ion-color-app-yellow);
+                    border-radius: 15px;
+                    padding: 5px 15px;
+                    font-size: large;
+                    font-weight: 500;
+                    ion-badge{
+                        margin: 0 10px 0 0;
+                        color: #fff;  
+                        background:transparent;
+                    }
+                }
+            }
+
+            #cups::part(native){
+                margin: 0;
+                padding: 0;
+            }
+        }
+
           ion-item{
               margin-bottom: 10px;
-              border-radius: 15px;
+              padding: 0 15px;
+              ion-input{
+                font-size: large;
+              }
           }
-          .box{
-              --background: #c0f5f5;
+
+          .item-select{
+            margin-top: 20px;
+          }
+
+          .item-box{
+            margin-bottom:0;
+            padding: 0;
           }
 
           ion-datetime {
@@ -68,14 +121,23 @@ ion-content{
               --ion-color-base: #68afd7 !important;
               --ion-color-step-150: #c0f5f5;
           }
+
           .list{
             padding: 0;
                 p{
                     margin: 0;
-                    margin-bottom: 10px;
                 }
-            
-        }  
+            }  
+
+        ion-text{
+            h3{
+                font-weight: 400;
+                margin-top: 0;
+                margin-left: 15px;
+            }
+        }
+
+        
       }
   }
 
@@ -87,7 +149,7 @@ ion-content{
   }
 
   a{
-      color: #68afd7;
+      color: #ffff;
   }
 
   .error-message {
@@ -184,4 +246,10 @@ ion-content{
 
 ion-fab-button {
   --background: var(--ion-color-app-blue);
+}
+
+footer{
+    ion-button{
+        margin: 0;
+    }
 }
