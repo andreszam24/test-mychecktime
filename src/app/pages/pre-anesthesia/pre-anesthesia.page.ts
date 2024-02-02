@@ -9,7 +9,7 @@ import { DateUtilsService } from 'src/app/services/utilities/date-utils.service'
 import { AdmissionList } from 'src/app/models/admission-list.model';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { StatusService } from 'src/app/services/status.service';
-import { IonSelectOption, IonTextarea} from '@ionic/angular/standalone';
+import { IonDatetime, IonDatetimeButton, IonModal, IonSelectOption, IonTextarea} from '@ionic/angular/standalone';
 import { EventsPanelComponent } from '../../components/events-panel/events-panel.component';
 
 
@@ -20,7 +20,7 @@ import { EventsPanelComponent } from '../../components/events-panel/events-panel
   templateUrl: './pre-anesthesia.page.html',
   styleUrls: ['./pre-anesthesia.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe, IonTextarea, EventsPanelComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe, IonModal, IonDatetimeButton, IonDatetime, IonTextarea, EventsPanelComponent]
 })
 export class PreAnesthesiaPage implements OnInit {
 

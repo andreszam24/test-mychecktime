@@ -9,12 +9,22 @@
   <div>
     <form class="check-form" >
       <ion-item lines="none" >
-        <ion-label class="title">Hora de ingreso</ion-label>
-        <ion-datetime [(ngModel)]="model.arrivalDate" name="arrivalDate" [max]="fechaMaxima" presentation="time"
-          displayFormat="HH:mm" pickerFormat="HH mm" placeholder="HH:mm"></ion-datetime>
+        <ion-label class="time title">Hora de ingreso</ion-label>
+        <ion-datetime-button datetime="time" [(ngModel)]="model.arrivalDate" name="arrivalDate"></ion-datetime-button>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime
+              id="time"
+              presentation="time"
+              name="arrivalDate"
+              [max]="fechaMaxima"
+              hourCycle="h23"
+            ></ion-datetime>
+          </ng-template>
+        </ion-modal>
       </ion-item>
       <ion-item lines="none">
-        <ion-checkbox [(ngModel)]="model.basicConfirmation" name="basicConfirmation" item-right>
+        <ion-label>
           <p class="title">El paciente ha confirmado</p>
           <p text-wrap>
             Su identidad <br />
@@ -22,24 +32,32 @@
             El procedimiento <br />
             Su consentimiento
           </p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.basicConfirmation" name="basicConfirmation" item-right>
         </ion-checkbox>
       </ion-item>
 
       <ion-item lines="none">
-        <ion-checkbox [(ngModel)]="model.site" name="site" item-right>
+        <ion-label>
           <p class="title">Demarcación del sitio / No procede</p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.site" name="site" item-right>
         </ion-checkbox>
       </ion-item>
 
       <ion-item lines="none">
-        <ion-checkbox [(ngModel)]="model.anesthesiaSecurity" name="anesthesiaSecurity" item-right>
+        <ion-label>
           <p text-wrap class="title">Se ha completado el control de la seguridad de la anestesia</p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.anesthesiaSecurity" name="anesthesiaSecurity" item-right>
         </ion-checkbox>
       </ion-item>
 
       <ion-item lines="none">
-        <ion-checkbox [(ngModel)]="model.pulsometer" name="pulsometer" item-right>
+        <ion-label>
           <p class="title">Pulsiómetro colocado y en funcionamiento</p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.pulsometer" name="pulsometer" item-right>
         </ion-checkbox>
       </ion-item>
 
@@ -55,12 +73,12 @@
         <ion-list-header>
           <ion-label>alergias conocidas?</ion-label>
         </ion-list-header>
-        <ion-list>
+        <ion-list class="background-list">
           <ion-item lines="none">
             <ion-radio [value]="false">No</ion-radio>
           </ion-item>
 
-          <ion-item lines="none">
+          <ion-item lines="none" class="border-none">
             <ion-radio [value]="true">Si</ion-radio>
           </ion-item>
         </ion-list>
@@ -70,12 +88,12 @@
         <ion-list-header>
           <ion-label>Vía aérea difícil / Riesgo de aspiración?</ion-label>
         </ion-list-header>
-        <ion-list>
+        <ion-list class="background-list">
           <ion-item lines="none">
             <ion-radio [value]="false">No</ion-radio>
           </ion-item>
 
-          <ion-item lines="none">
+          <ion-item lines="none" class="border-none">
             <ion-radio [value]="true">Sí, Hay instrumental y equipos / ayuda disponible</ion-radio>
           </ion-item>
         </ion-list>
@@ -85,12 +103,12 @@
         <ion-list-header>
           <ion-label>Riesgo de hemorragia > 500 ml (7 ml/kg para niños)?</ion-label>
         </ion-list-header>
-        <ion-list>
+        <ion-list class="background-list">
           <ion-item lines="none">
             <ion-radio [value]="false">No</ion-radio>
           </ion-item>
 
-          <ion-item lines="none">
+          <ion-item lines="none" class="border-none">
             <ion-radio [value]="true">Sí, Se ha previsto la disponibilidad de acceso intravenoso y líquidos
               adecuados</ion-radio>
           </ion-item>
