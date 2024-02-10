@@ -15,13 +15,12 @@ import { ConceptoTiempoRecambio } from 'src/app/models/concepto-tiempo-recambio.
 import { Cirujano } from 'src/app/models/cirujano.model';
 import { Instrumentador } from 'src/app/models/instrumentador.model';
 import { ParametersTimeCalculation } from 'src/app/models/parameters-time-calculation.model';
-import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { StatusService } from 'src/app/services/status.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { LoadingService } from 'src/app/services/utilities/loading.service';
 import { Toast } from '@capacitor/toast';
-import { AlertController, Platform, IonAlert } from '@ionic/angular/standalone';
+import { AlertController, Platform, IonAlert, IonButton } from '@ionic/angular/standalone';
 
 
 
@@ -31,7 +30,7 @@ import { AlertController, Platform, IonAlert } from '@ionic/angular/standalone';
   templateUrl: './operating-room-list.page.html',
   styleUrls: ['./operating-room-list.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent, IonButton]
 })
 export class OperatingRoomListPage implements OnInit {
   @ViewChild('audioPlayer') audioPlayer: ElementRef;
@@ -47,14 +46,16 @@ export class OperatingRoomListPage implements OnInit {
   parametersTimeCalculation = new ParametersTimeCalculation();
   isChangePatientTime=true;
   listConceptTimeReplacement: ConceptoTiempoRecambio[] = [];
-  
-  conceptoSeleccionadoTiempoRecambio: ConceptoTiempoRecambio = new ConceptoTiempoRecambio();
+  selectedConceptTimeReplacement: ConceptoTiempoRecambio = new ConceptoTiempoRecambio();
+  resultsSearchigConceptTimeReplacement= [...this.listConceptTimeReplacement];
   listSurgeons: Cirujano[] = [];
+  resultsSearchigSurgeons = [...this.listSurgeons];
   selectedSurgeon: Cirujano = new Cirujano();
   listInstrumentTechnicians: Instrumentador[] = [];
+  resultsSearchigInstrumentTechnicians = [...this.listInstrumentTechnicians];
   selectedInstrumentTechnician: Instrumentador = new Instrumentador();
   
-  mostrarBusquedaConceptos = false;
+  showConceptSearch = false;
 
   model: any = {
     confirmMembers: false,
@@ -80,13 +81,11 @@ export class OperatingRoomListPage implements OnInit {
     private platform: Platform
   ) { 
     this.operatingRoomList = new OperatingRoomList();
-    this.getListOfSurgeons();
-    this.getListOfInstrumentTechnicians();
-    this.getListConceptTimeReplacement();
+
   }
 
 ngOnInit() {
-    
+  this.loadMasterData()  
   }
 
   ionViewDidEnter(){
@@ -116,59 +115,78 @@ ngOnInit() {
     }
   }
 
+  loadMasterData() {
+    this.getAllSurgeons();
+    this.getAllInstrumentTechnicians();
+    this.getConceptTimeReplacement();
+  }
 
-  private getListOfSurgeons(){
+  getAllSurgeons(){
     this.listSurgeons = this.surgeonService.getLocalSurgeons();
-    if(this.listSurgeons.length == 0){
+    if (this.listSurgeons.length < 1) {
       this.surgeonService.getListOfSurgeons()
-      .pipe(
-        catchError((err, caught) => {
-          console.error('Ocurrió un error cargando la lista de cirujanos ', err, caught);
-          return of([]);        
-        })
-      )
-      .subscribe(
-        listSurgeons => {
-          this.listSurgeons = listSurgeons;
-        }
-      );
+        .pipe(
+          catchError((error) => {
+            console.error('Ups! Algo salio mal al consultar los cirujanos: ', error);
+            this.alertService.presentBasicAlert('Oops!', 'Parece algo salio mal conusltando las cirujanos y no logramos conectar con el servidor');
+            return of(null);
+          })
+        ).subscribe((result) => {
+          if (result && result.length > 0) {
+            this.listSurgeons = result;
+          } else {
+            this.alertService.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de cirujanos.');
+          }
+        });
     }
   }
 
-  private getListOfInstrumentTechnicians(){
+  getAllInstrumentTechnicians(){
     this.listInstrumentTechnicians = this.instrumentTechnicianService.getLocalInstrumentTechnicians();
-    if(this.listInstrumentTechnicians.length == 0){
+    if (this.listInstrumentTechnicians.length < 1) {
       this.instrumentTechnicianService.getListOfInstrumentTechnicians()
-      .pipe(
-        catchError((err, caught) => {
-          console.error('Ocurrió un error cargando la lista de cirujanos ', err, caught);
-          return of([]);        
-        })
-      )
-      .subscribe(
-        listInstrumentTechnicians => {
-          this.listInstrumentTechnicians = listInstrumentTechnicians;
-        }
-      );
+        .pipe(
+          catchError((error) => {
+            console.error('Ups! Algo salio mal al consultar los instrumentadores: ', error);
+            this.alertService.presentBasicAlert('Oops!', 'Parece algo salio mal conusltando los instrumentadores y no logramos conectar con el servidor');
+            return of(null);
+          })
+        ).subscribe((result) => {
+          if (result && result.length > 0) {
+            this.listInstrumentTechnicians = result;
+          } else {
+            this.alertService.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de instrumentadores.');
+          }
+        });
     }
   }
 
-  private getListConceptTimeReplacement(){
-    this.listConceptTimeReplacement = this.conceptTimeReplacementService.getLocalConceptTimeReplacement();
-    if(this.listConceptTimeReplacement.length == 0){
-      this.conceptTimeReplacementService.getListConceptTimeReplacement()
-      .pipe(
-        catchError((err, caught) => {
-          console.error('Ocurrió un error cargando la lista de cirujanos ', err, caught);
-          return of([]);        
-        })
-      )
-      .subscribe(
-        listConceptTimeReplacement => {
-          this.listConceptTimeReplacement = listConceptTimeReplacement;
-        }
-      );
+  getConceptTimeReplacement(){
+      this.listConceptTimeReplacement = this.conceptTimeReplacementService.getLocalConceptTimeReplacement();
+      if (this.listConceptTimeReplacement.length < 1) {
+        this.conceptTimeReplacementService.getListConceptTimeReplacement()
+          .pipe(
+            catchError((error) => {
+              console.error('Ups! Algo salio mal al consultar los tiempos de recambio: ', error);
+              this.alertService.presentBasicAlert('Oops!', 'Parece algo salio mal conusltando los tiempos de recambio y no logramos conectar con el servidor');
+              return of(null);
+            })
+          ).subscribe((result) => {
+            if (result && result.length > 0) {
+              this.listConceptTimeReplacement = result;
+            } else {
+              this.alertService.presentBasicAlert('Oops!', 'Parece que el servidor no tiene data de tiempos de recambio.');
+            }
+          });
     }
+   
+  }
+
+  private showErrorToast(msg: string) {
+    Toast.show({
+      text: msg,
+      duration: 'long'
+    });
   }
 
   isValid() {
@@ -189,32 +207,31 @@ ngOnInit() {
 
   endPageProccess() {
     if(this.isChangePatientTime) {
-    this.showAlertTimeReplacement();
+    this.showAlertTiempoRecambio();
     } else {
       this.goToNextPage();
     }
   }
 
-  showAlertTimeReplacement() {
+  showAlertTiempoRecambio() {
     this.recambio = new Recambio();
-    let loading = this.showLoading();
+    this.loadingService.showLoadingBasic("Cargando...");
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {      
       this.parametersTimeCalculation.idAnes = sm.currentAnesthesiologist.id;
       this.parametersTimeCalculation.idOperatingRoom = sm.idOperatingRoom;
       this.parametersTimeCalculation.operatingRoomDate = this.operatingRoomList.checkDate.toISOString();
-
       this.medicalService.calculateChangePatientTime(this.parametersTimeCalculation).subscribe(
         res => {
           if(res !== null) {
-            loading.dismiss();
+            this.loadingService.dismiss();
               this.recambio.elapsedTime = res.replace(/"/g, "");
-              this.mostrarAlerta(this.recambio.elapsedTime);
+              this.showAlert(this.recambio.elapsedTime);
             }
         },e => {
           
-          loading.dismiss(); 
+          this.loadingService.dismiss(); 
           if(e.status !== undefined && e.status === 401 && AuthService.getAuthToken() != null){
-            this.showAlertTimeReplacement();
+            this.showAlertTiempoRecambio();
           }else{
             this.showErrorToast('Trabajando Offline por baja señal. No se cálculo el tiempo de recambio. Pulse continuar.');
             this.isChangePatientTime = false;
@@ -228,69 +245,42 @@ ngOnInit() {
   });
 }
 
-  private mostrarAlerta(changeTime: string) {
-    /*let alert = this.alertCtrl.create({
-      message: '¿El tiempo de recambio es de ' + changeTime + ' (Días:Horas:Minutos:Segundos)?',
-      buttons: [
-        {
-          text: 'No',
-          role: 'cancel',
-          handler: () => this.procesarRespuestaRecambio(false)
-        },
-        {
-          text: 'Si',
-          handler: () => this.procesarRespuestaRecambio(true)
-        }
-      ]
-    });
-    alert.present();*/
-  }
+async showAlert(changeTime: string){
+  const alert = await this.alertCtrl.create({
+    message: '¿El tiempo de recambio es de ' + changeTime + ' (Días:Horas:Minutos:Segundos)?',
+    buttons: [
+      {
+        text: 'No',
+        role: 'cancel',
+        handler: () => this.processReplacementResponse(false)
+      },
+      {
+        text: 'Si',
+        handler: () => this.processReplacementResponse(true)
+      }
+    ]
+  });
+  await alert.present();
 
- /* async showOptionsModal(msg: string): Promise<boolean> {
-    return new Promise<boolean>(async (resolve) => {
-      let alert = await this.alertCtrl.create({
-        message: msg,
-        buttons: [
-          {
-            text: 'Cancelar',
-            role: 'cancel',
-            handler: () => {
-              alert.dismiss().then(() => resolve(false));
-              return false;
-            }
-          },
-          {
-            text: 'Aceptar',
-            handler: () => {
-              alert.dismiss().then(() => resolve(true));
-              return false;
-            }
-          }
-        ]
-      });
+}
 
-      await alert.present();
-    });
+private processReplacementResponse(accepted: boolean){
+  this.recambio.accepted = accepted;
+  const time = this.recambio.elapsedTime.split(":");
+  
+  if(!accepted || parseInt(time[0]) > 0 || parseInt(time[1]) > 0 || parseInt(time[2]) > 30) {
+    this.showSearchConcepts = true;
+  } else {
+    this.goToNextPage();
   }
-*/
+}
 
- private procesarRespuestaRecambio(accepted: boolean) {
-    this.recambio.accepted = accepted;
-    const time = this.recambio.elapsedTime.split(":");
-    
-    if(!accepted || parseInt(time[0]) > 0 || parseInt(time[1]) > 0 || parseInt(time[2]) > 30) {
-      this.mostrarBusquedaConceptos = true;
-    } else {
-      this.goToNextPage();
-    }
+processJustification(){
+  if(!!this.selectedConceptTimeReplacement && !!this.selectedConceptTimeReplacement.name) {
+    this.recambio.conceptoRecambio = this.selectedConceptTimeReplacement;
+    this.goToNextPage();
   }
-
-  procesarJustificacion() {
-    if(!!this.conceptoSeleccionadoTiempoRecambio && !!this.conceptoSeleccionadoTiempoRecambio.name) {
-      this.recambio.conceptoRecambio = this.conceptoSeleccionadoTiempoRecambio;
-      this.goToNextPage();
-    }
-  }
+}
 
   checkDate() {
     this.operatingRoomList.checkDate = new Date();
@@ -298,7 +288,7 @@ ngOnInit() {
     this.operatingRoomList.simpleCheckHour = this.datepipe.transform(this.operatingRoomList.checkDate,'HH:mm:ss')!;
   }
 
-  goToNextPage(){
+  goToNextPage() {
     const operatingRoomList = this.mapViewToModel();
     
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
@@ -311,7 +301,7 @@ ngOnInit() {
       this.medicalService.saveMedicalAttention(sm, 'sync')
         .then(result => {
             if(result) {
-              this.navCtrl.navigateForward('AnestesiaQuirofanoPage');
+              this.navCtrl.navigateForward('/anesthesia-operating-room');
             }
         }).catch(() => console.error('No se pudo guardar el servicio médico'));
     }).catch(() => console.log('Error consultando la atencion médica'));
@@ -330,100 +320,65 @@ ngOnInit() {
     return this.operatingRoomList;
   }
 
-  private showErrorToast(msg: string) {
-    Toast.show({
-      text:msg,
-      duration: "long",
-      position: "bottom"
-    });
+  searchSurgeons(event: any) {
+    const query = event.target.value.toLowerCase().trim();
+    if (query != '' && query.length > 4) {
+      this.resultsSearchigSurgeons = [];
+      this.searchSurgeonsByName(query);
+    } 
   }
 
-  private showLoading(): any {
-    this.loadingService.showLoadingBasic("Cargando...");
+  searchSurgeonsByName(name: string) {
+    this.resultsSearchigSurgeons = this.listSurgeons.filter((surgeon) => surgeon.name.toLowerCase().indexOf(name) > -1);
+    if (this.resultsSearchigSurgeons.length === 0) {
+      this.alertService.presentBasicAlert('Oops!', 'Parece que a quien buscas no se encuentra. Por favor intenta con otra búsqueda.');
+    } 
   }
 
- /*conceptoSelected(event: { component: SelectSearchable, value: any }) {
-    const concepto : ConceptoTiempoRecambio = JSON.parse(JSON.stringify(event.value.value));
-    this.conceptoSeleccionadoTiempoRecambio = concepto;
+  surgeonsSelected(surgeon: Cirujano) {
+    this.selectedSurgeon = surgeon;
+    this.resultsSearchigSurgeons = [];
   }
 
-  cirujanoSelected(event: { component: SelectSearchable, value: any }) {
-    const cirujano : Cirujano = JSON.parse(JSON.stringify(event.value.value));
-    this.cirujanoSeleccionado = cirujano;
+  searchInstrumentTechnician(event: any) {
+    const query = event.target.value.toLowerCase().trim();
+    if (query != '' && query.length > 4) {
+      this.resultsSearchigInstrumentTechnicians = [];
+      this.searchInstrumentTechnicianByName(query);
+    } 
   }
 
-  instrumentadorSelected(event: { component: SelectSearchable, value: any }) {
-    const instrumentador : Instrumentador = JSON.parse(JSON.stringify(event.value.value));
-    this.instrumentadorSeleccionado = instrumentador;
+  searchInstrumentTechnicianByName(name: string) {
+    this.resultsSearchigInstrumentTechnicians = this.listInstrumentTechnicians.filter((instrumentTechnician) => instrumentTechnician.name.toLowerCase().indexOf(name) > -1);
+    if (this.resultsSearchigInstrumentTechnicians.length === 0) {
+      this.alertService.presentBasicAlert('Oops!', 'Parece que a quien buscas no se encuentra. Por favor intenta con otra búsqueda.');
+    } 
   }
 
-  searchConceptoTemplate(concepto: any) {
-    
-    return `${concepto.value.name}`;
+  instrumentTechnicianSelected(instrumentTechnician: Instrumentador) {
+    this.selectedInstrumentTechnician = instrumentTechnician;
+    this.resultsSearchigInstrumentTechnicians = [];
   }
 
-  searchCirujanoTemplate(cirujano: any) {
-    
-    return `${cirujano.value.name} ${cirujano.value.lastname}`;
+  searchConceptTime(event: any){
+    const query = event.target.value.toLowerCase().trim();
+    if (query != '' && query.length > 4) {
+      this.resultsSearchigConceptTimeReplacement = [];
+      this.searchConceptTimeByName(query);
+    } 
+
   }
 
-  searchInstrumentadorTemplate(instrumentador: any) {
-    
-    return `${instrumentador.value.name} ${instrumentador.value.lastname}`;
+  searchConceptTimeByName(name: string){
+    this.resultsSearchigConceptTimeReplacement = this.listConceptTimeReplacement.filter((concept) => concept.name.toLowerCase().indexOf(name) > -1);
+    if (this.resultsSearchigConceptTimeReplacement.length === 0) {
+      this.alertService.presentBasicAlert('Oops!', 'Parece que a quien buscas no se encuentra. Por favor intenta con otra búsqueda.');
+    } 
   }
 
-  searchCirujanos(event: { component: SelectSearchable, text: string }) {
-    let text = (event.text || '').trim().toLowerCase();
-    
-    if (!text) {
-        event.component.items = [];
-        return;
-    } else if (text.length < 3) {
-        return;
-    }
-
-    event.component.isSearching = true;
-
-    let p = this.cirujanoService.searchByName(text);
-    event.component.items = p as any;
-    event.component.isSearching = false;
-    
+  conceptTimeReplacementselected(conceptTimeReplacement:ConceptoTiempoRecambio){
+    this.selectedConceptTimeReplacement = conceptTimeReplacement;
+    this.resultsSearchigConceptTimeReplacement = [];
   }
-
-  searchInstrumentadores(event: { component: SelectSearchable, text: string }) {
-    let text = (event.text || '').trim().toLowerCase();
-    
-    if (!text) {
-        event.component.items = [];
-        return;
-    } else if (text.length < 3) {
-        return;
-    }
-
-    event.component.isSearching = true;
-
-    let p = this.instrumentadorService.searchByName(text);
-    event.component.items = p as any;
-    event.component.isSearching = false;
-    
-  }
-
-  searchConceptos(event: { component: SelectSearchable, text: string }) {
-    let text = (event.text || '').trim().toLowerCase();
-    
-    if (!text) {
-        event.component.items = [];
-        return;
-    } else if (text.length < 3) {
-        return;
-    }
-
-    event.component.isSearching = true;
-
-    let p = this.conceptoTiempoRecambioService.searchByName(text);
-    event.component.items = p as any;
-    event.component.isSearching = false;
-  
-  }*/
 
 }

@@ -12,6 +12,8 @@ import { IonToggle, IonItem, IonContent, IonList, IonLabel, IonFooter, IonSpinne
 import { CupsCodesService } from 'src/app/services/cups-codes.service';
 import { SpecialtyService } from 'src/app/services/specialty.service';
 import { OperationRoomService } from 'src/app/services/operation-room.service';
+import { SurgeonService } from 'src/app/services/surgeon.service';
+import { InstrumentTechnicianService } from 'src/app/services/instrument-technician.service';
 
 
 @Component({
@@ -39,7 +41,10 @@ export class LoginPage implements OnInit {
     private loadingCtrl: LoadingController,
     private cupsCodesService: CupsCodesService,
     private specialtyService: SpecialtyService,
-    private operationRoomService:OperationRoomService
+    private operationRoomService:OperationRoomService,
+    private surgeonService: SurgeonService,
+    private instrumentTechnicianService: InstrumentTechnicianService,
+
   ) { }
 
   ngOnInit() {

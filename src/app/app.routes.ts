@@ -47,7 +47,8 @@ export const routes: Routes = [
   {
     path: 'shift-handover',
     loadComponent: () => import('./pages/shift-handover/shift-handover.page').then( m => m.ShiftHandoverPage)
-  },  {
+  },
+  {
     path: 'select-operating-room',
     loadComponent: () => import('./pages/select-operating-room/select-operating-room.page').then( m => m.SelectOperatingRoomPage)
   },
@@ -58,6 +59,10 @@ export const routes: Routes = [
   {
     path: 'operating-room-list',
     loadComponent: () => import('./pages/operating-room-list/operating-room-list.page').then( m => m.OperatingRoomListPage)
+  },
+  {
+    path: 'anesthesia-operating-room',
+    loadComponent: () => import('./pages/anesthesia-operating-room/anesthesia-operating-room.page').then( m => m.AnesthesiaOperatingRoomPage)
   },
 
 
