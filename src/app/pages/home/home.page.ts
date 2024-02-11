@@ -229,7 +229,8 @@ export class HomePage implements OnInit {
     const stateRouteMap: { [key: string]: string } = {
         'nueva': '/pre-anesthesia',
         'AdmissionList': '/select-operating-room',
-        'SelectOperatingRoom': '/check-patient-info'
+        'SelectOperatingRoom': '/check-patient-info',
+        'OperatingRoomList': '/anesthesia-operating-room',
     };
 
     const nextState = stateRouteMap[selectedMedicalAttention.state];

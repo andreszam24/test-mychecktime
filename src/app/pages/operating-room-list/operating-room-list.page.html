@@ -138,7 +138,7 @@
       <ion-radio-group name="diagnosticImages" [(ngModel)]="model.diagnosticImages" (ionChange)="checkDate()">
         <ion-list-header>
           <ion-label>
-            ¿Pueden visualizarse las imágenes dianósticas escenciales?
+            ¿Pueden visualizarse las imágenes diagnósticas escenciales?
           </ion-label>
         </ion-list-header>
         <ion-item>
@@ -149,11 +149,10 @@
         </ion-item>
       </ion-radio-group>
 
-      <ion-row>
-        <ion-col text-center>
-          <button id="btnContinuar" ion-button round [disabled]="!isValid()" (click)="endPageProccess()"
-            color="app-blue">Pasar al siguiente
-          </button>
+      <ion-row class="ion-justify-content-center">
+        <ion-col class="">
+          <ion-button shape="round"  [disabled]="!isValid()" (click)="endPageProccess()">Pasar al siguiente
+          </ion-button>
         </ion-col>
       </ion-row>
     </div>
@@ -178,10 +177,9 @@
           <ion-text class="item-text-wrap"> {{selectedConceptTimeReplacement.name}} </ion-text>
         </ion-item>
       </div>
-
       <ion-row>
-        <ion-col text-center>
-          <ion-button (click)="processJustification()">
+        <ion-col>
+          <ion-button shape="round" (click)="processJustification()">
             Pasar al siguiente
           </ion-button>
         </ion-col>

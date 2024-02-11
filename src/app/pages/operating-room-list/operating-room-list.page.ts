@@ -110,6 +110,11 @@ ngOnInit() {
       this.audio.play();
       this.audio.addEventListener('ended', async () => {
         this.audioAlert.dismiss();
+        this.model.confirmMembers = true;
+        this.model.confirmIdentity= true;
+        this.model.criticalEvents= true;
+        this.model.anesthesiaTeamReview= true;
+        this.model.nurseTeamReview= true;
         console.log('fin');
       });
     }
