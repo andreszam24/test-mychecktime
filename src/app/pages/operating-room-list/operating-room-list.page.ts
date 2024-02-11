@@ -89,7 +89,13 @@ ngOnInit() {
   }
 
   ionViewDidEnter(){
-    if (this.alertCtrl.getTop() != null) {
+    if (!this.model.confirmMembers) {
+      this.audioAlert.isOpen = true;
+    } else{
+      this.audioAlert.isOpen = false;
+    }
+
+    if (!this.model.confirmMembers && this.alertCtrl.getTop() != null) {
       this.playAudio();}
   }
 

@@ -80,7 +80,7 @@ export class AppComponent {
     } 
     else {
       this.appPages = [
-        { title: 'Pacientes Pendientes', url: '/home' },
+        { title: 'Pacientes pendientes', url: '/home' },
         { title: 'Cambio de turno', url: '/shift-handover' },
         { title: 'Sincronizacion con el servidor', url: '/synchronization' },
       ];

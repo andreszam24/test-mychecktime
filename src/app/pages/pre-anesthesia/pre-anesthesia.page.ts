@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, NavController } from '@ionic/angular';
@@ -23,6 +23,9 @@ import { EventsPanelComponent } from '../../components/events-panel/events-panel
   imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe, IonModal, IonDatetimeButton, IonDatetime, IonTextarea, EventsPanelComponent]
 })
 export class PreAnesthesiaPage implements OnInit {
+
+  @ViewChild('dateTimeButton') dateTimeButton: IonDatetime;
+
 
   barcodes: Barcode[] = [];
   isSupported = false;
@@ -58,6 +61,8 @@ export class PreAnesthesiaPage implements OnInit {
   ngOnInit() {
     this.startBarcodeScanner();
   }
+
+
 
 
   private startBarcodeScanner() {
@@ -177,8 +182,8 @@ export class PreAnesthesiaPage implements OnInit {
     }).catch(() => console.log('Error consultando la atencion médica'));
   }
 
-  
   private mapViewToModel() {
+    this.model.arrivalDate = DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(this.model.arrivalDate));
     this.admissionList.arrivalDate = DateUtilsService.stringHour2Date(this.model.arrivalDate);
     this.admissionList.simpleArrivalDate = this.datepipe.transform(this.admissionList.arrivalDate,'yyyy-MM-dd')!;
     this.admissionList.simpleArrivalHour = this.datepipe.transform(this.admissionList.arrivalDate,'HH:mm:ss')!;
