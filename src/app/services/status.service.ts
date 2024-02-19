@@ -77,15 +77,15 @@ export class StatusService {
   static readonly ESTADOS: Array<Estado> = [
     Estado.create(0, StatusService.INICIO, 'home'),
     Estado.create(1, StatusService.ADMISSION_LIST, 'pre-anesthesia'),
-//TODO: borrar    Estado.create(2, StatusService.SELECT_OPERATING_ROOM, SeleccionarQuirofanoPage),
-    /*Estado.create(3, StatusService.OPERATING_ROOM_LIST, ListaQuirofanoPage),
-    Estado.create(4, StatusService.START_ANESTHESIA, AnestesiaQuirofanoPage),
-    Estado.create(5, StatusService.END_START_ANESTHESIA, AnestesiaQuirofanoPage),
-    Estado.create(6, StatusService.START_SURGERY, AnestesiaQuirofanoPage),
-    Estado.create(7, StatusService.END_SUGERY, AnestesiaQuirofanoPage),
-    Estado.create(8, StatusService.EXIT_OPERATING_ROOM_LIST, CkeckeoSalidaQuirofanoPage),
-    Estado.create(9, StatusService.FROM_OPERATING_ROOM_TO, SalidaQuirofanoPage),
-    Estado.create(10, StatusService.SELECCION_DESTINO, SeleccionDestinoPage),*/
+    Estado.create(2, StatusService.SELECT_OPERATING_ROOM, 'select-operating-room'),
+    Estado.create(3, StatusService.OPERATING_ROOM_LIST, 'operating-room-list'),
+    Estado.create(4, StatusService.START_ANESTHESIA, 'anesthesia-operating-room'),
+    Estado.create(5, StatusService.END_START_ANESTHESIA, 'anesthesia-operating-room'),
+    Estado.create(6, StatusService.START_SURGERY, 'anesthesia-operating-room'),
+    Estado.create(7, StatusService.END_SUGERY, 'anesthesia-operating-room'),
+    Estado.create(8, StatusService.EXIT_OPERATING_ROOM_LIST, 'operating-room-exit-check'),
+    Estado.create(9, StatusService.FROM_OPERATING_ROOM_TO, 'operating-room-exit'),
+    Estado.create(10, StatusService.SELECCION_DESTINO, 'destination-selection'),
     Estado.create(11, StatusService.TERMINADO, 'home'),
     Estado.create(12, StatusService.CANCELADO, 'home')
   ];
@@ -93,24 +93,79 @@ export class StatusService {
   static readonly ORDEN_ESTADOS: Array<Estado> = [
     Estado.create(0, StatusService.INICIO, 'home'),
     Estado.create(1, StatusService.ADMISSION_LIST, 'pre-anesthesia'),
-    /*Estado.create(2, StatusService.OPERATING_ROOM_LIST, ListaQuirofanoPage),
-    Estado.create(3, StatusService.START_ANESTHESIA, AnestesiaQuirofanoPage),
-    Estado.create(4, StatusService.END_START_ANESTHESIA, AnestesiaQuirofanoPage),
-    Estado.create(5, StatusService.START_SURGERY, AnestesiaQuirofanoPage),
-    Estado.create(6, StatusService.END_SUGERY, AnestesiaQuirofanoPage),
-    Estado.create(7, StatusService.EXIT_OPERATING_ROOM_LIST, CkeckeoSalidaQuirofanoPage),
-    Estado.create(8, StatusService.FROM_OPERATING_ROOM_TO, SalidaQuirofanoPage),
-    Estado.create(9, StatusService.SELECCION_DESTINO, SeleccionDestinoPage),
-    Estado.create(10, StatusService.DESTINO_CASA, DestinoCasaPage),
-    Estado.create(10, StatusService.DESTINO_HOSPITALIZACION, DestinoHospitalizacionPage),
-    Estado.create(10, StatusService.DESTINO_UCI, DestinoUCIPage),
-    Estado.create(10, StatusService.DESTINO_SALA_DE_PAZ, DestinoFallecimientoPage),
-    Estado.create(10, StatusService.DESTINO_CIRUGIA, DestinoCirugiaPage),*/
+    Estado.create(2, StatusService.SELECT_OPERATING_ROOM, 'select-operating-room'),
+    Estado.create(3, StatusService.OPERATING_ROOM_LIST, 'operating-room-list'),
+    Estado.create(4, StatusService.START_ANESTHESIA, 'anesthesia-operating-room'),
+    Estado.create(5, StatusService.END_START_ANESTHESIA, 'anesthesia-operating-room'),
+    Estado.create(6, StatusService.START_SURGERY, 'anesthesia-operating-room'),
+    Estado.create(7, StatusService.END_SUGERY, 'anesthesia-operating-room'),
+    Estado.create(8, StatusService.EXIT_OPERATING_ROOM_LIST, 'operating-room-exit-check'),
+    Estado.create(9, StatusService.FROM_OPERATING_ROOM_TO, 'operating-room-exit'),
+    Estado.create(10, StatusService.SELECCION_DESTINO, 'destination-selection'),
     Estado.create(11, StatusService.TERMINADO, 'home'),
-    Estado.create(11, StatusService.CANCELADO, 'home')
+    Estado.create(12, StatusService.CANCELADO, 'home')
   ];
 
-  constructor() { }
+  public static next(status: string): any {
+    if(status === undefined || status === null || status === StatusService.INICIO) {
+        return 'home';
+    }
+    if(status === StatusService.TERMINADO || status === StatusService.CANCELADO) {
+        return null;
+    }
+
+    if(status === StatusService.SELECCION_DESTINO) {
+        return 'destination-selection';
+    }
+
+    if(status === StatusService.DESTINO_CASA) {
+        return 'home-destination';
+    }
+
+    if(status === StatusService.DESTINO_HOSPITALIZACION) {
+        return 'hospitalization-destination';
+    }
+
+    if(status === StatusService.DESTINO_UCI) {
+        return 'uci-destination';
+    }
+
+    if(status === StatusService.DESTINO_SALA_DE_PAZ) {
+        return 'decease-destination';
+    }
+
+    if(status === StatusService.DESTINO_CIRUGIA) {
+        return 'surgery-destination';
+    }
+
+    let page;
+    const currentStatusItem = StatusService.ESTADOS.find(e => e.name === status);
+
+    if(!!currentStatusItem) {
+        const nextStatusItem = StatusService.ESTADOS.find(e => e.index === (currentStatusItem.index + 1) );
+
+        page = nextStatusItem!.page || null;
+    }
+    return page;
+}
+
+  public static nextStatus(status: string): string {
+    if(status === undefined || status === null || status === StatusService.INICIO) {
+        return StatusService.ADMISSION_LIST;
+    }
+    if(status === StatusService.TERMINADO || status === StatusService.CANCELADO) {
+        return '';
+    }
+
+    let nextStatus;
+    const currentStatusItem = StatusService.ESTADOS.find(e => e.name === status);
+    
+    if(!currentStatusItem) {
+        const nextStatusItem = StatusService.ESTADOS.find(e => e.index === (currentStatusItem!.index + 1) );
+        nextStatus = nextStatusItem!.name || null;
+    }
+    return nextStatus ?? '';
+}
 
   public static isAtLeast(status: string, current: string): boolean {
     if (!(!!current)) {
