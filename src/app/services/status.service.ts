@@ -150,25 +150,32 @@ export class StatusService {
 }
 
   public static nextStatus(status: string): string {
+    console.log('nextStatus status entra: ',status )
     if(status === undefined || status === null || status === StatusService.INICIO) {
+      console.log('nextStatus status ADMISSION_LIST fin: ',StatusService.ADMISSION_LIST )
         return StatusService.ADMISSION_LIST;
     }
     if(status === StatusService.TERMINADO || status === StatusService.CANCELADO) {
+      console.log('nextStatus status cancelado/terminado fin')
         return '';
     }
 
     let nextStatus;
     const currentStatusItem = StatusService.ESTADOS.find(e => e.name === status);
     
-    if(!currentStatusItem) {
+    if(!!currentStatusItem) {
         const nextStatusItem = StatusService.ESTADOS.find(e => e.index === (currentStatusItem!.index + 1) );
         nextStatus = nextStatusItem!.name || null;
     }
+
+    console.log('nextStatus status fin: ',nextStatus )
     return nextStatus ?? '';
 }
 
   public static isAtLeast(status: string, current: string): boolean {
+    console.log('isAtLeast() inicio: ', 'status: ',status,'current: ', current)
     if (!(!!current)) {
+      console.log(current)
       return false;
     }
 
@@ -178,6 +185,7 @@ export class StatusService {
     const currentIndex = currentStatusItem?.index || -1;
     const queryIndex = queryStatusItem?.index || -1;
 
+    console.log('isAtLeast() fin: ', 'currentIndex: ',currentIndex,'queryIndex: ', queryIndex,' = ', currentIndex >= queryIndex)
     return currentIndex >= queryIndex;
   }
 

@@ -1,0 +1,71 @@
+<ion-menu  id="menu-anestesia" type="overlay" (ionOpen)="menuOpened()">
+  
+  <ion-content id="opciones-anestesia" color="app-blue" class="menuBlueBackground">
+
+    <div class="spacer" style="height: 10%"></div>
+
+    <div class="row">
+      <div class="col col-25"></div>
+      <div class="col col-25">
+        <img src="assets/imgs/anestesiaxhdpi.png">
+      </div>
+      <div class="col col-25"></div>
+    </div>
+
+    <ion-row>
+        <ion-col text-center>
+          <ion-button shape="round"
+          [color]="anesthesiaSelected('Bloqueo') ? 'app-red' : 'app-gray'"
+          (click)="addAnesthesiaType('Bloqueo')">
+            Bloqueo
+          </ion-button>
+        </ion-col>
+    </ion-row>
+
+    <ion-row>
+        <ion-col text-center>
+          <ion-button
+          shape="round"
+          [color]="anesthesiaSelected('Espinal') ? 'app-red' : 'app-gray'"
+          (click)="addAnesthesiaType('Espinal')">
+            Espinal
+          </ion-button>
+        </ion-col>
+    </ion-row>
+
+    <ion-row>
+        <ion-col text-center>
+          <ion-button
+          shape="round"
+          [color]="anesthesiaSelected('Peridural') ? 'app-red' : 'app-gray'"
+          (click)="addAnesthesiaType('Peridural')">
+            Peridural
+          </ion-button>
+        </ion-col>
+    </ion-row>
+
+    <ion-row>
+        <ion-col text-center>
+          <ion-button
+          shape="round"
+          [color]="anesthesiaSelected('General') ? 'app-red' : 'app-gray'"
+          (click)="addAnesthesiaType('General')">
+            General
+          </ion-button>
+        </ion-col>
+    </ion-row>
+
+    <ion-row>
+        <ion-col text-center>
+          <ion-button
+          shape="round"
+          [color]="anesthesiaSelected('Sedación') ? 'app-red' : 'app-gray'"
+          (click)="addAnesthesiaType('Sedación')">
+          Sedación
+          </ion-button>
+        </ion-col>
+    </ion-row>
+
+  </ion-content>
+
+</ion-menu>

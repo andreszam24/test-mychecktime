@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, NavController } from '@ionic/angular';
@@ -8,13 +8,14 @@ import { StatusService } from 'src/app/services/status.service';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { MenuController } from '@ionic/angular/standalone';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
+import { MenuAnesthesiaComponent } from 'src/app/components/menu-anesthesia/menu-anesthesia.component';
 
 @Component({
   selector: 'app-anesthesia-operating-room',
   templateUrl: './anesthesia-operating-room.page.html',
   styleUrls: ['./anesthesia-operating-room.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent, MenuAnesthesiaComponent]
 })
 export class AnesthesiaOperatingRoomPage implements OnInit {
 
@@ -28,16 +29,11 @@ export class AnesthesiaOperatingRoomPage implements OnInit {
     private medicalService: InProgressMedicalAttentionService,
   ) { }
 
-  ngOnInit() {
-    this.validarSiEventoCancelarVisible();
-    this.medicalService.getInProgressMedicalAtenttion().then(sm => {
-      this.currentServiceStatus = sm.state;
-    }).catch(() => console.error('Error consultando el servicio médico'));
-  }
+  ngOnInit() {this.validarSiEventoCancelarVisible();}
 
   private validarSiEventoCancelarVisible() {
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
-      // TODO: Validar regla de negocio
+      this.currentServiceStatus = sm.state;
       if(StatusService.isAtLeast('StartAnesthesia', sm.state)) {
         this.eventoCancelarVisible = true;
         this.menu.enable(true, 'main-content');//menu-anestesia
@@ -132,14 +128,16 @@ export class AnesthesiaOperatingRoomPage implements OnInit {
   }
 
   color(searchedStatus: string): string {
+    console.log('searchedStatus: ',searchedStatus, 'this.currentServiceStatus: ', this.currentServiceStatus )
     if(StatusService.nextStatus(this.currentServiceStatus) === searchedStatus) {
-      return '--ion-color-app-yellow';
-    }
-
-    if(StatusService.isAtLeast(searchedStatus, this.currentServiceStatus)) {
-      return '--ion-color-app-blue';
+      console.log('var(--ion-color-app-yellow)')
+      return 'var(--ion-color-app-yellow)';
+    } else if(StatusService.isAtLeast(searchedStatus, this.currentServiceStatus)) {
+      console.log('var(--ion-color-app-yellow)')
+      return 'var(--ion-color-app-blue)';
     } else {
-      return '--ion-color-app-gray';
+      console.log('var(--ion-color-app-yellow)')
+      return 'var(--ion-color-app-gray)';
     }
   }
 

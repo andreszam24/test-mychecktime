@@ -232,6 +232,7 @@ export class HomePage implements OnInit {
         'SelectOperatingRoom': '/check-patient-info',
         'OperatingRoomList': '/anesthesia-operating-room',
         'StartAnesthesia': '/anesthesia-operating-room',
+        'EndSurgery':'/operating-room-exit-check',
     };
 
     const nextState = stateRouteMap[selectedMedicalAttention.state];
