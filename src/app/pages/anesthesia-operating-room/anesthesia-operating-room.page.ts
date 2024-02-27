@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, NavController } from '@ionic/angular';
@@ -6,7 +6,7 @@ import { HeaderComponent } from 'src/app/components/header/header.component';
 import { EventsPanelComponent } from 'src/app/components/events-panel/events-panel.component';
 import { StatusService } from 'src/app/services/status.service';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
-import { MenuController } from '@ionic/angular/standalone';
+import { MenuController } from '@ionic/angular';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { MenuAnesthesiaComponent } from 'src/app/components/menu-anesthesia/menu-anesthesia.component';
 
@@ -21,6 +21,7 @@ export class AnesthesiaOperatingRoomPage implements OnInit {
 
   eventoCancelarVisible: boolean = false;
   currentServiceStatus: string;
+  anesthesiaTypes: Array<string>;
 
   datepipe = new DatePipe('en-US');
   constructor(
@@ -36,7 +37,7 @@ export class AnesthesiaOperatingRoomPage implements OnInit {
       this.currentServiceStatus = sm.state;
       if(StatusService.isAtLeast('StartAnesthesia', sm.state)) {
         this.eventoCancelarVisible = true;
-        this.menu.enable(true, 'main-content');//menu-anestesia
+        this.menu.enable(true, 'menu-anestesia');
       }
     }).catch(e => Promise.reject(e));
   }
@@ -58,8 +59,8 @@ export class AnesthesiaOperatingRoomPage implements OnInit {
   }
 
   private habilitarMenu() {
-    this.menu.enable(true, 'main-content');//menu-anestesia
-    this.menu.open();
+    this.menu.enable(true, 'menu-anestesia');
+    this.menu.open('menu-anestesia');
   }
 
   private inhabilitarOpcionEventoCancelar() {
@@ -128,21 +129,47 @@ export class AnesthesiaOperatingRoomPage implements OnInit {
   }
 
   color(searchedStatus: string): string {
-    console.log('searchedStatus: ',searchedStatus, 'this.currentServiceStatus: ', this.currentServiceStatus )
     if(StatusService.nextStatus(this.currentServiceStatus) === searchedStatus) {
-      console.log('var(--ion-color-app-yellow)')
       return 'var(--ion-color-app-yellow)';
     } else if(StatusService.isAtLeast(searchedStatus, this.currentServiceStatus)) {
-      console.log('var(--ion-color-app-yellow)')
       return 'var(--ion-color-app-blue)';
     } else {
-      console.log('var(--ion-color-app-yellow)')
       return 'var(--ion-color-app-gray)';
     }
   }
 
   disabled(searchedStatus: string): boolean {
     return StatusService.nextStatus(this.currentServiceStatus) !== searchedStatus;
+  }
+
+  addAnesthesiaType(anestesia: string) {
+    this.medicalService.getInProgressMedicalAtenttion().then(sm => {
+      if(!!sm && !!sm.operatingRoomList) {
+        const anesthesiaTypes: Array<string> = sm.operatingRoomList.anesthesiaTypes || [];
+        if(!(!!anesthesiaTypes.find(it => it === anestesia))) {
+          anesthesiaTypes.push(anestesia);
+          
+          sm.operatingRoomList.anesthesiaTypes = anesthesiaTypes;
+          this.anesthesiaTypes = anesthesiaTypes;
+        } else {
+          const excludeAnesthesiaList = anesthesiaTypes.filter(it => it !== anestesia);
+
+          sm.operatingRoomList.anesthesiaTypes = excludeAnesthesiaList;
+          this.anesthesiaTypes = excludeAnesthesiaList;
+        }
+        this.medicalService.saveMedicalAttention(sm,'nosync');
+      }
+    }).catch(e => console.error('Error consultando el servicio médico'));
+  }
+
+  menuOpened() {
+    this.medicalService.getInProgressMedicalAtenttion().then(sm => {
+      this.anesthesiaTypes = sm.operatingRoomList.anesthesiaTypes || [];
+    }).catch(e => console.error('Error consultando el servicio médico'));
+  }
+
+  anesthesiaSelected(anestesia: string) {
+    return !!this.anesthesiaTypes && this.anesthesiaTypes.some(x => x === anestesia);
   }
 
 }

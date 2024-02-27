@@ -5,7 +5,15 @@ ion-footer{
 ion-content{
     --background: var(--ion-color-app-aqua);
     --padding-top: 20px;
-    ion-button {
+    ion-menu-toggle{
+        display: block;
+        width: 95%;
+        margin: auto;
+        ion-button{
+            width: 100%;
+        }
+    }
+    ion-button{
         height: 50px !important;
         margin-bottom: 20px !important;
         --background: var(--ion-color-app-gray);
@@ -13,7 +21,7 @@ ion-content{
         margin: auto;
     }
     
-    ion-icon {
+    ion-icon{
         margin-left: 10px;
         width: 45px;
         height: 45px;

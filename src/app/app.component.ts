@@ -2,12 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router, NavigationEnd,RouterLink, RouterLinkActive } from '@angular/router';
-import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonImg,MenuController } from '@ionic/angular/standalone';
+import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonImg,MenuController, IonRow, IonCol, IonButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { maleFemaleOutline,mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp, informationCircle, trash } from 'ionicons/icons';
 import { InternetStatusComponent } from './components/internet-status/internet-status.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from './services/auth.service';
+import { MenuAnesthesiaComponent } from './components/menu-anesthesia/menu-anesthesia.component';
+import { InProgressMedicalAttentionService } from './services/in-progress-medical-attention.service';
 
 
 
@@ -16,15 +18,21 @@ import { AuthService } from './services/auth.service';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [HttpClientModule,RouterLink, RouterLinkActive, CommonModule, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, InternetStatusComponent,IonImg],
+  imports: [IonCol, IonRow, HttpClientModule,RouterLink, RouterLinkActive, CommonModule, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, InternetStatusComponent,IonImg,MenuAnesthesiaComponent, IonRow, IonCol, IonButton],
 })
 export class AppComponent {
+  anesthesiaTypes: Array<string>;
   private userSubscription: Subscription;
   appPages: { title: string, url: string }[] = [];
   currentPage: string;
   nameUser:any;
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
-  constructor(private auth: AuthService,private router: Router,private menuController: MenuController) {
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private menuController: MenuController,
+    private inProgressRepository: InProgressMedicalAttentionService,
+    ) {
     addIcons({ maleFemaleOutline, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp,trash, informationCircle });
     this.updateAppPages(router.url);
     this.nameUser = this.getUser(router.url);
@@ -95,6 +103,45 @@ export class AppComponent {
       return this.nameUser;
     }
   }
+
+  // menu-anestesia
+
+  addAnesthesiaType(anestesia: string) {
+    console.log('entro addAnesthesiaType')
+    this.inProgressRepository.getInProgressMedicalAtenttion().then(sm => {
+      console.log(!!sm && !!sm.operatingRoomList)
+      if(!!sm && !!sm.operatingRoomList) {
+        const anesthesiaTypes: Array<string> = sm.operatingRoomList.anesthesiaTypes || [];
+        if(!(!!anesthesiaTypes.find(it => it === anestesia))) {
+          anesthesiaTypes.push(anestesia);
+          
+          sm.operatingRoomList.anesthesiaTypes = anesthesiaTypes;
+          this.anesthesiaTypes = anesthesiaTypes;
+        } else {
+          const excludeAnesthesiaList = anesthesiaTypes.filter(it => it !== anestesia);
+
+          sm.operatingRoomList.anesthesiaTypes = excludeAnesthesiaList;
+          this.anesthesiaTypes = excludeAnesthesiaList;
+        }
+        this.inProgressRepository.saveMedicalAttention(sm,'nosync');
+      }
+    }).catch(e => console.error('Error consultando el servicio médico'));
+  }
+
+  menuOpened() {
+    console.log('entro a menuOpened')
+    this.inProgressRepository.getInProgressMedicalAtenttion().then(sm => {
+      this.anesthesiaTypes = sm.operatingRoomList.anesthesiaTypes || [];
+    }).catch(e => console.error('Error consultando el servicio médico'));
+  }
+
+  anesthesiaSelected(anestesia: string) {
+    console.log('this.anesthesiaTypes: ',this.anesthesiaTypes,'=',!!this.anesthesiaTypes && this.anesthesiaTypes.some(x => x === anestesia))
+    return !!this.anesthesiaTypes && this.anesthesiaTypes.some(x => x === anestesia);
+  }
+
+
+
 
 
 }

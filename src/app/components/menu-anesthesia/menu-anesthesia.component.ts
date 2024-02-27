@@ -22,7 +22,9 @@ export class MenuAnesthesiaComponent  implements OnInit {
   ngOnInit() {}
 
   addAnesthesiaType(anestesia: string) {
+    console.log('entro addAnesthesiaType')
     this.inProgressRepository.getInProgressMedicalAtenttion().then(sm => {
+      console.log(!!sm && !!sm.operatingRoomList)
       if(!!sm && !!sm.operatingRoomList) {
         const anesthesiaTypes: Array<string> = sm.operatingRoomList.anesthesiaTypes || [];
         if(!(!!anesthesiaTypes.find(it => it === anestesia))) {
@@ -42,12 +44,14 @@ export class MenuAnesthesiaComponent  implements OnInit {
   }
 
   menuOpened() {
+    console.log('entro a menuOpened')
     this.inProgressRepository.getInProgressMedicalAtenttion().then(sm => {
       this.anesthesiaTypes = sm.operatingRoomList.anesthesiaTypes || [];
     }).catch(e => console.error('Error consultando el servicio médico'));
   }
 
   anesthesiaSelected(anestesia: string) {
+    console.log('this.anesthesiaTypes: ',this.anesthesiaTypes,'=',!!this.anesthesiaTypes && this.anesthesiaTypes.some(x => x === anestesia))
     return !!this.anesthesiaTypes && this.anesthesiaTypes.some(x => x === anestesia);
   }
 

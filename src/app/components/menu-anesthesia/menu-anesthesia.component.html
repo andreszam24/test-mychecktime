@@ -1,21 +1,19 @@
-<ion-menu  id="menu-anestesia" type="overlay" (ionOpen)="menuOpened()">
+<ion-menu menuId="menu-anestesia" contentId="main-content" type="overlay"  (ionDidOpen)="menuOpened()">
   
   <ion-content id="opciones-anestesia" color="app-blue" class="menuBlueBackground">
 
     <div class="spacer" style="height: 10%"></div>
 
     <div class="row">
-      <div class="col col-25"></div>
       <div class="col col-25">
-        <img src="assets/imgs/anestesiaxhdpi.png">
+        <img src="../../../assets/svg/anestesiaxhdpi.svg">
       </div>
-      <div class="col col-25"></div>
     </div>
 
     <ion-row>
         <ion-col text-center>
           <ion-button shape="round"
-          [color]="anesthesiaSelected('Bloqueo') ? 'app-red' : 'app-gray'"
+          [style.--background]="anesthesiaSelected('Bloqueo') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
           (click)="addAnesthesiaType('Bloqueo')">
             Bloqueo
           </ion-button>
@@ -26,7 +24,7 @@
         <ion-col text-center>
           <ion-button
           shape="round"
-          [color]="anesthesiaSelected('Espinal') ? 'app-red' : 'app-gray'"
+          [style.--background]="anesthesiaSelected('Espinal') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
           (click)="addAnesthesiaType('Espinal')">
             Espinal
           </ion-button>
@@ -37,7 +35,7 @@
         <ion-col text-center>
           <ion-button
           shape="round"
-          [color]="anesthesiaSelected('Peridural') ? 'app-red' : 'app-gray'"
+          [style.--background]="anesthesiaSelected('Peridural') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
           (click)="addAnesthesiaType('Peridural')">
             Peridural
           </ion-button>
@@ -48,7 +46,7 @@
         <ion-col text-center>
           <ion-button
           shape="round"
-          [color]="anesthesiaSelected('General') ? 'app-red' : 'app-gray'"
+          [style.--background]="anesthesiaSelected('General') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
           (click)="addAnesthesiaType('General')">
             General
           </ion-button>
@@ -59,7 +57,7 @@
         <ion-col text-center>
           <ion-button
           shape="round"
-          [color]="anesthesiaSelected('Sedación') ? 'app-red' : 'app-gray'"
+          [style.--background]="anesthesiaSelected('Sedación') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
           (click)="addAnesthesiaType('Sedación')">
           Sedación
           </ion-button>

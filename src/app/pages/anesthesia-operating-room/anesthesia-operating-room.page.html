@@ -1,14 +1,14 @@
 <app-header titleName="paciente"></app-header>
-<app-menu-anesthesia></app-menu-anesthesia>
-
 <ion-content [fullscreen]="true">
-    <ion-button shape="round" expand="block" 
-    [style.--background]="color('StartAnesthesia')"
-    [disabled]="disabled('StartAnesthesia')"
-    (click)="goToInicoAnestesia()">
-      Inicio inducción de anestesia
-      <ion-icon src="../../../assets/svg/mascaretaxhdpi.svg"></ion-icon>
-    </ion-button>
+    <ion-menu-toggle auto-hide="false" menu="menu-anestesia">
+      <ion-button shape="round" expand="block"
+      [style.--background]="color('StartAnesthesia')"
+      [disabled]="disabled('StartAnesthesia')"
+      (click)="goToInicoAnestesia()">
+        Inicio inducción de anestesia
+        <ion-icon src="../../../assets/svg/mascaretaxhdpi.svg"></ion-icon>
+      </ion-button>
+    </ion-menu-toggle>
     <ion-button shape="round" expand="block"
     [style.--background]="color('EndStartAnesthesia')"
     [disabled]="disabled('EndStartAnesthesia')"
