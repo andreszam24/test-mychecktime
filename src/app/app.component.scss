@@ -7,7 +7,7 @@ ion-content::part(scroll) {
   padding: 15px 20px;
 }
 
-ion-menu::part(container) {
+#menu::part(container) {
   height: 380px;
   border-radius: 13px;
   margin: 10px;
@@ -148,4 +148,22 @@ ion-item.selected {
 
 ion-menu #opciones-anestesia{
   --background: var(--ion-color-app-blue);
+  .icon-menu{
+    width: 100%;
+    margin-top: 60px;
+    div{
+      width: 110px;
+      margin: auto;
+    }
+  }
+  ion-row{
+    ion-col{
+      text-align: center;
+    }
+    ion-button{
+      width:45%;
+    }
+  }
 }
+
+

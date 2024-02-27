@@ -8,14 +8,13 @@ import { StatusService } from 'src/app/services/status.service';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { MenuController } from '@ionic/angular';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
-import { MenuAnesthesiaComponent } from 'src/app/components/menu-anesthesia/menu-anesthesia.component';
 
 @Component({
   selector: 'app-anesthesia-operating-room',
   templateUrl: './anesthesia-operating-room.page.html',
   styleUrls: ['./anesthesia-operating-room.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent, MenuAnesthesiaComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent]
 })
 export class AnesthesiaOperatingRoomPage implements OnInit {
 
@@ -140,36 +139,6 @@ export class AnesthesiaOperatingRoomPage implements OnInit {
 
   disabled(searchedStatus: string): boolean {
     return StatusService.nextStatus(this.currentServiceStatus) !== searchedStatus;
-  }
-
-  addAnesthesiaType(anestesia: string) {
-    this.medicalService.getInProgressMedicalAtenttion().then(sm => {
-      if(!!sm && !!sm.operatingRoomList) {
-        const anesthesiaTypes: Array<string> = sm.operatingRoomList.anesthesiaTypes || [];
-        if(!(!!anesthesiaTypes.find(it => it === anestesia))) {
-          anesthesiaTypes.push(anestesia);
-          
-          sm.operatingRoomList.anesthesiaTypes = anesthesiaTypes;
-          this.anesthesiaTypes = anesthesiaTypes;
-        } else {
-          const excludeAnesthesiaList = anesthesiaTypes.filter(it => it !== anestesia);
-
-          sm.operatingRoomList.anesthesiaTypes = excludeAnesthesiaList;
-          this.anesthesiaTypes = excludeAnesthesiaList;
-        }
-        this.medicalService.saveMedicalAttention(sm,'nosync');
-      }
-    }).catch(e => console.error('Error consultando el servicio médico'));
-  }
-
-  menuOpened() {
-    this.medicalService.getInProgressMedicalAtenttion().then(sm => {
-      this.anesthesiaTypes = sm.operatingRoomList.anesthesiaTypes || [];
-    }).catch(e => console.error('Error consultando el servicio médico'));
-  }
-
-  anesthesiaSelected(anestesia: string) {
-    return !!this.anesthesiaTypes && this.anesthesiaTypes.some(x => x === anestesia);
   }
 
 }

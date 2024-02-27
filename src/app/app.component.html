@@ -20,19 +20,18 @@
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>
 
+
     <ion-menu menuId="menu-anestesia" contentId="main-content" type="overlay"  (ionDidOpen)="menuOpened()">
       <ion-content id="opciones-anestesia" class="menuBlueBackground">
-        
-        <div class="spacer" style="height: 10%"></div>
 
-        <div class="row">
-          <div class="col col-25">
+        <div class="icon-menu">
+          <div>
             <img src="../../../assets/svg/anestesiaxhdpi.svg">
           </div>
         </div>
     
         <ion-row>
-            <ion-col text-center>
+            <ion-col class="ion-align-items-center">
               <ion-button shape="round"
               [style.--background]="anesthesiaSelected('Bloqueo') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
               (click)="addAnesthesiaType('Bloqueo')">
@@ -42,7 +41,7 @@
         </ion-row>
     
         <ion-row>
-            <ion-col text-center>
+            <ion-col class="ion-align-items-center">
               <ion-button
               shape="round"
               [style.--background]="anesthesiaSelected('Espinal') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
@@ -53,7 +52,7 @@
         </ion-row>
     
         <ion-row>
-            <ion-col text-center>
+            <ion-col class="ion-align-items-center">
               <ion-button
               shape="round"
               [style.--background]="anesthesiaSelected('Peridural') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
@@ -64,7 +63,7 @@
         </ion-row>
     
         <ion-row>
-            <ion-col text-center>
+            <ion-col class="ion-align-items-center">
               <ion-button
               shape="round"
               [style.--background]="anesthesiaSelected('General') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
@@ -75,7 +74,7 @@
         </ion-row>
     
         <ion-row>
-            <ion-col text-center>
+            <ion-col class="ion-align-items-center">
               <ion-button
               shape="round"
               [style.--background]="anesthesiaSelected('Sedación') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
@@ -86,6 +85,7 @@
         </ion-row>
       </ion-content>
     </ion-menu>
+  
   </ion-split-pane>
   <app-internet-status></app-internet-status>
 </ion-app>

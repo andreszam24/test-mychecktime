@@ -8,7 +8,6 @@ import { maleFemaleOutline,mailOutline, mailSharp, paperPlaneOutline, paperPlane
 import { InternetStatusComponent } from './components/internet-status/internet-status.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from './services/auth.service';
-import { MenuAnesthesiaComponent } from './components/menu-anesthesia/menu-anesthesia.component';
 import { InProgressMedicalAttentionService } from './services/in-progress-medical-attention.service';
 
 
@@ -18,7 +17,7 @@ import { InProgressMedicalAttentionService } from './services/in-progress-medica
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [IonCol, IonRow, HttpClientModule,RouterLink, RouterLinkActive, CommonModule, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, InternetStatusComponent,IonImg,MenuAnesthesiaComponent, IonRow, IonCol, IonButton],
+  imports: [IonCol, IonRow, HttpClientModule,RouterLink, RouterLinkActive, CommonModule, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, InternetStatusComponent,IonImg, IonRow, IonCol, IonButton],
 })
 export class AppComponent {
   anesthesiaTypes: Array<string>;
@@ -107,7 +106,6 @@ export class AppComponent {
   // menu-anestesia
 
   addAnesthesiaType(anestesia: string) {
-    console.log('entro addAnesthesiaType')
     this.inProgressRepository.getInProgressMedicalAtenttion().then(sm => {
       console.log(!!sm && !!sm.operatingRoomList)
       if(!!sm && !!sm.operatingRoomList) {
@@ -129,14 +127,12 @@ export class AppComponent {
   }
 
   menuOpened() {
-    console.log('entro a menuOpened')
     this.inProgressRepository.getInProgressMedicalAtenttion().then(sm => {
       this.anesthesiaTypes = sm.operatingRoomList.anesthesiaTypes || [];
     }).catch(e => console.error('Error consultando el servicio médico'));
   }
 
   anesthesiaSelected(anestesia: string) {
-    console.log('this.anesthesiaTypes: ',this.anesthesiaTypes,'=',!!this.anesthesiaTypes && this.anesthesiaTypes.some(x => x === anestesia))
     return !!this.anesthesiaTypes && this.anesthesiaTypes.some(x => x === anestesia);
   }
 

@@ -232,6 +232,8 @@ export class HomePage implements OnInit {
         'SelectOperatingRoom': '/check-patient-info',
         'OperatingRoomList': '/anesthesia-operating-room',
         'StartAnesthesia': '/anesthesia-operating-room',
+        'EndStartAnesthesia': '/anesthesia-operating-room',
+        'StartSurgery': '/anesthesia-operating-room',
         'EndSurgery':'/operating-room-exit-check',
     };
 
