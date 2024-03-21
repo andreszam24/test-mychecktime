@@ -1,0 +1,13 @@
+<ion-content class="ion-padding">
+  <ion-row>
+    <ion-col class="pre-select-qr">
+      <ion-icon (click)="scan()"  src="../../../assets/svg/pre-scan-qr.svg"></ion-icon>
+      <div class="text_qr">
+        <p>{{text}}</p>
+      </div>
+    </ion-col>
+    <ion-col class="pre-select-button-qr">
+      <ion-button (click)="scan()">SCANEAR</ion-button>
+    </ion-col>
+  </ion-row>
+</ion-content>

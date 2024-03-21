@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+import { IonicModule, ModalController, NavController } from '@ionic/angular';
 import { HeaderComponent } from 'src/app/components/header/header.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { AlertService } from 'src/app/services/utilities/alert.service';
@@ -11,7 +11,8 @@ import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-
 import { StatusService } from 'src/app/services/status.service';
 import { IonDatetime, IonDatetimeButton, IonModal, IonSelectOption, IonTextarea} from '@ionic/angular/standalone';
 import { EventsPanelComponent } from '../../components/events-panel/events-panel.component';
-
+import { PreScanQrComponent } from 'src/app/components/pre-scan-qr/pre-scan-qr.component';
+import { AudioAlertComponent } from 'src/app/components/audio-alert/audio-alert.component';
 
 
 
@@ -20,13 +21,26 @@ import { EventsPanelComponent } from '../../components/events-panel/events-panel
   templateUrl: './pre-anesthesia.page.html',
   styleUrls: ['./pre-anesthesia.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe, IonModal, IonDatetimeButton, IonDatetime, IonTextarea, EventsPanelComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe, IonModal, IonDatetimeButton, IonDatetime, IonTextarea, EventsPanelComponent, PreScanQrComponent, AudioAlertComponent]
 })
 export class PreAnesthesiaPage implements OnInit {
 
   @ViewChild('dateTimeButton') dateTimeButton: IonDatetime;
 
-
+  audioSrc = './../../../assets/audio/audio.mp3';
+  showAudioAlert = false;
+  header = 'Validación lista de Pre-anesthesia';
+  alertButtons = [
+    {
+      text: 'Volver',
+      cssClass: 'alert-button-cancel',
+      role: 'cancel',
+      handler: () => {
+        this.navCtrl.navigateForward('home');
+      },
+    },
+  ];
+  textValidate='CONFIRME LA IDENTIDAD DEL PACIENTE, EL CONSENTIMIENTO, EL PROCEDIMIENTO Y SU LATERALIDAD. VERIFIQUE LOS SIGNOS VITALES, SI TIENE ALGUNA ALERGIA, LA VIA AÉREA DEL PACIENTE, Y EL RIESGO DE SANGRADO. ANTES DE INGRESAR REVISE LOS DISPOSITIVOS Y LA MÁQUINA DE ANESTESIA, LOS MEDICAMENTOS Y EL EQUIPO DE VIA AEREA.';
   barcodes: Barcode[] = [];
   isSupported = false;
   admissionList: AdmissionList;
@@ -52,6 +66,7 @@ export class PreAnesthesiaPage implements OnInit {
     private alertService: AlertService,
     private navCtrl: NavController,
     private medicalService: InProgressMedicalAttentionService,
+    private modalCtrl: ModalController
   ) {
     this.admissionList = new AdmissionList();
     this.flagInputOtherIntervention = false;
@@ -59,11 +74,25 @@ export class PreAnesthesiaPage implements OnInit {
    }
 
   ngOnInit() {
-    this.startBarcodeScanner();
+    this.openModal()
   }
 
+  async openModal() {
+    const textoModal = "ESTA LISTA DE VERIFICACIÓN SE REALIZA IDEALMENTE EN EL ÁREA PRE-OPERATORIA.";
+    const modal = await this.modalCtrl.create({
+      component: PreScanQrComponent,
+      componentProps: {
+        text: textoModal
+      }
+    });
+    modal.present();
 
+    const { data } = await modal.onWillDismiss();
 
+    if (data === 'scan') {
+      this.startBarcodeScanner();
+    }
+  }
 
   private startBarcodeScanner() {
     BarcodeScanner.isSupported().then((result) => {
@@ -101,6 +130,7 @@ export class PreAnesthesiaPage implements OnInit {
   }
 
   private async readQR() {
+    this.showAudioAlert = true;
     const { barcodes } = await BarcodeScanner.scan();
     let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
     this.model.basicConfirmation = qr.basicConfirmation;
@@ -111,12 +141,6 @@ export class PreAnesthesiaPage implements OnInit {
     this.model.difficultAirway = qr.difficultAirway;
     this.model.riskOfHemorrhage = qr.riskOfHemorrhage;
     this.model.intervention = qr.intervention;
-    
-    //TODO: hacer que seleccione especialidad o cups sino se encuentran 
-    //this.setFormPatient();
-    //this.cdr.detectChanges();
-    //this.changeStatusManulIntake(false);
-    //this.changeStatusLookingForPatient(false);
   }
 
   private async unsupportedBarcodeMessage() {
@@ -205,7 +229,7 @@ export class PreAnesthesiaPage implements OnInit {
     return this.admissionList;
   }
 
-    validarOtra(intervention: string) {
+  validarOtra(intervention: string) {
       if(intervention === 'Otra'){
         this.flagInputOtherIntervention = true;
       }else{

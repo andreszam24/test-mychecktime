@@ -20,25 +20,31 @@ import { StatusService } from 'src/app/services/status.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { LoadingService } from 'src/app/services/utilities/loading.service';
 import { Toast } from '@capacitor/toast';
-import { AlertController, Platform, IonAlert, IonButton } from '@ionic/angular/standalone';
-
-
-
+import { AlertController,IonAlert, IonButton } from '@ionic/angular/standalone';
+import { AudioAlertComponent } from 'src/app/components/audio-alert/audio-alert.component';
 
 @Component({
   selector: 'app-operating-room-list',
   templateUrl: './operating-room-list.page.html',
   styleUrls: ['./operating-room-list.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent, IonButton]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent, IonButton, AudioAlertComponent]
 })
 export class OperatingRoomListPage implements OnInit {
-  @ViewChild('audioPlayer') audioPlayer: ElementRef;
-  @ViewChild('audioAlert') audioAlert: IonAlert;
-
-  
-
-  private audio: any;
+  audioSrc = './../../../assets/audio/audio.mp3';
+  showAudioAlert = false;
+  header = 'Validación lista de Pre-anesthesia';
+  alertButtons = [
+    {
+      text: 'Volver',
+      cssClass: 'alert-button-cancel',
+      role: 'cancel',
+      handler: () => {
+        this.navCtrl.navigateForward('home');
+      },
+    },
+  ];
+  textValidate='PÍDALE AL CIRUJANO QUE CONFIRME LA IDENTIDAD DEL PACIENTE, EL PROCEDIMIENTO, LA LATERALIDAD, SI VISUALIZÓ LAS IMÁGENES Y LOS ASPECTOS CRÍTICOS DEL PACIENTE. VERIFÍQUE QUE LA INSTRUMENTADORA Y LA CASA MEDICA HAYAN REVISADO LA ESTERILIDAD Y SI EXISTEN DUDAS CON EL INSTRUMENTAL O EQUIPOS.VERIFIQUE CON LA CRICULANTE LA HORA DE LA PROFILAXIS';
   public showContinueButton = false;
   showSearchConcepts:boolean =  false;
   operatingRoomList: OperatingRoomList;
@@ -54,7 +60,6 @@ export class OperatingRoomListPage implements OnInit {
   listInstrumentTechnicians: Instrumentador[] = [];
   resultsSearchigInstrumentTechnicians = [...this.listInstrumentTechnicians];
   selectedInstrumentTechnician: Instrumentador = new Instrumentador();
-  
   showConceptSearch = false;
 
   model: any = {
@@ -78,7 +83,6 @@ export class OperatingRoomListPage implements OnInit {
     private instrumentTechnicianService: InstrumentTechnicianService,
     private loadingService: LoadingService,
     private alertCtrl: AlertController,
-    private platform: Platform
   ) { 
     this.operatingRoomList = new OperatingRoomList();
 
@@ -90,41 +94,19 @@ ngOnInit() {
 
   ionViewDidEnter(){
     if (!this.model.confirmMembers) {
-      this.audioAlert.isOpen = true;
+      this.showAudioAlert = true;
+      this.model.confirmMembers = true;
+      this.model.confirmIdentity= true;
+      this.model.criticalEvents= true;
+      this.model.anesthesiaTeamReview= true;
+      this.model.nurseTeamReview= true;
+      this.model.administeredProphylaxis = false;
+      this.model.diagnosticImages= false;
     } else{
-      this.audioAlert.isOpen = false;
-    }
-
-    if (!this.model.confirmMembers && this.alertCtrl.getTop() != null) {
-      this.playAudio();}
-  }
-
-  public alertButtons = [
-    {
-      text: 'Volver',
-      cssClass: 'alert-button-cancel',
-      role: 'cancel',
-      handler: () => {
-        this.navCtrl.navigateForward('home');
-      },
-    },
-  ];
-
-  playAudio() {
-    this.audio = this.audioPlayer.nativeElement as HTMLAudioElement;
-    if (this.audio) {
-      this.audio.play();
-      this.audio.addEventListener('ended', async () => {
-        this.audioAlert.dismiss();
-        this.model.confirmMembers = true;
-        this.model.confirmIdentity= true;
-        this.model.criticalEvents= true;
-        this.model.anesthesiaTeamReview= true;
-        this.model.nurseTeamReview= true;
-        console.log('fin');
-      });
+      this.showAudioAlert = false;
     }
   }
+
 
   loadMasterData() {
     this.getAllSurgeons();

@@ -1,0 +1,56 @@
+ion-content{
+    --background: var(--ion-color-app-aqua);
+    ion-row{
+        margin: auto;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        height: 50%;
+        left: 0;
+        right: 0;
+    }
+
+    ion-col{
+        text-align: center;
+    }
+    .pre-select-qr{
+        ion-icon{
+            width: 300px;
+            height: 300px;  
+        }
+        .text_qr{
+            position: absolute;
+            background: rgba(192, 55, 52, 0.9);
+            text-align: center;
+            width: 65%;
+            height: 220px;
+            margin: auto;
+            left: 0;
+            right: 0;
+            top: 45px;
+            padding: 15px;
+            p{
+                margin: auto;
+                position: absolute;
+                left: 2px;
+                right: 2px;
+                top: 0;
+                bottom: 0;
+                height: fit-content;
+            }
+        }
+    }
+    
+    .pre-select-button-qr{
+        margin-top: 30px;
+        text-align: center;
+        ion-button{
+            --background:var(--ion-color-app-blue);
+            margin: 0;
+            padding: 0;
+            height: 70%;
+            width: 200px;
+        }
+    }
+}
+

@@ -34,13 +34,16 @@
 }
 
 .alert-audio .custom-alert {
-    position: absolute;
-    bottom: 6px;
+    margin-bottom: 15px;
   }
 
   .alert-audio .alert-button-group {
-    position: absolute;
-    bottom: 6px;
+    margin-bottom: 15px;
+
+  }
+
+  .alert-audio .alert-message{
+    text-align: justify;
   }
 
   .alert-audio .alert-button-cancel{
