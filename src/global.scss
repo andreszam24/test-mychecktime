@@ -44,10 +44,11 @@
 
   .alert-audio .alert-message{
     text-align: justify;
+    color: rgb(0, 0, 0);
   }
 
   .alert-audio .alert-button-cancel{
-    background-color: var(--ion-color-app-blue);
+    background-color: var(--ion-color-app-red);
     color: #ffff;
     border-radius: 4px;
   }

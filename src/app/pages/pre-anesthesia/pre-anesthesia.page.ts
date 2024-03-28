@@ -29,7 +29,8 @@ export class PreAnesthesiaPage implements OnInit {
 
   audioSrc = './../../../assets/audio/audio.mp3';
   showAudioAlert = false;
-  header = 'Validación lista de Pre-anesthesia';
+  header = 'Validación lista de Pre-anestesia';
+  scannDataForm = false;
   alertButtons = [
     {
       text: 'Volver',
@@ -91,6 +92,8 @@ export class PreAnesthesiaPage implements OnInit {
 
     if (data === 'scan') {
       this.startBarcodeScanner();
+    }else{
+      this.navCtrl.navigateForward('home');
     }
   }
 
@@ -107,7 +110,8 @@ export class PreAnesthesiaPage implements OnInit {
   async scan(): Promise<void> {
     const granted = await this.requestPermissions();
     if (!granted) {
-      this.alertService.presentBasicAlert('¡Ups! Sin permisos', '¡Activa los permisos de la cámara para usar el escáner de códigos!');
+      this.alertService.presentBasicAlert('¡Ups! Sin permisos', '¡Activa los permisos de la cámara para y scanea el qr del area pre-operatoria!');
+      this.navCtrl.navigateForward('home');
       return;
     }
 
@@ -124,13 +128,25 @@ export class PreAnesthesiaPage implements OnInit {
         });
       }
     }).catch(error => {
-      console.error(error.message);
+      this.showAudioAlert = false;
+      if (error.message === 'scan canceled.') {
+        this.alertService.presentActionAlert('¡Ups! Parece que cancelaste el escaneo','Por favor, escanea el código QR de area pre-operatoria para continuar.', () => {
+          this.navCtrl.navigateForward('home');
+        });
+    } else if (error.message.includes('device') || error.message.includes('camera')) {
+      this.alertService.presentActionAlert( '¡Ups! Parece que hay un problema con tu dispositivo o cámara','Asegúrate de que estén funcionando correctamente y vuelve a intentarlo.',() => {
+        this.navCtrl.navigateForward('home');
+      });
+    } else {
+        console.error(error.message);
+        this.navCtrl.navigateForward('home');
+    }
+
     });
 
   }
 
   private async readQR() {
-    this.showAudioAlert = true;
     const { barcodes } = await BarcodeScanner.scan();
     let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
     this.model.basicConfirmation = qr.basicConfirmation;
@@ -141,6 +157,8 @@ export class PreAnesthesiaPage implements OnInit {
     this.model.difficultAirway = qr.difficultAirway;
     this.model.riskOfHemorrhage = qr.riskOfHemorrhage;
     this.model.intervention = qr.intervention;
+    this.scannDataForm = true;
+    this.showAudioAlert = true;
   }
 
   private async unsupportedBarcodeMessage() {

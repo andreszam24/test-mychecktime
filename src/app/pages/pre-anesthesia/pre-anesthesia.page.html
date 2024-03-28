@@ -1,6 +1,6 @@
 <app-header titleName="paciente"></app-header>
 <app-audio-alert *ngIf="showAudioAlert" [audioSrc]="audioSrc" [audioHeader]="header" [alertButtons]="alertButtons" [textValidate]="textValidate" (alertClosed)="showAudioAlert = false"></app-audio-alert>
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" *ngIf="scannDataForm">
   <ion-header>
     <ion-toolbar>
       <ion-title size="large">Pre-anesthesia</ion-title>

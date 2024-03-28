@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+import { IonicModule, ModalController, NavController } from '@ionic/angular';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { HeaderComponent } from 'src/app/components/header/header.component';
 import { OperationRoom } from 'src/app/models/operationRoom.model';
@@ -10,6 +10,8 @@ import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-
 import { StatusService } from 'src/app/services/status.service';
 import { WorkingAreaService } from 'src/app/services/working-area.service';
 import { OperationRoomService } from 'src/app/services/operation-room.service';
+import { PreScanQrComponent } from 'src/app/components/pre-scan-qr/pre-scan-qr.component';
+import { AudioAlertComponent } from 'src/app/components/audio-alert/audio-alert.component';
 
 
 @Component({
@@ -32,12 +34,33 @@ export class SelectOperatingRoomPage implements OnInit {
     private navCtrl: NavController,
     private medicalService: InProgressMedicalAttentionService,
     private workingArea: WorkingAreaService,
-    private operationRoomService:OperationRoomService
+    private operationRoomService:OperationRoomService,
+    private modalCtrl: ModalController
+
   ) { }
 
   ngOnInit() {
-    this.startBarcodeScanner();
+    this.openModal()
     this.currentClinic = this.workingArea.getClinic();
+  }
+
+  async openModal() {
+    const textoModal = "LISTA DE VERIFICACIÓN EN SALA. ANTES DE CUALQUIER INTERVENCIÓN, VERIFIQUE QUE ESTE EL CIRUJANO Y LA INSTRUMENTADORA.";
+    const modal = await this.modalCtrl.create({
+      component: PreScanQrComponent,
+      componentProps: {
+        text: textoModal
+      }
+    });
+    modal.present();
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data === 'scan') {
+      this.startBarcodeScanner();
+    }else{
+      this.navCtrl.navigateForward('home');
+    }
   }
 
   private startBarcodeScanner() {
