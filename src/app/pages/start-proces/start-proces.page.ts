@@ -4,13 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 @Component({
-  selector: 'app-operating-room-exit',
-  templateUrl: './operating-room-exit.page.html',
-  styleUrls: ['./operating-room-exit.page.scss'],
+  selector: 'app-start-proces',
+  templateUrl: './start-proces.page.html',
+  styleUrls: ['./start-proces.page.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule]
 })
-export class OperatingRoomExitPage implements OnInit {
+export class StartProcesPage implements OnInit {
 
   constructor() { }
 

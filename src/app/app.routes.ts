@@ -63,17 +63,15 @@ export const routes: Routes = [
   {
     path: 'anesthesia-operating-room',
     loadComponent: () => import('./pages/anesthesia-operating-room/anesthesia-operating-room.page').then( m => m.AnesthesiaOperatingRoomPage)
-  },  {
+  },
+  {
     path: 'operating-room-exit-check',
     loadComponent: () => import('./pages/operating-room-exit-check/operating-room-exit-check.page').then( m => m.OperatingRoomExitCheckPage)
   },
-  {
-    path: 'operating-room-exit',
-    loadComponent: () => import('./pages/operating-room-exit/operating-room-exit.page').then( m => m.OperatingRoomExitPage)
-  },
+  
   {
     path: 'destination-selection',
-    loadComponent: () => import('./pages/destination-selection/destination-selection.page').then( m => m.DestinationSelectionPage)
+    loadComponent: () => import('./pages/hospital-discharge/destination-selection/destination-selection.page').then( m => m.DestinationSelectionPage)
   },
   {
     path: 'home-destination',
@@ -94,7 +92,11 @@ export const routes: Routes = [
   {
     path: 'surgery-destination',
     loadComponent: () => import('./pages/hospital-discharge/surgery-destination/surgery-destination.page').then( m => m.SurgeryDestinationPage)
+  },  {
+    path: 'start-proces',
+    loadComponent: () => import('./pages/start-proces/start-proces.page').then( m => m.StartProcesPage)
   },
+
 
 
 

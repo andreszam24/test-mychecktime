@@ -6,7 +6,7 @@ import { AlertController } from '@ionic/angular';
 })
 export class AlertService {
 
-  constructor(private alertController: AlertController,) { }
+  constructor(private alertController: AlertController) { }
 
   async presentBasicAlert(header: string, message: string): Promise<void> {
     const alert = await this.alertController.create({
