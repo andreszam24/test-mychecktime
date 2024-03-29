@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { Router, NavigationEnd,RouterLink, RouterLinkActive } from '@angular/router';
 import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonImg,MenuController, IonRow, IonCol, IonButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { maleFemaleOutline,mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp, informationCircle, trash } from 'ionicons/icons';
+import { maleFemaleOutline,mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp, informationCircle, trash , ellipsisVertical} from 'ionicons/icons';
 import { InternetStatusComponent } from './components/internet-status/internet-status.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from './services/auth.service';
@@ -31,9 +31,8 @@ export class AppComponent {
     private router: Router,
     private menuController: MenuController,
     private inProgressRepository: InProgressMedicalAttentionService,
-    private menu :MenuController
     ) {
-    addIcons({ maleFemaleOutline, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp,trash, informationCircle });
+    addIcons({ maleFemaleOutline, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp,trash, informationCircle, ellipsisVertical});
     this.updateAppPages(router.url);
     this.nameUser = this.getUser(router.url);
     this.handleRouterEvents();
@@ -77,8 +76,6 @@ export class AppComponent {
 
 
   private updateAppPages(currentUrl: string): void {
-    const menu = this.menuController.get('menu');
-    console.log(menu)
     if (currentUrl == '/home') {
       this.appPages = [
         { title: 'Cambio de turno', url: '/shift-handover' },
@@ -134,8 +131,7 @@ export class AppComponent {
   }
 
   closeMenu(){
-    this.menu.close('menu-anestesia');
-    this.menu.enable(false, 'menu-anestesia');
+    this.menuController.close('menu-anestesia');
   }
 
   anesthesiaSelected(anestesia: string) {

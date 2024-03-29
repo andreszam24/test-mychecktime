@@ -52,11 +52,7 @@ export class HomePage implements OnInit {
     this.httpInProgressMedicalAttention.selectMedicalAttention('');
   }
 
-  ionViewDidEnter() {
-    this.menu.close('menu-anestesia');
-    this.menu.enable(false, 'menu-anestesia');
-  }
-
+  
   ngOnInit() {
     this.internetService.internetStatus$.subscribe((isConnected) => {
       if (isConnected) {
@@ -67,6 +63,7 @@ export class HomePage implements OnInit {
 
   ionViewWillEnter() {
     this.extractUserData();
+    this.menu.close('menu-anestesia');
   }
 
   async showOptionsModal(msg: string): Promise<boolean> {

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { IonHeader, IonToolbar, IonTitle, IonButtons,IonMenuButton,IonIcon,IonMenu, IonContent, IonList,IonItem,IonLabel,IonMenuToggle,IonImg, NavController} from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonButtons,IonMenuButton,IonIcon,IonMenu, IonContent, IonList,IonItem,IonLabel,IonMenuToggle,IonImg, NavController, IonButton} from '@ionic/angular/standalone';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { Patient } from 'src/app/models/patient.model';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
@@ -13,7 +13,7 @@ import { MenuController } from '@ionic/angular';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   standalone:true,
-  imports:[RouterLink, RouterLinkActive,IonHeader,IonToolbar, IonTitle,IonButtons,IonMenuButton,IonIcon, IonMenu, IonContent, IonList, IonItem,IonLabel,IonMenuToggle,IonImg, CommonModule]
+  imports:[RouterLink, RouterLinkActive,IonHeader,IonToolbar, IonTitle,IonButtons,IonButton,IonMenuButton,IonIcon, IonMenu, IonContent, IonList, IonItem,IonLabel,IonMenuToggle,IonImg, CommonModule]
 })
 export class HeaderComponent  implements OnInit {
   @Input() titleName: string ;
@@ -40,11 +40,6 @@ export class HeaderComponent  implements OnInit {
       this.sharedDataService.setDatos(this.medicalAttention);
       this.navCtrl.navigateForward('/patient-summary');
     }
-  }
-
-  closeMenu(){
-    this.menu.close('menu-anestesia');
-    this.menu.enable(false, 'menu-anestesia');
   }
 
 
