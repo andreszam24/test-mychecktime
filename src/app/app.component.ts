@@ -31,6 +31,7 @@ export class AppComponent {
     private router: Router,
     private menuController: MenuController,
     private inProgressRepository: InProgressMedicalAttentionService,
+    private menu :MenuController
     ) {
     addIcons({ maleFemaleOutline, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp,trash, informationCircle });
     this.updateAppPages(router.url);
@@ -130,6 +131,11 @@ export class AppComponent {
     this.inProgressRepository.getInProgressMedicalAtenttion().then(sm => {
       this.anesthesiaTypes = sm.operatingRoomList.anesthesiaTypes || [];
     }).catch(e => console.error('Error consultando el servicio médico'));
+  }
+
+  closeMenu(){
+    this.menu.close('menu-anestesia');
+    this.menu.enable(false, 'menu-anestesia');
   }
 
   anesthesiaSelected(anestesia: string) {

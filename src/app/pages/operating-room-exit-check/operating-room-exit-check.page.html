@@ -8,69 +8,52 @@
   </ion-header>
   <form class="exit-check-form" *ngIf="scannDataForm">
     <ion-item lines="none">
-      <ion-label text-wrap text-center class="blue-box">
-        <p>
+      <ion-label text-wrap  class="blue-box">
           El enfermero confirma verbalmente con el equipo:
-        </p>
       </ion-label>
     </ion-item>
     <ion-item lines="none">
-      <ion-label text-center>
-        <p class="title" text-wrap>
-          El nombre del procedimiento realizado
-        </p>
-      </ion-label>
-      <ion-checkbox [(ngModel)]="model.confirmProcedure" name="confirmProcedure" color="app-red" item-right></ion-checkbox>
+      <ion-checkbox [(ngModel)]="model.confirmProcedure" name="confirmProcedure" item-right>El nombre del procedimiento realizado</ion-checkbox>
     </ion-item>
 
     <ion-item lines="none">
-      <ion-label text-center>
-        <p class="title" text-wrap>
-          Que los recuentos de instrumentos, gasas y agujas son correctos (o no aplican)
-        </p>
-      </ion-label>
-      <ion-checkbox [(ngModel)]="model.instrumentsCount" name="instrumentsCount" color="app-red" item-right></ion-checkbox>
+      <ion-checkbox [(ngModel)]="model.instrumentsCount" name="instrumentsCount" item-right>
+        Que los recuentos de instrumentos, gasas y agujas son correctos (o no aplican)
+      </ion-checkbox>
     </ion-item>
 
     <ion-item lines="none">
-      <ion-label text-center>
-        <p class="title" text-wrap>
-          El etiquetado de las muestras (Que figure el nombre del paciente)
-        </p>
-      </ion-label>
-      <ion-checkbox [(ngModel)]="model.verifyTagsPatient" name="verifyTagsPatient" color="app-red" item-right></ion-checkbox>
+      <ion-checkbox [(ngModel)]="model.verifyTagsPatient" name="verifyTagsPatient" item-right>
+        El etiquetado de las muestras (Que figure el nombre del paciente)
+      </ion-checkbox>
     </ion-item>
 
     <ion-item lines="none">
-      <ion-label text-center>
-        <p class="title" text-wrap>
-          Si hay problemas que resolver relacionados con el instrumental y los equipos
-        </p>
-      </ion-label>
-      <ion-checkbox [(ngModel)]="model.problemsResolve" name="problemsResolve" color="app-red" item-right></ion-checkbox>
+      <ion-checkbox [(ngModel)]="model.problemsResolve" name="problemsResolve" item-right>
+        Si hay problemas que resolver relacionados con el instrumental y los equipos
+      </ion-checkbox>
     </ion-item>
 
     <ion-item lines="none">
-      <ion-label class="question" text-center>
-        <p text-wrap class="title">El cirujano, el anestesista y el enfermero revisan los principales aspectos de la recuperación y el tratamiento del paciente</p>
+      <ion-label class="question" >
+        El cirujano, el anestesista y el enfermero revisan los principales aspectos de la recuperación y el tratamiento del paciente
       </ion-label>
     </ion-item>
 
     
     <ion-radio-group name="recoveryReview" [(ngModel)]="model.recoveryReview">
-      <ion-list radio-group >
-        <ion-item>
-          <ion-label class="no-background">No</ion-label>
-          <ion-radio [value]="false"></ion-radio>
+      <ion-list>
+        <ion-item lines="none">
+          <ion-radio class="border-radio" [value]="false">No</ion-radio>
         </ion-item>
-        <ion-item>
-          <ion-label text-wrap class="no-background">Sí</ion-label>
-          <ion-radio [value]="true"></ion-radio>
+        <ion-item lines="none">
+          <ion-radio [value]="true">Si</ion-radio>
         </ion-item>
       </ion-list>
     </ion-radio-group>
 
     <ion-item lines="none">
+      <ion-input type="number" name="bloodCount" [(ngModel)]="model.bloodCount" maxlength="5" placeholder="Volumen de sangrado"></ion-input>
       <ion-select class="small-size-select" [(ngModel)]="model.bloodCountUnits" 
         name="bloodCountUnits" multiple="false" placeholder="Unidades">
         <ion-select-option value="ml">ml</ion-select-option>
@@ -79,18 +62,17 @@
     </ion-item>
 
     <ion-row>
-      <ion-col text-center>
-        <button id="btnFinProcedimiento" 
-          ion-button round 
+      <ion-col>
+        <ion-button id="btnFinProcedimiento" 
+          shape="round"
           [disabled]="!isValid()"
-          (click)="showConfirmEndProcedure()"
-          color="app-blue">Fin de la anestesia
-        </button>
+          (click)="showConfirmEndProcedure()">Fin de la anestesia
+        </ion-button>
       </ion-col>
     </ion-row>
 
   </form>
 </ion-content>
 <ion-footer>
-  <app-events-panel [showCancelEvent] = true sizeCol ='3'></app-events-panel>
+  <app-events-panel sizeCol ='4'></app-events-panel>
 </ion-footer>

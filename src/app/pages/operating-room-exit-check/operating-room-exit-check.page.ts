@@ -24,7 +24,7 @@ export class OperatingRoomExitCheckPage implements OnInit {
   
   audioSrc = './../../../assets/audio/audio.mp3';
   showAudioAlert = false;
-  header = 'Validación lista de salida quirofano';
+  header = 'Validación lista salida quirofano';
   scannDataForm = false;
   alertButtons = [
     {
@@ -62,7 +62,6 @@ export class OperatingRoomExitCheckPage implements OnInit {
     private menu: MenuController
   ) { 
     this.exitOperatingRoomList = new ExitOperatingRoomList();
-    this.menu.enable(true, 'menu-anestesia');
   }
 
   ngOnInit() {

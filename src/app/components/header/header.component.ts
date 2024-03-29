@@ -6,6 +6,7 @@ import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { Patient } from 'src/app/models/patient.model';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { SharedDataService } from 'src/app/services/utilities/shared-data.service';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-header',
@@ -27,6 +28,7 @@ export class HeaderComponent  implements OnInit {
     private inProgressMedicalAttentio: InProgressMedicalAttentionService,
     private sharedDataService: SharedDataService,
     private navCtrl: NavController,
+    private menu :MenuController
   ) { }
 
   ngOnInit() {
@@ -38,6 +40,11 @@ export class HeaderComponent  implements OnInit {
       this.sharedDataService.setDatos(this.medicalAttention);
       this.navCtrl.navigateForward('/patient-summary');
     }
+  }
+
+  closeMenu(){
+    this.menu.close('menu-anestesia');
+    this.menu.enable(false, 'menu-anestesia');
   }
 
 

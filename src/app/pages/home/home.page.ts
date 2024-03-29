@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, MenuController } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonCard, IonCardContent, IonList, IonItem, IonItemSliding, IonItemOption, IonItemOptions, IonImg, AlertController } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
@@ -45,14 +45,19 @@ export class HomePage implements OnInit {
     private workingAreaRepository: WorkingAreaService,
     private internetService: InternetServiceService,
     private cdr: ChangeDetectorRef,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private menu :MenuController
 
   ) { 
     this.httpInProgressMedicalAttention.selectMedicalAttention('');
   }
 
+  ionViewDidEnter() {
+    this.menu.close('menu-anestesia');
+    this.menu.enable(false, 'menu-anestesia');
+  }
+
   ngOnInit() {
-    
     this.internetService.internetStatus$.subscribe((isConnected) => {
       if (isConnected) {
         this.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id);
