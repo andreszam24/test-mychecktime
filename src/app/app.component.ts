@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router, NavigationEnd,RouterLink, RouterLinkActive } from '@angular/router';
-import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonImg,MenuController } from '@ionic/angular/standalone';
+import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonImg,MenuController, IonRow, IonCol, IonButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { maleFemaleOutline,mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp, informationCircle, trash } from 'ionicons/icons';
+import { maleFemaleOutline,mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp, informationCircle, trash , ellipsisVertical} from 'ionicons/icons';
 import { InternetStatusComponent } from './components/internet-status/internet-status.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from './services/auth.service';
+import { InProgressMedicalAttentionService } from './services/in-progress-medical-attention.service';
 
 
 
@@ -16,16 +17,22 @@ import { AuthService } from './services/auth.service';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [HttpClientModule,RouterLink, RouterLinkActive, CommonModule, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, InternetStatusComponent,IonImg],
+  imports: [IonCol, IonRow, HttpClientModule,RouterLink, RouterLinkActive, CommonModule, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, InternetStatusComponent,IonImg, IonRow, IonCol, IonButton],
 })
 export class AppComponent {
+  anesthesiaTypes: Array<string>;
   private userSubscription: Subscription;
   appPages: { title: string, url: string }[] = [];
   currentPage: string;
   nameUser:any;
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
-  constructor(private auth: AuthService,private router: Router,private menuController: MenuController) {
-    addIcons({ maleFemaleOutline, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp,trash, informationCircle });
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private menuController: MenuController,
+    private inProgressRepository: InProgressMedicalAttentionService,
+    ) {
+    addIcons({ maleFemaleOutline, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp,trash, informationCircle, ellipsisVertical});
     this.updateAppPages(router.url);
     this.nameUser = this.getUser(router.url);
     this.handleRouterEvents();
@@ -69,8 +76,6 @@ export class AppComponent {
 
 
   private updateAppPages(currentUrl: string): void {
-    const menu = this.menuController.get('menu');
-    console.log(menu)
     if (currentUrl == '/home') {
       this.appPages = [
         { title: 'Cambio de turno', url: '/shift-handover' },
@@ -80,7 +85,7 @@ export class AppComponent {
     } 
     else {
       this.appPages = [
-        { title: 'Pacientes Pendientes', url: '/home' },
+        { title: 'Pacientes pendientes', url: '/home' },
         { title: 'Cambio de turno', url: '/shift-handover' },
         { title: 'Sincronizacion con el servidor', url: '/synchronization' },
       ];
@@ -95,6 +100,46 @@ export class AppComponent {
       return this.nameUser;
     }
   }
+
+  // menu-anestesia
+
+  addAnesthesiaType(anestesia: string) {
+    this.inProgressRepository.getInProgressMedicalAtenttion().then(sm => {
+      console.log(!!sm && !!sm.operatingRoomList)
+      if(!!sm && !!sm.operatingRoomList) {
+        const anesthesiaTypes: Array<string> = sm.operatingRoomList.anesthesiaTypes || [];
+        if(!(!!anesthesiaTypes.find(it => it === anestesia))) {
+          anesthesiaTypes.push(anestesia);
+          
+          sm.operatingRoomList.anesthesiaTypes = anesthesiaTypes;
+          this.anesthesiaTypes = anesthesiaTypes;
+        } else {
+          const excludeAnesthesiaList = anesthesiaTypes.filter(it => it !== anestesia);
+
+          sm.operatingRoomList.anesthesiaTypes = excludeAnesthesiaList;
+          this.anesthesiaTypes = excludeAnesthesiaList;
+        }
+        this.inProgressRepository.saveMedicalAttention(sm,'nosync');
+      }
+    }).catch(e => console.error('Error consultando el servicio médico'));
+  }
+
+  menuOpened() {
+    this.inProgressRepository.getInProgressMedicalAtenttion().then(sm => {
+      this.anesthesiaTypes = sm.operatingRoomList.anesthesiaTypes || [];
+    }).catch(e => console.error('Error consultando el servicio médico'));
+  }
+
+  closeMenu(){
+    this.menuController.close('menu-anestesia');
+  }
+
+  anesthesiaSelected(anestesia: string) {
+    return !!this.anesthesiaTypes && this.anesthesiaTypes.some(x => x === anestesia);
+  }
+
+
+
 
 
 }

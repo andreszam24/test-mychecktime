@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, MenuController } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonCard, IonCardContent, IonList, IonItem, IonItemSliding, IonItemOption, IonItemOptions, IonImg, AlertController } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
@@ -45,14 +45,15 @@ export class HomePage implements OnInit {
     private workingAreaRepository: WorkingAreaService,
     private internetService: InternetServiceService,
     private cdr: ChangeDetectorRef,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private menu :MenuController
 
   ) { 
     this.httpInProgressMedicalAttention.selectMedicalAttention('');
   }
 
+  
   ngOnInit() {
-    
     this.internetService.internetStatus$.subscribe((isConnected) => {
       if (isConnected) {
         this.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id);
@@ -62,6 +63,7 @@ export class HomePage implements OnInit {
 
   ionViewWillEnter() {
     this.extractUserData();
+    this.menu.close('menu-anestesia');
   }
 
   async showOptionsModal(msg: string): Promise<boolean> {
@@ -128,6 +130,7 @@ export class HomePage implements OnInit {
     this.httpInProgressMedicalAttention.searchPendingServices(clinicId, anesthesiologistId).subscribe({
       next: (data) => {
         this.attentionsInProgress = data;
+        this.attentionsInProgress.sort((a, b) => a.patient.id - b.patient.id);
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -223,14 +226,31 @@ export class HomePage implements OnInit {
     this.attentionsInProgress = this.attentionsInProgress.filter(registro => registro._id != registroMedico._id);
   }
 
+  
   selectAttentionServiceAndContinue(selectedMedicalAttention: MedicalAttention) {
-    if(selectedMedicalAttention.state == 'nueva'){
-      this.httpInProgressMedicalAttention.selectMedicalAttention(selectedMedicalAttention._id);
-      this.goToNextState()
-    }
-  }
+    const stateRouteMap: { [key: string]: string } = {
+        'nueva': '/pre-anesthesia',
+        'AdmissionList': '/select-operating-room',
+        'SelectOperatingRoom': '/check-patient-info',
+        'OperatingRoomList': '/anesthesia-operating-room',
+        'StartAnesthesia': '/anesthesia-operating-room',
+        'EndStartAnesthesia': '/anesthesia-operating-room',
+        'StartSurgery': '/anesthesia-operating-room',
+        'EndSurgery':'/operating-room-exit-check',
+    };
 
-  goToNextState() {
-    this.router.navigateByUrl('/pre-anesthesia');
+    const nextState = stateRouteMap[selectedMedicalAttention.state];
+
+    if (nextState) {
+        this.httpInProgressMedicalAttention.selectMedicalAttention(selectedMedicalAttention._id);
+        this.goToNextState(nextState);
+    } else {
+        console.error('Estado no manejado:', selectedMedicalAttention.state);
+    }
+}
+
+
+  goToNextState(page:string) {
+    this.router.navigateByUrl(page);
   }
 }

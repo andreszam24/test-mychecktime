@@ -1,0 +1,184 @@
+ion-fab-button {
+    --background: var(--ion-color-app-blue);
+  }
+
+
+ion-searchbar.custom {
+--background: #68afd7;
+--color: #fff;
+--placeholder-color: #fff;
+--icon-color: #fff;
+--border-radius: 20px;
+padding:0;
+padding-bottom: 20px;
+input{
+    font-size: large !important;  
+}
+}
+
+ion-content{
+    --background:var(--ion-color-app-aqua);
+    ion-header{
+        ion-toolbar{
+            ion-title{
+                background-color: var(--ion-color-app-red);
+                color: white;
+                text-align: center;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+        }
+    }
+
+    .seccion-div{
+        background: #c0f5f5;
+        width: 95%;
+        margin: 10px auto;
+        border-radius: 10px;
+        padding: 20px 10px;
+
+        h4{
+            margin-top: 0;
+        }
+
+        ion-list{
+            padding: 0;
+            background: transparent;
+            ion-item{
+                --background: transparent;
+                border-bottom: #fff solid 0.5px;
+            }
+        }
+
+        .select-item{
+            border-radius: 30px;
+        }
+    }
+
+    .item-check{
+        margin: 21px auto;
+        width: 95%;
+        --background: transparent;
+        ion-label{
+            margin-right: 5px;
+            background: #fff;
+            padding: 10px 5px;
+            border-radius: 40px;
+            text-align: center;
+            .title{
+                color: var(--ion-color-app-red);
+            }
+        }
+    }
+
+    .item-check::part(native){
+        padding: 0;
+        --background: transparent
+    } 
+
+    ion-radio-group{
+        ion-list-header{
+            background: #fff;
+            width: 95%;
+            margin: 20px auto;
+            border-radius: 30px;
+            color: var(--ion-color-app-red);
+        }
+
+        ion-item{
+            --background: transparent;
+            width: 95%;
+            margin: auto;  
+        }
+    }
+}
+
+ion-row{
+  ion-col{
+    text-align: center;
+    ion-button{
+      --background: var(--ion-color-app-blue);
+    }
+  }
+}
+
+ion-radio {
+    --color-checked: var(--ion-color-app-red);
+    white-space: normal;
+  }
+  
+  ion-radio.ios::part(container) {
+    border: 2px solid var(--ion-color-app-blue);
+
+  }
+  
+  .radio-checked.ios::part(container) {
+    border-color: var(--ion-color-app-red);
+  }
+
+  ion-radio.radio-checked::part(container) {
+    background: var(--ion-color-app-red);
+    border-color: var(--ion-color-app-red);
+  }
+
+  ion-radio::part(container) {
+    border: 2px solid var(--ion-color-app-red);
+  }
+
+  ion-radio::part(label) {
+    white-space: normal;
+  }
+
+  ion-radio::part(mark) {
+    background: none;
+    transition: none;
+    transform: none;
+    border-radius: 0;
+  }
+
+  ion-radio.radio-checked::part(mark) {
+    width: 6px;
+    height: 10px;
+  
+    border-width: 0px 2px 2px 0px;
+    border-style: solid;
+    border-color: #fff;
+  
+    transform: rotate(45deg);
+  }
+
+  ion-checkbox{
+    --size: 20px;
+    --checkbox-background-checked: var(--ion-color-app-red);
+    text-align: center;
+  }
+  
+  ion-checkbox::part(container) {
+    border-radius: 50%;
+    border: 2px solid var(--ion-color-app-red);
+  }
+
+
+#audio-alert{
+    --height: 220px!important;
+    --min-height:220px!important;
+    --max-height:220px!important;
+    --min-width: 90%;
+    --max-width: 90%;
+    --width: 90%;
+} 
+
+#audio-validate{
+    z-index: 11 !important;
+    position: absolute !important;
+    width: 70% !important;
+}
+
+
+ion-footer{
+    height: 10%;
+  }
+

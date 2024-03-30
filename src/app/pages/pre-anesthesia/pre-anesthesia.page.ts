@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+import { IonicModule, ModalController, NavController } from '@ionic/angular';
 import { HeaderComponent } from 'src/app/components/header/header.component';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { AlertService } from 'src/app/services/utilities/alert.service';
@@ -9,9 +9,10 @@ import { DateUtilsService } from 'src/app/services/utilities/date-utils.service'
 import { AdmissionList } from 'src/app/models/admission-list.model';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { StatusService } from 'src/app/services/status.service';
-import { IonSelectOption, IonTextarea} from '@ionic/angular/standalone';
+import { IonDatetime, IonDatetimeButton, IonModal, IonSelectOption, IonTextarea} from '@ionic/angular/standalone';
 import { EventsPanelComponent } from '../../components/events-panel/events-panel.component';
-
+import { PreScanQrComponent } from 'src/app/components/pre-scan-qr/pre-scan-qr.component';
+import { AudioAlertComponent } from 'src/app/components/audio-alert/audio-alert.component';
 
 
 
@@ -20,10 +21,27 @@ import { EventsPanelComponent } from '../../components/events-panel/events-panel
   templateUrl: './pre-anesthesia.page.html',
   styleUrls: ['./pre-anesthesia.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe, IonTextarea, EventsPanelComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe, IonModal, IonDatetimeButton, IonDatetime, IonTextarea, EventsPanelComponent, PreScanQrComponent, AudioAlertComponent]
 })
 export class PreAnesthesiaPage implements OnInit {
 
+  @ViewChild('dateTimeButton') dateTimeButton: IonDatetime;
+
+  audioSrc = './../../../assets/audio/audio.mp3';
+  showAudioAlert = false;
+  header = 'Validación lista de Pre-anestesia';
+  scannDataForm = false;
+  alertButtons = [
+    {
+      text: 'Volver',
+      cssClass: 'alert-button-cancel',
+      role: 'cancel',
+      handler: () => {
+        this.navCtrl.navigateForward('home');
+      },
+    },
+  ];
+  textValidate='CONFIRME LA IDENTIDAD DEL PACIENTE, EL CONSENTIMIENTO, EL PROCEDIMIENTO Y SU LATERALIDAD. VERIFIQUE LOS SIGNOS VITALES, SI TIENE ALGUNA ALERGIA, LA VIA AÉREA DEL PACIENTE, Y EL RIESGO DE SANGRADO. ANTES DE INGRESAR REVISE LOS DISPOSITIVOS Y LA MÁQUINA DE ANESTESIA, LOS MEDICAMENTOS Y EL EQUIPO DE VIA AEREA.';
   barcodes: Barcode[] = [];
   isSupported = false;
   admissionList: AdmissionList;
@@ -49,6 +67,7 @@ export class PreAnesthesiaPage implements OnInit {
     private alertService: AlertService,
     private navCtrl: NavController,
     private medicalService: InProgressMedicalAttentionService,
+    private modalCtrl: ModalController
   ) {
     this.admissionList = new AdmissionList();
     this.flagInputOtherIntervention = false;
@@ -56,16 +75,33 @@ export class PreAnesthesiaPage implements OnInit {
    }
 
   ngOnInit() {
-    this.startBarcodeScanner();
+    this.openModal()
   }
 
+  async openModal() {
+    const textoModal = "ESTA LISTA DE VERIFICACIÓN SE REALIZA IDEALMENTE EN EL ÁREA PRE-OPERATORIA.";
+    const modal = await this.modalCtrl.create({
+      component: PreScanQrComponent,
+      componentProps: {
+        text: textoModal
+      }
+    });
+    modal.present();
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data === 'scan') {
+      this.startBarcodeScanner();
+    }else{
+      this.navCtrl.navigateForward('home');
+    }
+  }
 
   private startBarcodeScanner() {
     BarcodeScanner.isSupported().then((result) => {
       this.isSupported = result.supported;
       this.scan();
     }).catch(async (error) => {
-      //this.changeStatusManulIntake(true);
       console.error(error.message);
       await this.unsupportedBarcodeMessage();
     });
@@ -74,8 +110,8 @@ export class PreAnesthesiaPage implements OnInit {
   async scan(): Promise<void> {
     const granted = await this.requestPermissions();
     if (!granted) {
-      this.alertService.presentBasicAlert('¡Ups! Sin permisos', '¡Activa los permisos de la cámara para usar el escáner de códigos!');
-      //this.changeStatusManulIntake(true);
+      this.alertService.presentBasicAlert('¡Ups! Sin permisos', '¡Activa los permisos de la cámara para y scanea el qr del area pre-operatoria!');
+      this.navCtrl.navigateForward('home');
       return;
     }
 
@@ -92,10 +128,20 @@ export class PreAnesthesiaPage implements OnInit {
         });
       }
     }).catch(error => {
-     /* if (!this.medicalAttention?.patient) {
-        this.changeStatusManulIntake(true);
-      }*/
-      console.error(error.message);
+      this.showAudioAlert = false;
+      if (error.message === 'scan canceled.') {
+        this.alertService.presentActionAlert('¡Ups! Parece que cancelaste el escaneo','Por favor, escanea el código QR de area pre-operatoria para continuar.', () => {
+          this.navCtrl.navigateForward('home');
+        });
+    } else if (error.message.includes('device') || error.message.includes('camera')) {
+      this.alertService.presentActionAlert( '¡Ups! Parece que hay un problema con tu dispositivo o cámara','Asegúrate de que estén funcionando correctamente y vuelve a intentarlo.',() => {
+        this.navCtrl.navigateForward('home');
+      });
+    } else {
+        console.error(error.message);
+        this.navCtrl.navigateForward('home');
+    }
+
     });
 
   }
@@ -111,12 +157,8 @@ export class PreAnesthesiaPage implements OnInit {
     this.model.difficultAirway = qr.difficultAirway;
     this.model.riskOfHemorrhage = qr.riskOfHemorrhage;
     this.model.intervention = qr.intervention;
-    
-    //TODO: hacer que seleccione especialidad o cups sino se encuentran 
-    //this.setFormPatient();
-    //this.cdr.detectChanges();
-    //this.changeStatusManulIntake(false);
-    //this.changeStatusLookingForPatient(false);
+    this.scannDataForm = true;
+    this.showAudioAlert = true;
   }
 
   private async unsupportedBarcodeMessage() {
@@ -182,8 +224,8 @@ export class PreAnesthesiaPage implements OnInit {
     }).catch(() => console.log('Error consultando la atencion médica'));
   }
 
-  
   private mapViewToModel() {
+    this.model.arrivalDate = DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(this.model.arrivalDate));
     this.admissionList.arrivalDate = DateUtilsService.stringHour2Date(this.model.arrivalDate);
     this.admissionList.simpleArrivalDate = this.datepipe.transform(this.admissionList.arrivalDate,'yyyy-MM-dd')!;
     this.admissionList.simpleArrivalHour = this.datepipe.transform(this.admissionList.arrivalDate,'HH:mm:ss')!;
@@ -205,7 +247,7 @@ export class PreAnesthesiaPage implements OnInit {
     return this.admissionList;
   }
 
-    validarOtra(intervention: string) {
+  validarOtra(intervention: string) {
       if(intervention === 'Otra'){
         this.flagInputOtherIntervention = true;
       }else{

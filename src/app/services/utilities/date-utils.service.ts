@@ -9,6 +9,8 @@ export class DateUtilsService {
             return new Date("1/1/1");
         }
 
+        console.log('hora: ',hour)
+
         const tokens = hour.split(':').map(t => parseInt(t));
         const now = new Date();
         now.setHours(tokens[0]);

@@ -1,0 +1,36 @@
+<app-header titleName="paciente"></app-header>
+<ion-content [fullscreen]="true">
+    <ion-menu-toggle auto-hide="false" menu="menu-anestesia">
+      <ion-button shape="round" expand="block"
+      [style.--background]="color('StartAnesthesia')"
+      [disabled]="disabled('StartAnesthesia')"
+      (click)="goToInicoAnestesia()">
+        Inicio inducción de anestesia
+        <ion-icon src="../../../assets/svg/mascaretaxhdpi.svg"></ion-icon>
+      </ion-button>
+    </ion-menu-toggle>
+    <ion-button shape="round" expand="block"
+    [style.--background]="color('EndStartAnesthesia')"
+    [disabled]="disabled('EndStartAnesthesia')"
+    (click)="goToFinInicioAnestesia()">
+      Fin de inducción de anestesia
+      <ion-icon src="../../../assets/svg/tubotraxhdpi.svg"></ion-icon>
+    </ion-button>
+    <ion-button shape="round" expand="block"
+    [style.--background]="color('StartSurgery')"
+    [disabled]="disabled('StartSurgery')"
+    (click)="goToIncisionQuirurgica()">
+      Incisión quirúrgica
+      <ion-icon src="../../../assets/svg/bisturixhdpi.svg"></ion-icon>
+    </ion-button>
+    <ion-button shape="round" expand="block"
+    [style.--background]="color('EndSurgery')"
+    [disabled]="disabled('EndSurgery')"
+    (click)="goToFinCirugia()">
+      Fin de cirugía
+      <ion-icon src="../../../assets/svg/suturaxhdpi.svg"></ion-icon>
+    </ion-button>
+</ion-content>
+<ion-footer>
+  <app-events-panel [showCancelEvent] = "eventoCancelarVisible" sizeCol ='4'></app-events-panel>
+</ion-footer>

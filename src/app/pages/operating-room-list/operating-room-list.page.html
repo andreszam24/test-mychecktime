@@ -1,0 +1,196 @@
+<app-header titleName="paciente"></app-header>
+<app-audio-alert *ngIf="showAudioAlert" [audioSrc]="audioSrc" [audioHeader]="header" [alertButtons]="alertButtons" [textValidate]="textValidate" (alertClosed)="showAudioAlert = false"></app-audio-alert>
+
+<ion-content [fullscreen]="true">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title size="large">Quirófano</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-alert 
+      id="audio-alert" 
+      backdropDismiss=false 
+      #audioAlert 
+      header="Validación lista de quirofano" 
+      [buttons]="alertButtons" 
+      class="alert-audio">
+    <audio id="audio-validate" src="./../../../assets/audio/audio.mp3" controls="controls" #audioPlayer></audio>
+  </ion-alert>
+  <form class="formulario-chequeo">
+    <div *ngIf="!showSearchConcepts">
+
+      <div class="seccion-div">
+        <ion-text>
+          <h4>Búsqueda de Cirujano</h4>
+        </ion-text>
+        <ion-searchbar class="custom" [debounce]="1500" (ionInput)="searchSurgeons($event)"
+          placeholder="Agregar Cirujano">
+        </ion-searchbar>
+       <ion-list class="list">
+          <ion-item lines="none" *ngFor="let surgeon of resultsSearchigSurgeons">
+            <ion-label (click)="surgeonsSelected(surgeon)">{{ surgeon.name }} {{surgeon.lastname}}</ion-label>
+          </ion-item>
+        </ion-list>
+        <div *ngIf="selectedSurgeon.name">
+          <ion-text>
+            <h4>Cirujano Seleccionado</h4>
+          </ion-text>
+          <ion-item lines="none" class="select-item">
+            <ion-text class="item-text-wrap"> {{selectedSurgeon.name}} {{selectedSurgeon.lastname}}</ion-text>
+          </ion-item>
+        </div>
+      </div>
+      <div class="seccion-div">
+        <ion-text>
+          <h3>Búsqueda de Instrumentador</h3>
+        </ion-text>
+        <ion-searchbar class="custom" [debounce]="1500" (ionInput)="searchInstrumentTechnician($event)"
+          placeholder="Agregar Instrumentador">
+        </ion-searchbar>
+       <ion-list class="list">
+          <ion-item lines="none" *ngFor="let instrumentTechnician of resultsSearchigInstrumentTechnicians">
+            <ion-label (click)="instrumentTechnicianSelected(instrumentTechnician)">{{ instrumentTechnician.name }} {{instrumentTechnician.lastname}}</ion-label>
+          </ion-item>
+        </ion-list>
+        <div *ngIf="selectedInstrumentTechnician.name">
+          <ion-text>
+            <h3>Instrumentador Seleccionado</h3>
+          </ion-text>
+          <ion-item lines="none" class="select-item">
+            <ion-text class="item-text-wrap"> {{selectedInstrumentTechnician.name}} {{selectedInstrumentTechnician.lastname}}</ion-text>
+          </ion-item>
+        </div>
+      </div>
+
+      <ion-item lines="none" class="item-check">
+        <ion-label class="question">
+          <p class="title">
+            Confirmar que todos los miembros del equipo se hayan presentado por su nombre y función
+          </p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.confirmMembers" name="confirmMembers" item-right>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item lines="none" class="item-check">
+        <ion-label class="question" text-center>
+          <p class="title">
+            Cirujano, anestesista y enfermero confirman verbalemnte
+          </p>
+          <p text-wrap>
+            La identidad del paciente <br />
+            El sitio quirúrgico <br />
+            el procedimiento
+          </p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.confirmIdentity" name="confirmIdentity" item-right>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item lines="none" class="item-check">
+        <ion-label class="question" text-center>
+          <p class="title">Previsión de eventos críticos</p>
+          <p text-wrap>El cirujano revisa: Los pasos críticos o imprevistos, la diración de la operación y la pérdida de
+            sangre prevista</p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.criticalEvents" name="criticalEvents" item-right>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item lines="none" class="item-check">
+        <ion-label class="question" text-center>
+          <p class="title">El equipo de anestesia revisa</p>
+          <p text-wrap>
+            Si el paciente presenta algún problema específico
+          </p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.anesthesiaTeamReview" name="anesthesiaTeamReview" item-right>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-item lines="none" class="item-check">
+        <ion-label class="question" text-center>
+          <p class="title">
+            El equipo de enfermería revisa
+          </p>
+          <p text-wrap>
+            Si se ha confirmado la esterilidad (con resultados de los indicadores) y su existen dudas o problemas
+            relacionados con el instrumental y los equipos
+          </p>
+        </ion-label>
+        <ion-checkbox [(ngModel)]="model.nurseTeamReview" name="nurseTeamReview" item-right>
+        </ion-checkbox>
+      </ion-item>
+
+      <ion-radio-group name="administeredProphylaxis" [(ngModel)]="model.administeredProphylaxis">
+        <ion-list-header>
+          <ion-label>
+            ¿Se ha administrado profilaxis antibiótica en los últimos 60 minutos?
+          </ion-label>
+        </ion-list-header>
+        <ion-item>
+          <ion-radio [value]="false">No procede</ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-radio [value]="true">Sí</ion-radio>
+        </ion-item>
+      </ion-radio-group>
+
+      <ion-radio-group name="diagnosticImages" [(ngModel)]="model.diagnosticImages">
+        <ion-list-header>
+          <ion-label>
+            ¿Pueden visualizarse las imágenes diagnósticas escenciales?
+          </ion-label>
+        </ion-list-header>
+        <ion-item>
+          <ion-radio [value]="false">No procede</ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-radio [value]="true">Sí</ion-radio>
+        </ion-item>
+      </ion-radio-group>
+
+      <ion-row class="ion-justify-content-center">
+        <ion-col class="">
+          <ion-button shape="round"  [disabled]="!isValid()" (click)="endPageProccess()">Continuar
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </div>
+
+  <div *ngIf="showSearchConcepts" class="seccion-div">
+      <ion-text>
+        <h4>Búsqueda de conceptos de tiempo de recambio</h4>
+      </ion-text>
+      <ion-searchbar class="custom" [debounce]="1500" (ionInput)="searchConceptTime($event)"
+          placeholder="Agregar concepto de tiempo de recambio">
+      </ion-searchbar>
+      <ion-list class="list">
+        <ion-item lines="none" *ngFor="let conceptTimeReplacement of resultsSearchigConceptTimeReplacement">
+          <ion-label (click)="conceptTimeReplacementselected(conceptTimeReplacement)">{{ conceptTimeReplacement.name }}</ion-label>
+        </ion-item>
+      </ion-list>
+      <div *ngIf="selectedConceptTimeReplacement.name">
+        <ion-text>
+          <h3>Concepto de Tiempo de Recambio Seleccionado</h3>
+        </ion-text>
+        <ion-item lines="none" class="select-item">
+          <ion-text class="item-text-wrap"> {{selectedConceptTimeReplacement.name}} </ion-text>
+        </ion-item>
+      </div>
+      <ion-row>
+        <ion-col>
+          <ion-button shape="round" (click)="processJustification()">
+            Continuar
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </div>
+
+  </form>
+</ion-content>
+<ion-footer>
+  <app-events-panel [showCancelEvent] = true sizeCol ='3'></app-events-panel>
+</ion-footer>
+

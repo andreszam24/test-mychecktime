@@ -1,0 +1,31 @@
+ion-footer{
+    height: 10%;
+}
+
+ion-content{
+    --background: var(--ion-color-app-aqua);
+    --padding-top: 20px;
+    ion-menu-toggle{
+        display: block;
+        width: 95%;
+        margin: auto;
+        ion-button{
+            width: 100%;
+        }
+    }
+    ion-button{
+        height: 50px !important;
+        margin-bottom: 20px !important;
+        --background: var(--ion-color-app-gray);
+        width: 95%;
+        margin: auto;
+    }
+    
+    ion-icon{
+        margin-left: 10px;
+        width: 45px;
+        height: 45px;
+    }
+
+}
+

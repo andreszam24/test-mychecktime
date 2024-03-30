@@ -40,3 +40,15 @@ export const URLSpecialties = `${URLServer}/especialidades`;
 export const URLDeleteClinicalRecord = `${URLServer}/clinicalhistory/borrarRegistroClinicoPaciente`;
 
 export const URLAnesthesiologist = `${URLServer}/anesthesiologist`;
+
+export const URLOperationRooms = `${URLServer}/operatingrooms`;
+export const URLConceptTimeReplacement = `${URLServer}/conceptostiemporecambio`;
+
+export const URLSurgeons = `${URLServer}/cirujanos`;
+export const URLInstrumentTechnicians = `${URLServer}/instrumentadores`;
+
+export const URLChangePatientTime = `${URLServer}/clinicalhistory/changepatienttime`;
+
+
+
+

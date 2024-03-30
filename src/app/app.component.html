@@ -8,17 +8,85 @@
             <ion-label>{{nameUser ?? ''}}</ion-label>
           </ion-item>
           <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
-            <ion-item lines="none" routerDirection="root" [routerLink]="[p.url]"  detail="false" routerLinkActive="selected">
+            <ion-item (click)="closeMenu()" lines="none" routerDirection="root" [routerLink]="[p.url]"  detail="false" routerLinkActive="selected">
               <ion-label>{{ p.title }}</ion-label>
             </ion-item>
           </ion-menu-toggle>
           <ion-item (click)="doLogout()" lines="none" id="logout">
-            <ion-label>Cerrar Sesión</ion-label>
+            <ion-label>Cerrar sesión</ion-label>
           </ion-item>
         </ion-list>
       </ion-content>
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>
+
+
+    <ion-menu menuId="menu-anestesia" contentId="main-content" type="overlay"  (ionDidOpen)="menuOpened()"
+    *ngIf="currentPage == '/anesthesia-operating-room'">
+      <ion-content id="opciones-anestesia" class="menuBlueBackground">
+
+        <div class="icon-menu">
+          <div>
+            <img src="../../../assets/svg/anestesiaxhdpi.svg">
+          </div>
+        </div>
+    
+        <ion-row>
+            <ion-col class="ion-align-items-center">
+              <ion-button shape="round"
+              [style.--background]="anesthesiaSelected('Bloqueo') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
+              (click)="addAnesthesiaType('Bloqueo')">
+                Bloqueo
+              </ion-button>
+            </ion-col>
+        </ion-row>
+    
+        <ion-row>
+            <ion-col class="ion-align-items-center">
+              <ion-button
+              shape="round"
+              [style.--background]="anesthesiaSelected('Espinal') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
+              (click)="addAnesthesiaType('Espinal')">
+                Espinal
+              </ion-button>
+            </ion-col>
+        </ion-row>
+    
+        <ion-row>
+            <ion-col class="ion-align-items-center">
+              <ion-button
+              shape="round"
+              [style.--background]="anesthesiaSelected('Peridural') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
+              (click)="addAnesthesiaType('Peridural')">
+                Peridural
+              </ion-button>
+            </ion-col>
+        </ion-row>
+    
+        <ion-row>
+            <ion-col class="ion-align-items-center">
+              <ion-button
+              shape="round"
+              [style.--background]="anesthesiaSelected('General') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
+              (click)="addAnesthesiaType('General')">
+                General
+              </ion-button>
+            </ion-col>
+        </ion-row>
+    
+        <ion-row>
+            <ion-col class="ion-align-items-center">
+              <ion-button
+              shape="round"
+              [style.--background]="anesthesiaSelected('Sedación') ? 'var(--ion-color-app-red)' : 'var(--ion-color-app-gray)'"
+              (click)="addAnesthesiaType('Sedación')">
+              Sedación
+              </ion-button>
+            </ion-col>
+        </ion-row>
+      </ion-content>
+    </ion-menu>
+  
   </ion-split-pane>
   <app-internet-status></app-internet-status>
 </ion-app>

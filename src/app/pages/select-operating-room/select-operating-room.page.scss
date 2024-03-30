@@ -1,0 +1,27 @@
+ion-content{
+    .select-qr{
+        position: absolute;
+        margin: auto;
+        top: 0;
+        bottom: 0;
+        right: 0px;
+        left: 0;
+        height: 60%;
+        text-align: center;
+        ion-icon{
+            width: 500px;
+            height: 300px
+        }
+        p{
+            width: 100%;
+            text-align: center;
+            margin-top: 15px;
+        }
+    }
+}
+
+footer{
+    .back{
+        --background: var(--ion-color-app-red);
+    }
+}

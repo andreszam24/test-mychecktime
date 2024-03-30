@@ -1,0 +1,10 @@
+<ion-alert 
+      id="audio-alert" 
+      backdropDismiss=false 
+      #audioAlert 
+      [header]="audioHeader" 
+      [buttons]="alertButtons" 
+      [message]="textValidate"
+      class="alert-audio">
+    <audio id="audio-validate" [src]="audioSrc" controls="controls" #audioPlayer></audio>
+</ion-alert>
