@@ -130,13 +130,8 @@
           placeholder="Ingrese la intervención"></ion-textarea>
       </ion-item>
 
-      <ion-row>
-        <ion-col text-center class="content-button">
-          <ion-button id="login-button" size="default" expand="full"  [disabled]="!isValid()"
-            (click)="goToNextPage()">Continuar
-          </ion-button>
-        </ion-col>
-      </ion-row>
+      <app-button-panel [disabled]="!isValid()" (buttonClicked)="goToNextPage()"></app-button-panel>
+
     </form>
   </div>
 </ion-content>

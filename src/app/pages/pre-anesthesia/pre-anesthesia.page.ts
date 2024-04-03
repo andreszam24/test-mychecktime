@@ -13,6 +13,7 @@ import { IonDatetime, IonDatetimeButton, IonModal, IonSelectOption, IonTextarea}
 import { EventsPanelComponent } from '../../components/events-panel/events-panel.component';
 import { PreScanQrComponent } from 'src/app/components/pre-scan-qr/pre-scan-qr.component';
 import { AudioAlertComponent } from 'src/app/components/audio-alert/audio-alert.component';
+import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 
 
 
@@ -21,7 +22,7 @@ import { AudioAlertComponent } from 'src/app/components/audio-alert/audio-alert.
   templateUrl: './pre-anesthesia.page.html',
   styleUrls: ['./pre-anesthesia.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe, IonModal, IonDatetimeButton, IonDatetime, IonTextarea, EventsPanelComponent, PreScanQrComponent, AudioAlertComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe, IonModal, IonDatetimeButton, IonDatetime, IonTextarea, EventsPanelComponent, PreScanQrComponent, AudioAlertComponent, ButtonPanelComponent]
 })
 export class PreAnesthesiaPage implements OnInit {
 

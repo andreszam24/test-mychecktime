@@ -359,7 +359,7 @@ export class PatientIntakePage implements OnInit {
       this.medicalAttention.patient.name = this.profileForm.value.name ?? 'dummy';
       this.medicalAttention.patient.lastname = this.profileForm.value.lastName ?? 'dummy';
       this.medicalAttention.patient.gender = this.profileForm.value.gender ?? null!;
-      this.medicalAttention.patient.birthday = this.parseBirthday(this.profileForm.value.birthday + '-01-01' ?? "1800-01-01") ;
+      this.medicalAttention.patient.birthday = this.parseBirthday(this.profileForm.value.birthday + '-01-01' ?? "1950-01-01") ;
     }
 
     const existePaciente = this.medicalAttetionRepository.existsPatientInProgressAttentions(
