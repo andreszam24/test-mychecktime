@@ -12,7 +12,8 @@ import { IonRow, IonCol,IonFab,IonFabButton,IonIcon, NavController} from '@ionic
 export class EventsPanelComponent  implements OnInit {
 
   @Input() showCancelEvent: boolean = false;
-  @Input() sizeCol: string = '3';
+  @Input() showScanerDiv: boolean = false;
+  @Input() sizeCol: string = '';
 
 
   constructor(private navCtrl: NavController) {}

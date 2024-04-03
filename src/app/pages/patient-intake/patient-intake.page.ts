@@ -353,12 +353,12 @@ export class PatientIntakePage implements OnInit {
   private saveMedicalAttention(): void {
 
     if (this.manualIntake) {
-      this.medicalAttention.numeroResgistro = this.profileForm.value.registerCode ?? '';
+      this.medicalAttention.numeroResgistro = this.profileForm.value.registerCode ?? 'dummy';
       this.medicalAttention.programming = this.profileForm.value.programmingType ?? '';
       this.medicalAttention.patient.dni = this.profileForm.value.dni ?? '';
-      this.medicalAttention.patient.name = this.profileForm.value.name ?? '';
-      this.medicalAttention.patient.lastname = this.profileForm.value.lastName ?? '';
-      this.medicalAttention.patient.gender = this.profileForm.value.gender ?? '';
+      this.medicalAttention.patient.name = this.profileForm.value.name ?? 'dummy';
+      this.medicalAttention.patient.lastname = this.profileForm.value.lastName ?? 'dummy';
+      this.medicalAttention.patient.gender = this.profileForm.value.gender ?? null!;
       this.medicalAttention.patient.birthday = this.parseBirthday(this.profileForm.value.birthday + '-01-01' ?? "1800-01-01") ;
     }
 

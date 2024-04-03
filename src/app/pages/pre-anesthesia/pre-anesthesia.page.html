@@ -141,7 +141,7 @@
   </div>
 </ion-content>
 <ion-footer>
-    <app-events-panel [showCancelEvent] = true></app-events-panel>
+    <app-events-panel [showCancelEvent] = true [showScanerDiv] = true></app-events-panel>
 </ion-footer>
 <ion-fab slot="fixed" vertical="bottom" horizontal="end">
   <ion-fab-button (click)="scan()" [disabled]="!isSupported">

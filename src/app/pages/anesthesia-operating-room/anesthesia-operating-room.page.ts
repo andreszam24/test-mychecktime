@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, NavController } from '@ionic/angular';
@@ -27,17 +27,19 @@ export class AnesthesiaOperatingRoomPage implements OnInit {
     private navCtrl: NavController,
     private menu: MenuController,
     private medicalService: InProgressMedicalAttentionService,
+    private cdr: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {this.validarSiEventoCancelarVisible();}
 
   private validarSiEventoCancelarVisible() {
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
-      this.currentServiceStatus = sm.state;
+      this.currentServiceStatus = sm.state;console.log('estado actual: ',sm.state)
+      console.log(StatusService.isAtLeast('StartAnesthesia', sm.state))
       if(StatusService.isAtLeast('StartAnesthesia', sm.state)) {
         this.eventoCancelarVisible = true;
         this.menu.enable(true, 'menu-anestesia');
-      }
+      } 
     }).catch(e => Promise.reject(e));
   }
 
@@ -67,6 +69,7 @@ export class AnesthesiaOperatingRoomPage implements OnInit {
   }
 
   goToFinInicioAnestesia() {
+    this.inhabilitarOpcionEventoCancelar();
     const check = (sm: MedicalAttention) => {
       sm.operatingRoomList.endStartAnesthesia = new Date();
       sm.operatingRoomList.simpleEndStartAnesthesiaDate = this.datepipe.transform(sm.operatingRoomList.endStartAnesthesia,'yyyy-MM-dd')!;
@@ -76,10 +79,11 @@ export class AnesthesiaOperatingRoomPage implements OnInit {
       sm.state = StatusService.END_START_ANESTHESIA;
     }
 
-    this.checkItemAndSave(check, () => {});
+    this.checkItemAndSave(check, () => {this.cdr.detectChanges()});
   }
 
   goToIncisionQuirurgica() {
+    this.inhabilitarOpcionEventoCancelar();
     const check = (sm: MedicalAttention) => {
       sm.operatingRoomList.startSurgery = new Date();
       sm.operatingRoomList.simpleStartSurgeryDate = this.datepipe.transform(sm.operatingRoomList.startSurgery,'yyyy-MM-dd')!;
@@ -89,10 +93,11 @@ export class AnesthesiaOperatingRoomPage implements OnInit {
       sm.state = StatusService.START_SURGERY;
     }
 
-    this.checkItemAndSave(check, () => {});
+    this.checkItemAndSave(check, () => {this.cdr.detectChanges();});
   }
 
   goToFinCirugia() {
+    this.inhabilitarOpcionEventoCancelar();
     const check = (sm: MedicalAttention) => {
       sm.operatingRoomList.endSurgery = new Date();
       sm.operatingRoomList.simpleEndSurgeryDate = this.datepipe.transform(sm.operatingRoomList.endSurgery,'yyyy-MM-dd')!;
