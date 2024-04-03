@@ -22,6 +22,9 @@ ion-content{
                 margin: auto;
                 margin-bottom: 15px;
             }
+            ion-item::part(native){
+                flex-direction: column;
+            }
         }
     }
     p{

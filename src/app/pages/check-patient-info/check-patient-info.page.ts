@@ -33,10 +33,10 @@ export class CheckPatientInfoPage implements OnInit {
 
   ngOnInit() {
     this.medicalServiceInProgress();
-    this.startBarcodeScanner();
+    //this.startBarcodeScanner();
   }
 
-  private startBarcodeScanner() {
+  startBarcodeScanner() {
     BarcodeScanner.isSupported().then((result) => {
       this.isSupported = result.supported;
       this.scan();

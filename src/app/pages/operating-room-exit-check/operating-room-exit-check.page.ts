@@ -139,13 +139,20 @@ export class OperatingRoomExitCheckPage implements OnInit {
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    this.model.confirmProcedure = qr.confirmProcedure;
-    this.model.instrumentsCount = qr.instrumentsCount;
-    this.model.verifyTagsPatient = qr.verifyTagsPatient;
-    this.model.problemsResolve = qr.problemsResolve;
-    this.model.recoveryReview = qr.recoveryReview;
-    this.scannDataForm = true;
-    this.showAudioAlert = true;
+    if(qr && qr.confirmProcedure){
+      this.model.confirmProcedure = qr.confirmProcedure;
+      this.model.instrumentsCount = qr.instrumentsCount;
+      this.model.verifyTagsPatient = qr.verifyTagsPatient;
+      this.model.problemsResolve = qr.problemsResolve;
+      this.model.recoveryReview = qr.recoveryReview;
+      this.scannDataForm = true;
+      this.showAudioAlert = true;
+    } else{
+      this.alertService.presentActionAlert('¡Ups! Parece que ocurrió un problema con el QR','Por favor, escanea un código QR valido para continuar.', () => {
+        this.navCtrl.navigateForward('home');
+      });
+    }
+    
   }
 
   private async unsupportedBarcodeMessage() {

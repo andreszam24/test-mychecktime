@@ -67,7 +67,7 @@ export class PreAnesthesiaPage implements OnInit {
     private alertService: AlertService,
     private navCtrl: NavController,
     private medicalService: InProgressMedicalAttentionService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
   ) {
     this.admissionList = new AdmissionList();
     this.flagInputOtherIntervention = false;
@@ -75,7 +75,7 @@ export class PreAnesthesiaPage implements OnInit {
    }
 
   ngOnInit() {
-    this.openModal()
+    this.openModal();
   }
 
   async openModal() {
@@ -149,16 +149,22 @@ export class PreAnesthesiaPage implements OnInit {
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    this.model.basicConfirmation = qr.basicConfirmation;
-    this.model.site= qr.site;
-    this.model.anesthesiaSecurity= qr.anesthesiaSecurity;
-    this.model.pulsometer = qr.pulsometer;
-    this.model.allergy = qr.allergy;
-    this.model.difficultAirway = qr.difficultAirway;
-    this.model.riskOfHemorrhage = qr.riskOfHemorrhage;
-    this.model.intervention = qr.intervention;
-    this.scannDataForm = true;
-    this.showAudioAlert = true;
+    if(qr && qr.basicConfirmation){
+      this.model.basicConfirmation = qr.basicConfirmation;
+      this.model.site= qr.site;
+      this.model.anesthesiaSecurity= qr.anesthesiaSecurity;
+      this.model.pulsometer = qr.pulsometer;
+      this.model.allergy = qr.allergy;
+      this.model.difficultAirway = qr.difficultAirway;
+      this.model.riskOfHemorrhage = qr.riskOfHemorrhage;
+      this.model.intervention = qr.intervention;
+      this.scannDataForm = true;
+      this.showAudioAlert = true;
+    }else{
+      this.alertService.presentActionAlert('¡Ups! Parece que ocurrió un problema con el QR','Por favor, escanea un código QR valido para continuar.', () => {
+        this.navCtrl.navigateForward('home');
+      });
+    }
   }
 
   private async unsupportedBarcodeMessage() {

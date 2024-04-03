@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, Platform } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AlertService {
 
-  constructor(private alertController: AlertController) { }
+  constructor(private alertController: AlertController, private platform: Platform) {}
 
   async presentBasicAlert(header: string, message: string): Promise<void> {
     const alert = await this.alertController.create({
@@ -27,5 +27,8 @@ export class AlertService {
       }]
     });
     await alert.present();
+    alert.onDidDismiss().then(() => {
+      okAction();
+    });
   }
 }

@@ -111,7 +111,7 @@ export class SelectOperatingRoomPage implements OnInit {
       this.selectedOperationRoom = qr.operatingRoom;
       this.verifySelectedOperatingRoomQR(); 
     } else {
-      throw new Error('¡Ups! Parece que ocurrió un problema con el QR');     
+      throw new Error('¡Ups! Parece que ocurrió un problema con el QR. Por favor, escanea un código QR valido para continuar.');     
     }
   }
 

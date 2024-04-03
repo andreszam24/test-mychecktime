@@ -130,7 +130,7 @@ export class HomePage implements OnInit {
     this.httpInProgressMedicalAttention.searchPendingServices(clinicId, anesthesiologistId).subscribe({
       next: (data) => {
         this.attentionsInProgress = data;
-        this.attentionsInProgress.sort((a, b) => a.patient.id - b.patient.id);
+        this.attentionsInProgress.sort((a, b) => a._id.localeCompare(b._id));
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -237,6 +237,7 @@ export class HomePage implements OnInit {
         'EndStartAnesthesia': '/anesthesia-operating-room',
         'StartSurgery': '/anesthesia-operating-room',
         'EndSurgery':'/operating-room-exit-check',
+        'ExitOperatingRoomList':'/start-proces'
     };
 
     const nextState = stateRouteMap[selectedMedicalAttention.state];

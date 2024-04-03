@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-import { AlertController,IonAlert} from '@ionic/angular/standalone';
+import { AlertController,IonAlert, Platform} from '@ionic/angular/standalone';
 
 
 @Component({
@@ -20,10 +20,9 @@ export class AudioAlertComponent  implements OnInit {
   @Input() alertButtons:any={};
   @Output() alertClosed = new EventEmitter();
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {}
-
   ngAfterViewInit() {
     this.audioAlert.isOpen = true;
     this.playAudio()
@@ -34,7 +33,6 @@ export class AudioAlertComponent  implements OnInit {
     audio.play();
     audio.addEventListener('ended', () => {
       this.audioAlert.dismiss();
-      console.log('fin');
     });
   }
 }

@@ -63,13 +63,10 @@ export class AnesthesiaOperatingRoomPage implements OnInit {
   }
 
   private inhabilitarOpcionEventoCancelar() {
-    if(this.eventoCancelarVisible){
-      this.eventoCancelarVisible = false;
-    }
+    this.eventoCancelarVisible = false;
   }
 
   goToFinInicioAnestesia() {
-    
     const check = (sm: MedicalAttention) => {
       sm.operatingRoomList.endStartAnesthesia = new Date();
       sm.operatingRoomList.simpleEndStartAnesthesiaDate = this.datepipe.transform(sm.operatingRoomList.endStartAnesthesia,'yyyy-MM-dd')!;
