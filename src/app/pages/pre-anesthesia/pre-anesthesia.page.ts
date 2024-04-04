@@ -38,7 +38,7 @@ export class PreAnesthesiaPage implements OnInit {
       cssClass: 'alert-button-cancel',
       role: 'cancel',
       handler: () => {
-        this.navCtrl.navigateForward('home');
+        this.navCtrl.back();
       },
     },
   ];
@@ -158,7 +158,7 @@ export class PreAnesthesiaPage implements OnInit {
       this.model.allergy = qr.allergy;
       this.model.difficultAirway = qr.difficultAirway;
       this.model.riskOfHemorrhage = qr.riskOfHemorrhage;
-      this.model.intervention = qr.intervention;
+      this.model.intervention = qr.intervention ?? 'Ninguna';
       this.scannDataForm = true;
       this.showAudioAlert = true;
     }else{

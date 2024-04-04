@@ -22,6 +22,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { OperationRoom } from 'src/app/models/operationRoom.model';
 import { AnesthesiologistProfile } from 'src/app/models/anesthesiologist-profile.model';
 import { StatusService } from 'src/app/services/status.service';
+import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 
 
 
@@ -31,7 +32,7 @@ import { StatusService } from 'src/app/services/status.service';
   templateUrl: './patient-intake.page.html',
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
-  imports: [IonDatetime, DatePipe, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule, HeaderComponent, IonCardHeader, IonCardContent, IonRow, IonCol],
+  imports: [IonDatetime, DatePipe, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule, HeaderComponent, IonCardHeader, IonCardContent, IonRow, IonCol,ButtonPanelComponent],
 })
 
 export class PatientIntakePage implements OnInit {

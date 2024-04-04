@@ -11,7 +11,7 @@ import { StatusService } from 'src/app/services/status.service';
 import { WorkingAreaService } from 'src/app/services/working-area.service';
 import { OperationRoomService } from 'src/app/services/operation-room.service';
 import { PreScanQrComponent } from 'src/app/components/pre-scan-qr/pre-scan-qr.component';
-import { AudioAlertComponent } from 'src/app/components/audio-alert/audio-alert.component';
+import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 
 
 @Component({
@@ -19,7 +19,7 @@ import { AudioAlertComponent } from 'src/app/components/audio-alert/audio-alert.
   templateUrl: './select-operating-room.page.html',
   styleUrls: ['./select-operating-room.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, ButtonPanelComponent]
 })
 export class SelectOperatingRoomPage implements OnInit {
 
@@ -180,8 +180,8 @@ export class SelectOperatingRoomPage implements OnInit {
     }
   }
 
-  goToBackPage(){
-    this.navCtrl.back()
+  toContinue(){
+    this.textItem = '¡Para continuar debes escanear el QR correspondiente a la sala! Por favor, da click en la imagen para continuar';
   }
 
 }

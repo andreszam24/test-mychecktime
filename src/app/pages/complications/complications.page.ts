@@ -6,13 +6,14 @@ import { IonicModule, NavController } from '@ionic/angular';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { MedicalEvent } from 'src/app/models/medical-event.model';
 import { IonIcon, IonItem, IonText } from '@ionic/angular/standalone';
+import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 
 @Component({
   selector: 'app-complications',
   templateUrl: './complications.page.html',
   styleUrls: ['./complications.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, IonIcon, IonItem, IonText]
+  imports: [IonicModule, CommonModule, FormsModule, IonIcon, IonItem, IonText, ButtonPanelComponent]
 })
 export class ComplicationsPage implements OnInit {
 
@@ -28,10 +29,6 @@ export class ComplicationsPage implements OnInit {
   ) { }
 
   ngOnInit() {
-  }
-
-  goToBackPage(){
-    this.navCtrl.back()
   }
 
   toContinue() {

@@ -30,18 +30,7 @@
 </ion-content>
 <ion-footer>
   <ion-toolbar position="bottom">
-    <ion-row>
-        <ion-col>
-          <ion-button (click)="goToBackPage()"  class="back">
-            Volver
-          </ion-button>
-        </ion-col>
-        <ion-col>
-          <ion-button (click)="shiftHandover()"  class="continue">
-            Guardar
-          </ion-button>
-        </ion-col>
-    </ion-row>
+    <app-button-panel [disabled]="false" (buttonClicked)="shiftHandover()"></app-button-panel>
   </ion-toolbar>
 </ion-footer>
 

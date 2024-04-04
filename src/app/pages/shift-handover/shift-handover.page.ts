@@ -13,13 +13,14 @@ import { AuthService } from '../../services/auth.service';
 import { IonAvatar, IonCardContent, IonCardHeader, IonCol, IonIcon, IonInput, IonItem, IonLabel, IonRow, IonSearchbar, IonSelect, IonText } from '@ionic/angular/standalone';
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { HeaderComponent } from '../../components/header/header.component';
+import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 
 @Component({
   selector: 'app-shift-handover',
   templateUrl: './shift-handover.page.html',
   styleUrls: ['./shift-handover.page.scss'],
   standalone: true,
-  imports: [IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, HeaderComponent, IonCardHeader, IonCardContent, IonRow, IonCol],
+  imports: [IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, HeaderComponent, IonCardHeader, IonCardContent, IonRow, IonCol, ButtonPanelComponent],
 })
 export class ShiftHandoverPage implements OnInit {
 

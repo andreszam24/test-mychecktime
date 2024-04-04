@@ -6,6 +6,7 @@ import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { HeaderComponent } from 'src/app/components/header/header.component';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { Patient } from 'src/app/models/patient.model';
+import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 
 
 @Component({
@@ -13,7 +14,7 @@ import { Patient } from 'src/app/models/patient.model';
   templateUrl: './check-patient-info.page.html',
   styleUrls: ['./check-patient-info.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, ButtonPanelComponent]
 })
 export class CheckPatientInfoPage implements OnInit {
 
@@ -132,10 +133,6 @@ export class CheckPatientInfoPage implements OnInit {
 
   goToNextPage(){
     this.navCtrl.navigateForward('operating-room-list');
-  }
-
-  goToBackPage(){
-    this.navCtrl.back()
   }
 
   toContinue() {

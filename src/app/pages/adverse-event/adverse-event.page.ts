@@ -5,13 +5,14 @@ import { Toast } from '@capacitor/toast';
 import { IonicModule, NavController } from '@ionic/angular';
 import { MedicalEvent } from 'src/app/models/medical-event.model';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
+import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 
 @Component({
   selector: 'app-adverse-event',
   templateUrl: './adverse-event.page.html',
   styleUrls: ['./adverse-event.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule,ButtonPanelComponent]
 })
 export class AdverseEventPage implements OnInit {
 
@@ -27,10 +28,6 @@ export class AdverseEventPage implements OnInit {
   ) { }
 
   ngOnInit() {
-  }
-
-  goToBackPage(){
-    this.navCtrl.back()
   }
 
   toContinue() {

@@ -172,11 +172,9 @@
   <ion-loading class="custom-loading" trigger="login-button" message="Cargando..."></ion-loading>
 </ion-content>
 <footer>
-  <div class="content-button">
-    <ion-button id="login-button" size="default" expand="full" (click)="toValidatePatientData()">Continuar</ion-button>
-  </div>
+  <app-button-panel [disabled]="false" (buttonClicked)="toValidatePatientData()"></app-button-panel>
 </footer>
-<ion-fab slot="fixed" vertical="bottom" horizontal="end">
+<ion-fab slot="fixed" vertical="bottom" horizontal="start">
   <ion-fab-button (click)="scan()" [disabled]="!isSupported">
     <ion-icon src="../../../assets/svg/barcode-outline.svg"></ion-icon>
   </ion-fab-button>

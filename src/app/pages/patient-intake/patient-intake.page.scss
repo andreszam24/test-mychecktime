@@ -246,9 +246,12 @@ ion-content{
 
 ion-fab-button {
   --background: var(--ion-color-app-blue);
+  margin-bottom: 3.5rem;
+
 }
 
 footer{
+    background-color: var(--ion-color-app-aqua);
     ion-button{
         margin: 0;
     }

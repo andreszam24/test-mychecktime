@@ -19,7 +19,7 @@ export class ButtonPanelComponent  implements OnInit {
   ngOnInit() {}
 
   goToBackPage(){
-    this.navCtrl.back()
+    this.navCtrl.back();
   }
 
   onClick() {

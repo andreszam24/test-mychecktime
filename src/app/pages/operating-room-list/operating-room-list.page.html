@@ -151,12 +151,8 @@
         </ion-item>
       </ion-radio-group>
 
-      <ion-row class="ion-justify-content-center">
-        <ion-col class="">
-          <ion-button shape="round"  [disabled]="!isValid()" (click)="endPageProccess()">Continuar
-          </ion-button>
-        </ion-col>
-      </ion-row>
+      <app-button-panel [disabled]="!isValid()" (buttonClicked)="endPageProccess()"></app-button-panel>
+
     </div>
 
   <div *ngIf="showSearchConcepts" class="seccion-div">
@@ -179,13 +175,7 @@
           <ion-text class="item-text-wrap"> {{selectedConceptTimeReplacement.name}} </ion-text>
         </ion-item>
       </div>
-      <ion-row>
-        <ion-col>
-          <ion-button shape="round" (click)="processJustification()">
-            Continuar
-          </ion-button>
-        </ion-col>
-      </ion-row>
+      <app-button-panel [disabled]="false" (buttonClicked)="processJustification()"></app-button-panel>
     </div>
 
   </form>

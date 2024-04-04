@@ -22,13 +22,14 @@ import { LoadingService } from 'src/app/services/utilities/loading.service';
 import { Toast } from '@capacitor/toast';
 import { AlertController,IonAlert, IonButton } from '@ionic/angular/standalone';
 import { AudioAlertComponent } from 'src/app/components/audio-alert/audio-alert.component';
+import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 
 @Component({
   selector: 'app-operating-room-list',
   templateUrl: './operating-room-list.page.html',
   styleUrls: ['./operating-room-list.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent, IonButton, AudioAlertComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent, IonButton, AudioAlertComponent, ButtonPanelComponent]
 })
 export class OperatingRoomListPage implements OnInit {
   audioSrc = './../../../assets/audio/audio.mp3';
@@ -40,7 +41,7 @@ export class OperatingRoomListPage implements OnInit {
       cssClass: 'alert-button-cancel',
       role: 'cancel',
       handler: () => {
-        this.navCtrl.navigateForward('home');
+        this.navCtrl.back();
       },
     },
   ];
