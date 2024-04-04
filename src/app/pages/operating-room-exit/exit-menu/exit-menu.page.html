@@ -1,11 +1,10 @@
 <app-header titleName="paciente"></app-header>
 
 <ion-content class="exit-menu" [fullscreen]="true">
-  <div>
     <ion-button shape="round" expand="block"
     (click)="goToRecovery()">
       Recuperacion
-      <ion-icon src="../../../assets/svg/recuperacionxhdpi.svg"></ion-icon>
+      <ion-icon id="recovery" src="../../../assets/svg/recuperacionxhdpi.svg"></ion-icon>
   </ion-button>
   <ion-button shape="round" expand="block" 
     (click)="goToUCI()">
@@ -17,5 +16,4 @@
       Sala de paz
       <ion-icon src="../../../assets/svg/fallecimietoxhdpi.svg"></ion-icon>    
   </ion-button>
-  </div>
 </ion-content>

@@ -1,13 +1,19 @@
 .exit-menu{
     --background:var(--ion-color-app-aqua);
+    --padding-top: 1.5rem;
     ion-button{
+        --background:var(--ion-color-app-blue);
         height: 50px;
         width: 95%;
         margin: auto;
         margin-bottom: 20px;
         ion-icon{
             margin-left: 10px;
-            height: 45px;
+            width: 35px;
+            height: 35px;
+        }
+        .recovery{
+            width: 45px;
         }
     }
 }
