@@ -97,6 +97,23 @@ export const routes: Routes = [
     path: 'start-proces',
     loadComponent: () => import('./pages/start-proces/start-proces.page').then( m => m.StartProcesPage)
   },
+  {
+    path: 'exit-menu',
+    loadComponent: () => import('./pages/operating-room-exit/exit-menu/exit-menu.page').then( m => m.ExitMenuPage)
+  },  {
+    path: 'death',
+    loadComponent: () => import('./pages/operating-room-exit/death/death.page').then( m => m.DeathPage)
+  },
+  {
+    path: 'recovery',
+    loadComponent: () => import('./pages/operating-room-exit/recovery/recovery.page').then( m => m.RecoveryPage)
+  },
+  {
+    path: 'uci',
+    loadComponent: () => import('./pages/operating-room-exit/uci/uci.page').then( m => m.UciPage)
+  },
+
+
 
 
 
