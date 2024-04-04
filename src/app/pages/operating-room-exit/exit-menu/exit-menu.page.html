@@ -1,13 +1,21 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>exit-menu</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header titleName="paciente"></app-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">exit-menu</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="exit-menu" [fullscreen]="true">
+  <div>
+    <ion-button shape="round" expand="block"
+    (click)="goToRecovery()">
+      Recuperacion
+      <ion-icon src="../../../assets/svg/recuperacionxhdpi.svg"></ion-icon>
+  </ion-button>
+  <ion-button shape="round" expand="block" 
+    (click)="goToUCI()">
+      UCI
+      <ion-icon src="../../../assets/svg/ucixhdpi.svg"></ion-icon>    
+  </ion-button>
+  <ion-button shape="round" expand="block"
+    (click)="goToDeath()">
+      Sala de paz
+      <ion-icon src="../../../assets/svg/fallecimietoxhdpi.svg"></ion-icon>    
+  </ion-button>
+  </div>
 </ion-content>

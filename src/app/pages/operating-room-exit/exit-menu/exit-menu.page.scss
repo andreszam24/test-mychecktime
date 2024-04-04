@@ -1,0 +1,13 @@
+.exit-menu{
+    --background:var(--ion-color-app-aqua);
+    ion-button{
+        height: 50px;
+        width: 95%;
+        margin: auto;
+        margin-bottom: 20px;
+        ion-icon{
+            margin-left: 10px;
+            height: 45px;
+        }
+    }
+}
