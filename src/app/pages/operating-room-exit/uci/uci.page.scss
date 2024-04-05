@@ -1,0 +1,45 @@
+.uci-page{
+    --background:var(--ion-color-app-aqua);
+    ion-header{
+        ion-toolbar{
+            ion-title{
+                background-color: var(--ion-color-app-red);
+                color: white;
+                text-align: center;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+        }
+    }
+    form{
+        padding-top: 1rem;
+
+        ion-input, ion-textarea {
+            background-color: white;
+            color: var(--ion-color-app-dark);
+            border-radius: 25px;
+            text-align: justify;
+            --padding-start:1rem;
+            width: 95%;
+            margin: auto;
+        }
+
+        ion-row{
+            ion-col{
+              text-align: center;
+              ion-button{
+                --background: var(--ion-color-app-blue);
+                font-size: small;
+                width: 85%;
+              }
+            }
+        }
+
+    }
+    
+    
+}
+

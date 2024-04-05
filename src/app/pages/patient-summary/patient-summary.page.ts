@@ -36,4 +36,8 @@ export class PatientSummaryPage implements OnInit{
     this.medicalAttention = this.sharedDataService.getDatos();
   }
 
+  goToBackPage(){
+    this.navCtrl.back();
+  }
+
 }

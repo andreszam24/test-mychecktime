@@ -28,7 +28,7 @@ export class CancellationPage implements OnInit {
   constructor(
     private navCtrl: NavController,
     private inProgressRepository: InProgressMedicalAttentionService,
-    private loadingService: LoadingService,
+    private loadingService: LoadingService
   ) { }
 
   ngOnInit() {

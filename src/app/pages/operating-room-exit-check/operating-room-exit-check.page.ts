@@ -59,7 +59,6 @@ export class OperatingRoomExitCheckPage implements OnInit {
     private navCtrl: NavController,
     private medicalService: InProgressMedicalAttentionService,
     private modalCtrl: ModalController,
-    private menu: MenuController
   ) { 
     this.exitOperatingRoomList = new ExitOperatingRoomList();
   }
@@ -207,7 +206,7 @@ export class OperatingRoomExitCheckPage implements OnInit {
       this.medicalService.saveMedicalAttention(sm,'sync')
         .then(result => {
             if(result) {
-              this.navCtrl.navigateForward('start-proces');
+              this.navCtrl.navigateForward('exit-menu');
             }
           }).catch(() => console.error('No se pudo guardar el servicio médico'));
     }).catch(() => console.log('Error consultando la atencion médica'));

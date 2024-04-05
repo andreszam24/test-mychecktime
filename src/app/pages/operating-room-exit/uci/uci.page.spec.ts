@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { StartProcesPage } from './start-proces.page';
+import { UciPage } from './uci.page';
 
-describe('StartProcesPage', () => {
-  let component: StartProcesPage;
-  let fixture: ComponentFixture<StartProcesPage>;
+describe('UciPage', () => {
+  let component: UciPage;
+  let fixture: ComponentFixture<UciPage>;
 
   beforeEach(async(() => {
-    fixture = TestBed.createComponent(StartProcesPage);
+    fixture = TestBed.createComponent(UciPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));
