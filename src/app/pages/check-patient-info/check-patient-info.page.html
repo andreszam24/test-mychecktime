@@ -8,11 +8,11 @@
           </ion-text>
         </ion-col>
         <ion-col class="select-qr" size="12">
-              <ion-icon (click)="scan()"  src="../../../assets/svg/Item-select-qr.svg"></ion-icon>
+              <ion-icon (click)="startBarcodeScanner()"  src="../../../assets/svg/Item-select-qr.svg"></ion-icon>
         </ion-col>
         <ion-col class="Valid-data-input" size="12">
             <ion-item lines="none">
-                <ion-input fill="solid" [(ngModel)]="inputData" labelPlacement="stacked" helperText="Manual" placeholder="Ingresa 4 ultimos digitos" pattern="[0-9]*" maxlength="4" required>
+                <ion-input fill="solid" [(ngModel)]="inputData" labelPlacement="stacked"  helperText="Manual" placeholder="Ingresa 4 ultimos digitos" pattern="[0-9]*" maxlength="4" required>
                 <ion-icon slot="start" src="../../../assets/svg/person-circle-outline.svg" aria-hidden="true"></ion-icon>
                 </ion-input>
                 <ion-note color="danger" *ngIf="inputData && !validarInputData()">
@@ -25,17 +25,6 @@
 </ion-content>
 <ion-footer>
     <ion-toolbar position="bottom">
-      <ion-row>
-          <ion-col>
-            <ion-button (click)="goToBackPage()"  class="back">
-              Volver
-            </ion-button>
-          </ion-col>
-          <ion-col>
-            <ion-button (click)="toContinue()"  class="continue">
-              Continuar
-            </ion-button>
-          </ion-col>
-      </ion-row>
+      <app-button-panel [disabled]="false" (buttonClicked)="toContinue()"></app-button-panel>
     </ion-toolbar>
 </ion-footer>

@@ -22,6 +22,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { OperationRoom } from 'src/app/models/operationRoom.model';
 import { AnesthesiologistProfile } from 'src/app/models/anesthesiologist-profile.model';
 import { StatusService } from 'src/app/services/status.service';
+import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 
 
 
@@ -31,7 +32,7 @@ import { StatusService } from 'src/app/services/status.service';
   templateUrl: './patient-intake.page.html',
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
-  imports: [IonDatetime, DatePipe, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule, HeaderComponent, IonCardHeader, IonCardContent, IonRow, IonCol],
+  imports: [IonDatetime, DatePipe, IonItem, IonSearchbar, IonAvatar, IonLabel, IonText, IonInput, IonIcon, IonSelect, IonicModule, FormsModule, InternetStatusComponent, CommonModule, ReactiveFormsModule, HeaderComponent, IonCardHeader, IonCardContent, IonRow, IonCol,ButtonPanelComponent],
 })
 
 export class PatientIntakePage implements OnInit {
@@ -353,13 +354,13 @@ export class PatientIntakePage implements OnInit {
   private saveMedicalAttention(): void {
 
     if (this.manualIntake) {
-      this.medicalAttention.numeroResgistro = this.profileForm.value.registerCode ?? '';
+      this.medicalAttention.numeroResgistro = this.profileForm.value.registerCode ?? 'dummy';
       this.medicalAttention.programming = this.profileForm.value.programmingType ?? '';
       this.medicalAttention.patient.dni = this.profileForm.value.dni ?? '';
-      this.medicalAttention.patient.name = this.profileForm.value.name ?? '';
-      this.medicalAttention.patient.lastname = this.profileForm.value.lastName ?? '';
-      this.medicalAttention.patient.gender = this.profileForm.value.gender ?? '';
-      this.medicalAttention.patient.birthday = this.parseBirthday(this.profileForm.value.birthday + '-01-01' ?? "1800-01-01") ;
+      this.medicalAttention.patient.name = this.profileForm.value.name ?? 'dummy';
+      this.medicalAttention.patient.lastname = this.profileForm.value.lastName ?? 'dummy';
+      this.medicalAttention.patient.gender = this.profileForm.value.gender ?? null!;
+      this.medicalAttention.patient.birthday = this.parseBirthday(this.profileForm.value.birthday + '-01-01' ?? "1950-01-01") ;
     }
 
     const existePaciente = this.medicalAttetionRepository.existsPatientInProgressAttentions(

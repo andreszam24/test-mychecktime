@@ -7,7 +7,5 @@
   </ion-item>
 </ion-content>
 <footer>
-  <div class="content-button">
-    <ion-button class="back" size="default" expand="full" (click)="goToBackPage()">Volver</ion-button>
-  </div>
+  <app-button-panel [disabled]="false" (buttonClicked)="toContinue()"></app-button-panel>
 </footer>

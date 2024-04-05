@@ -79,7 +79,7 @@ export class AppComponent {
     if (currentUrl == '/home') {
       this.appPages = [
         { title: 'Cambio de turno', url: '/shift-handover' },
-        { title: 'Sincronizacion con el servidor', url: '/synchronization' },
+        { title: 'Sincronizacion con el servidor', url: '/home' },
       ];
 
     } 
@@ -87,7 +87,7 @@ export class AppComponent {
       this.appPages = [
         { title: 'Pacientes pendientes', url: '/home' },
         { title: 'Cambio de turno', url: '/shift-handover' },
-        { title: 'Sincronizacion con el servidor', url: '/synchronization' },
+        { title: 'Sincronizacion con el servidor', url: '/home' },
       ];
     }
   }

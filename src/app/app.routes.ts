@@ -92,7 +92,8 @@ export const routes: Routes = [
   {
     path: 'surgery-destination',
     loadComponent: () => import('./pages/hospital-discharge/surgery-destination/surgery-destination.page').then( m => m.SurgeryDestinationPage)
-  },  {
+  },
+  {
     path: 'start-proces',
     loadComponent: () => import('./pages/start-proces/start-proces.page').then( m => m.StartProcesPage)
   },

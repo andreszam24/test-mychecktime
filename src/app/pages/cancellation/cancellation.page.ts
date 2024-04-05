@@ -7,13 +7,14 @@ import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-
 import { LoadingService } from 'src/app/services/utilities/loading.service';
 import { MedicalEvent } from 'src/app/models/medical-event.model';
 import { StatusService } from 'src/app/services/status.service';
+import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 
 @Component({
   selector: 'app-cancellation',
   templateUrl: './cancellation.page.html',
   styleUrls: ['./cancellation.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule,ButtonPanelComponent]
 })
 export class CancellationPage implements OnInit {
 
@@ -32,11 +33,6 @@ export class CancellationPage implements OnInit {
 
   ngOnInit() {
   }
-
-  goToBackPage(){
-    this.navCtrl.back()
-  }
-
 
   toContinue() {
     if(!this.validateForm())  {

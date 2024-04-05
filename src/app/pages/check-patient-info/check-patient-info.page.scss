@@ -21,6 +21,12 @@ ion-content{
                 width: 80%;
                 margin: auto;
                 margin-bottom: 15px;
+                ion-note{
+                    font-size: 0.72rem;
+                }
+            }
+            ion-item::part(native){
+                flex-direction: column;
             }
         }
     }

@@ -26,10 +26,8 @@ export class TokenInterceptor implements HttpInterceptor {
         if (user.loggedIn && user.account) {
           Token = AuthService.getAuthToken();
           if (helper.isTokenExpired(Token)) {
-            //console.log('token expirado')
             this.authService.refreshToken();
             Token = AuthService.getAuthToken();
-            //console.log('nuevo token: ', Token)
             modifiedRequest = this.addToken(request, Token!);
           } else {
             modifiedRequest = this.addToken(request, Token!);

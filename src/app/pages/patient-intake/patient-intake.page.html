@@ -22,7 +22,7 @@
                   </ion-note>
                 </div>
               <div class="metadata-end-wrapper">
-                <ion-note color="medium">Fecha de nacimiento: {{ medicalAttention.patient.birthday }}</ion-note>
+                <ion-note color="medium">Año de nacimiento: {{ medicalAttention.patient.birthday }}</ion-note>
               </div>
             </ion-col>
           </ion-row>
@@ -87,10 +87,9 @@
         <ion-input formControlName="lastName" label-placement="stacked" placeholder="Apellido"></ion-input>
       </ion-item>
       <ion-item lines="none">
-        <ion-select formControlName="gender" label="Genero" placeholder="Selecciona">
+        <ion-select formControlName="gender" label="Género" placeholder="Selecciona">
           <ion-select-option value="Femenino">Femenino</ion-select-option>
           <ion-select-option value="Masculino">Masculino</ion-select-option>
-          <ion-select-option value="Otro">Otro</ion-select-option>
         </ion-select>
       </ion-item>
       <ion-item lines="none">
@@ -173,11 +172,9 @@
   <ion-loading class="custom-loading" trigger="login-button" message="Cargando..."></ion-loading>
 </ion-content>
 <footer>
-  <div class="content-button">
-    <ion-button id="login-button" size="default" expand="full" (click)="toValidatePatientData()">Continuar</ion-button>
-  </div>
+  <app-button-panel [disabled]="false" (buttonClicked)="toValidatePatientData()"></app-button-panel>
 </footer>
-<ion-fab slot="fixed" vertical="bottom" horizontal="end">
+<ion-fab slot="fixed" vertical="bottom" horizontal="start">
   <ion-fab-button (click)="scan()" [disabled]="!isSupported">
     <ion-icon src="../../../assets/svg/barcode-outline.svg"></ion-icon>
   </ion-fab-button>

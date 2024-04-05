@@ -6,13 +6,14 @@ import { IonicModule, NavController } from '@ionic/angular';
 import { MedicalEvent } from 'src/app/models/medical-event.model';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { AppSpinnerComponent } from 'src/app/components/app-spinner/app-spinner.component';
+import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 
 @Component({
   selector: 'app-transfusion',
   templateUrl: './transfusion.page.html',
   styleUrls: ['./transfusion.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, AppSpinnerComponent]
+  imports: [IonicModule, CommonModule, FormsModule, AppSpinnerComponent, ButtonPanelComponent]
 })
 export class TransfusionPage implements OnInit {
 
