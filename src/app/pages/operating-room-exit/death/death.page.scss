@@ -1,0 +1,31 @@
+.death-page{
+    --background:var(--ion-color-app-aqua);
+    ion-header{
+        ion-toolbar{
+            ion-title{
+                background-color: var(--ion-color-app-red);
+                color: white;
+                text-align: center;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+        }
+    }
+    ion-row{
+        text-align: center;
+        ion-button{
+            --background: var(--ion-color-app-blue);  
+        }
+        #ion-button-death{
+            white-space: normal;
+            --padding-end:2.5rem;
+            --padding-start:2.5rem;
+            --padding-top:2.5rem;
+            --padding-bottom:2.5rem;
+        }
+    }
+}
+

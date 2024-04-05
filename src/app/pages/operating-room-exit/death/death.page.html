@@ -1,13 +1,30 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>death</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header titleName="paciente"></app-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<ion-content [fullscreen]="true" class="death-page">
+  <ion-header>
     <ion-toolbar>
-      <ion-title size="large">death</ion-title>
+      <ion-title size="large">Sala de paz</ion-title>
     </ion-toolbar>
   </ion-header>
+  <ion-row>
+    <ion-col>
+      <ion-button id="ion-button-death" 
+        shape="round"
+        (click)="registerDeathTime()">
+          Pulse este botón para registrar 
+          la hora de fallecimiento 
+          automáticamente
+      </ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-button id="btnContinuar" 
+        shape="round"
+        [disabled]="!isValid()"
+        (click)="goToNextPage()">
+          Continuar 
+      </ion-button>
+    </ion-col>
+  </ion-row>
 </ion-content>
