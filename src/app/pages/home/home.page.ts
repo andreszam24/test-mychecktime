@@ -8,7 +8,7 @@ import { InternetStatusComponent } from '../../components/internet-status/intern
 import { HeaderComponent } from '../../components/header/header.component';
 import { AuthService } from '../../services/auth.service';
 import { Patient } from '../../models/patient.model';
-import { of, catchError } from 'rxjs';
+import { of, catchError, Subscription } from 'rxjs';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { StatusService } from 'src/app/services/status.service';
 import { SharedDataService } from 'src/app/services/utilities/shared-data.service';
@@ -17,6 +17,7 @@ import { MedicalAttentionService } from 'src/app/services/medical-attention.serv
 import { WorkingAreaService } from 'src/app/services/working-area.service';
 import { InternetServiceService } from 'src/app/services/utilities/internet-service.service';
 import { LoadingService } from 'src/app/services/utilities/loading.service';
+import { Network } from '@capacitor/network';
 
 
 
@@ -34,6 +35,7 @@ export class HomePage implements OnInit {
   clinicName: string = 'No identificamos la clínica';
   anesthesiologistId: number;
   attentionsInProgress: MedicalAttention[] = [];
+  private internetStatusSubscription: Subscription;
 
   constructor(
     private router: Router,
@@ -52,9 +54,8 @@ export class HomePage implements OnInit {
     this.httpInProgressMedicalAttention.selectMedicalAttention('');
   }
 
-  
-  ngOnInit() {
-    this.internetService.internetStatus$.subscribe((isConnected) => {
+  ngOnInit(): void {
+    this.internetStatusSubscription = this.internetService.internetStatus$.subscribe((isConnected) => {
       if (isConnected) {
         this.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id);
       }
@@ -64,7 +65,23 @@ export class HomePage implements OnInit {
   ionViewWillEnter() {
     this.extractUserData();
     this.menu.close('menu-anestesia');
+    this.checkingInternetStatus();    
   }
+
+  private async checkingInternetStatus(){ 
+    const status = await Network.getStatus();
+    if(status.connected){
+      this.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id);
+    }else{
+      this.searchPatientInLocal();
+    }
+}
+
+ngOnDestroy(): void {
+  if (this.internetStatusSubscription) {
+    this.internetStatusSubscription.unsubscribe();
+  }
+}
 
   async showOptionsModal(msg: string): Promise<boolean> {
     return new Promise<boolean>(async (resolve) => {
@@ -118,7 +135,6 @@ export class HomePage implements OnInit {
         this.workingAreaRepository.setClinic(userData.account.clinics[0]);
         this.clinicName = this.workingAreaRepository.getClinic().name;
         this.anesthesiologistId = userData.account.id;
-        this.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.anesthesiologistId);
       },
       error: (e) => console.error('Extract User Data: ', e),
       complete: () => { },
@@ -140,14 +156,15 @@ export class HomePage implements OnInit {
       }
     });
   }
-
- /*TODO: Probablemente se pueda borrar searchPatientInLocal() {
+ 
+searchPatientInLocal() {
     this.httpInProgressMedicalAttention.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id).then(
       services => {
         this.attentionsInProgress = services;
+        this.attentionsInProgress.sort((a, b) => a._id.localeCompare(b._id));
       }
     ).catch(() => this.attentionsInProgress = []);
-  }*/
+  }
 
   getRoomName(medicalRecord: MedicalAttention) {
     let hall = 'Sin ingresar a sala';
