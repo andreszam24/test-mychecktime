@@ -69,7 +69,6 @@ export class RecoveryPage implements OnInit {
       this.navCtrl.navigateForward('home');
       return;
     }
-
     // NOTE: To avoid that scan it doesn't work, you may use 5.0.3 version or higher: npm i @capacitor-mlkit/barcode-scanning@5.0.3
     //Check if the Google ML Kit barcode scanner is available
     await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable().then(async (data) => {
