@@ -1,13 +1,12 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>recovery</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header titleName="paciente"></app-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<ion-content [fullscreen]="true" class="recovery-page">
+  <ion-header>
     <ion-toolbar>
-      <ion-title size="large">recovery</ion-title>
+      <ion-title size="large">Recuperación</ion-title>
     </ion-toolbar>
   </ion-header>
+  <form class="recovery-form" *ngIf="scannDataForm">
+
+  </form>
 </ion-content>
