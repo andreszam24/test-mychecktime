@@ -171,6 +171,7 @@ export class RecoveryPage implements OnInit {
   }
 
   goToNextPage() {
+    this.loadingService.showLoadingBasic("Cargando...");
     this.mapViewToModel();
     const fromRoomTo = new FromOperatingRoomTo();
     fromRoomTo.status = StatusService.TERMINADO;
@@ -179,20 +180,16 @@ export class RecoveryPage implements OnInit {
     fromRoomTo.simpleCheckDate = this.datepipe.transform(fromRoomTo.checkDate,'yyyy-MM-dd')!;
     fromRoomTo.simpleCheckHour = this.datepipe.transform(fromRoomTo.checkDate,'HH:mm:ss')!;
     fromRoomTo.recover = this.recover;
-
-    this.loadingService.showLoadingBasic("Cargando...");
-    
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
-      
       sm.exitOperatingRoomList.fromOperatingRoomTo = fromRoomTo;
       sm.state = StatusService.FROM_OPERATING_ROOM_TO;
       
       this.medicalService.saveMedicalAttention(sm, 'sync')
         .then(result => {
-            this.loadingService.dismiss();
             if(result) {
               this.navCtrl.navigateForward('/home');
             }
+            this.loadingService.dismiss();
         }).catch(() => {
           this.loadingService.dismiss();
           this.navCtrl.navigateForward('/home');

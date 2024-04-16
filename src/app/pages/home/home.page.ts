@@ -254,7 +254,8 @@ searchPatientInLocal() {
         'EndStartAnesthesia': '/anesthesia-operating-room',
         'StartSurgery': '/anesthesia-operating-room',
         'EndSurgery':'/operating-room-exit-check',
-        'ExitOperatingRoomList':'/exit-menu'
+        'ExitOperatingRoomList':'/exit-menu',
+        'FromOperatingRoomTo':'destination-selection'
     };
 
     const nextState = stateRouteMap[selectedMedicalAttention.state];
