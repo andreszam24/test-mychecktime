@@ -14,5 +14,98 @@
             }
         }
     } 
+
+    .together{
+        position: relative;
+        padding-top: 1.5rem;
+        --background: transparent;
+        font-size: 1.3rem;
+        ion-label{
+            color: var(--ion-color-app-blue);
+            position: absolute;
+            top: 0;
+            margin: 0;
+        }
+        ion-select{
+            width: 100%;
+            max-width: 100%;
+            background: white;
+            margin-top: 1.5rem;
+            border-radius: 2rem;
+            padding-right: 1rem;
+        }
+        
+    }
+
+    ion-row{
+        width: 100%;
+        margin: 1rem 0;
+        text-align: center;
+        .question{
+            width: 95%;
+            margin: auto;
+            background: white;
+            padding: 1rem 0;
+            border-radius: 2rem;
+            color: var(--ion-color-app-red); 
+        }
+    }
+
+    ion-radio-group{
+        ion-item{
+            --background: transparent;
+            width: 95%;
+            margin: auto; 
+        }
+        .border{
+            border-bottom: white 0.5px solid;
+        }
+    }
+
+    ion-radio {
+        --color-checked: var(--ion-color-app-red);
+        white-space: normal;
+      }
+      
+      ion-radio.ios::part(container) {
+        border: 2px solid var(--ion-color-app-blue);
+    
+      }
+      
+      .radio-checked.ios::part(container) {
+        border-color: var(--ion-color-app-red);
+      }
+    
+      ion-radio.radio-checked::part(container) {
+        background: var(--ion-color-app-red);
+        border-color: var(--ion-color-app-red);
+      }
+    
+      ion-radio::part(container) {
+        border: 2px solid var(--ion-color-app-red);
+      }
+    
+      ion-radio::part(label) {
+        white-space: normal;
+      }
+    
+      ion-radio::part(mark) {
+        background: none;
+        transition: none;
+        transform: none;
+        border-radius: 0;
+      }
+    
+      ion-radio.radio-checked::part(mark) {
+        width: 6px;
+        height: 10px;
+        border-width: 0px 2px 2px 0px;
+        border-style: solid;
+        border-color: #fff;
+        transform: rotate(45deg);
+      }
 }
 
+ion-footer{
+    height: 10%;
+}

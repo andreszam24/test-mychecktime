@@ -8,6 +8,11 @@ import { PreScanQrComponent } from 'src/app/components/pre-scan-qr/pre-scan-qr.c
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { AlertService } from 'src/app/services/utilities/alert.service';
+import { Recover } from 'src/app/models/recover.model';
+import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
+import { StatusService } from 'src/app/services/status.service';
+import { FromOperatingRoomTo } from 'src/app/models/from-operating-room-to.model';
+import { LoadingService } from 'src/app/services/utilities/loading.service';
 
 
 @Component({
@@ -15,7 +20,7 @@ import { AlertService } from 'src/app/services/utilities/alert.service';
   templateUrl: './recovery.page.html',
   styleUrls: ['./recovery.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent,PreScanQrComponent ]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent,PreScanQrComponent, EventsPanelComponent, ButtonPanelComponent ]
 })
 export class RecoveryPage implements OnInit {
   scannDataForm = false;
@@ -23,13 +28,27 @@ export class RecoveryPage implements OnInit {
   isSupported = false;
   datepipe = new DatePipe('en-US');
 
+  recover: Recover;
+
+  model: any = {
+    aldrete: null,
+    bromage: null,
+    ramsay: null,
+    eva: null,
+    nausea: null
+  };
+
 
   constructor(
     private modalCtrl: ModalController,
     private navCtrl: NavController,
     private medicalService: InProgressMedicalAttentionService,
+    private loadingService: LoadingService,
+
     private alertService: AlertService,
-  ) { }
+  ) { 
+    this.recover = new Recover();
+  }
 
   ngOnInit() {this.openModal()}
 
@@ -135,6 +154,71 @@ export class RecoveryPage implements OnInit {
     const { camera } = await BarcodeScanner.requestPermissions();
     return camera === 'granted' || camera === 'limited';
   }
+
+  isValid() {
+    const oneOfThree = this.isSetted(this.model.bromage) || this.isSetted(this.model.ramsay) || this.isSetted(this.model.aldrete);
+    return this.isSetted(this.model.eva) && oneOfThree && this.model.nausea !== null;
+  }
+
+  private isSetted(valor: any) {
+    return valor !== undefined && valor !== null && valor !== '';
+  }
+
+  checkDate() {
+    this.recover.checkDate = new Date();
+    this.recover.simpleCheckDateOrder = this.datepipe.transform(this.recover.checkDate,'yyyy-MM-dd')!;
+    this.recover.simpleCheckHourOrder = this.datepipe.transform(this.recover.checkDate,'HH:mm:ss')!;
+  }
+
+  goToNextPage() {
+    this.mapViewToModel();
+    const fromRoomTo = new FromOperatingRoomTo();
+    fromRoomTo.status = StatusService.TERMINADO;
+    fromRoomTo.to = "recuperacion";
+    fromRoomTo.checkDate = this.recover.checkDate;
+    fromRoomTo.simpleCheckDate = this.datepipe.transform(fromRoomTo.checkDate,'yyyy-MM-dd')!;
+    fromRoomTo.simpleCheckHour = this.datepipe.transform(fromRoomTo.checkDate,'HH:mm:ss')!;
+    fromRoomTo.recover = this.recover;
+
+    this.loadingService.showLoadingBasic("Cargando...");
+    
+    this.medicalService.getInProgressMedicalAtenttion().then( sm => {
+      
+      sm.exitOperatingRoomList.fromOperatingRoomTo = fromRoomTo;
+      sm.state = StatusService.FROM_OPERATING_ROOM_TO;
+      
+      this.medicalService.saveMedicalAttention(sm, 'sync')
+        .then(result => {
+            this.loadingService.dismiss();
+            if(result) {
+              this.navCtrl.navigateForward('/home');
+            }
+        }).catch(() => {
+          this.loadingService.dismiss();
+          this.navCtrl.navigateForward('/home');
+        });
+    }).catch(() => {
+      console.log('Error consultando la atencion médica');
+      this.loadingService.dismiss();
+      this.navCtrl.navigateForward('/home');
+    });
+  }
+
+  private mapViewToModel(): Recover {
+    this.recover.aldrete = this.valorNumerico(this.model.aldrete);
+    this.recover.bromage = this.valorNumerico(this.model.bromage);
+    this.recover.ramsay = this.valorNumerico(this.model.ramsay);
+    this.recover.eva = this.model.eva;
+    this.recover.nausea = this.model.nausea;
+    this.recover.state = StatusService.TERMINADO;
+    return this.recover;
+  }
+
+  private valorNumerico(valor: any): number {
+    return valor === '' ? null : valor;
+  }
+
+
 
 
 
