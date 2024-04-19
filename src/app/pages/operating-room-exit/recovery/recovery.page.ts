@@ -42,9 +42,8 @@ export class RecoveryPage implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private navCtrl: NavController,
-    private medicalService: InProgressMedicalAttentionService,
     private loadingService: LoadingService,
-
+    private medicalService: InProgressMedicalAttentionService,
     private alertService: AlertService,
   ) { 
     this.recover = new Recover();
@@ -171,7 +170,8 @@ export class RecoveryPage implements OnInit {
   }
 
   goToNextPage() {
-    this.loadingService.showLoadingBasic("Cargando...");
+    //ERROR Error: Uncaught (in promise): overlay does not exist
+    //this.loadingService.showLoadingBasic("Cargando...");
     this.mapViewToModel();
     const fromRoomTo = new FromOperatingRoomTo();
     fromRoomTo.status = StatusService.TERMINADO;
@@ -183,20 +183,20 @@ export class RecoveryPage implements OnInit {
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
       sm.exitOperatingRoomList.fromOperatingRoomTo = fromRoomTo;
       sm.state = StatusService.FROM_OPERATING_ROOM_TO;
-      
       this.medicalService.saveMedicalAttention(sm, 'sync')
         .then(result => {
             if(result) {
+              //this.loadingService.dismiss();
               this.navCtrl.navigateForward('/home');
             }
-            this.loadingService.dismiss();
         }).catch(() => {
-          this.loadingService.dismiss();
+          console.error('entro a catch')
+          //this.loadingService.dismiss();
           this.navCtrl.navigateForward('/home');
         });
     }).catch(() => {
-      console.log('Error consultando la atencion médica');
-      this.loadingService.dismiss();
+      console.error('Error consultando la atencion médica');
+      //this.loadingService.dismiss();
       this.navCtrl.navigateForward('/home');
     });
   }
