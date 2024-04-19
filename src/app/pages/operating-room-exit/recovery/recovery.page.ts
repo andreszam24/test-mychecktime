@@ -13,6 +13,7 @@ import { ButtonPanelComponent } from 'src/app/components/button-panel/button-pan
 import { StatusService } from 'src/app/services/status.service';
 import { FromOperatingRoomTo } from 'src/app/models/from-operating-room-to.model';
 import { LoadingService } from 'src/app/services/utilities/loading.service';
+import { LoadingController } from '@ionic/angular/standalone';
 
 
 @Component({
@@ -44,7 +45,7 @@ export class RecoveryPage implements OnInit {
     private navCtrl: NavController,
     private loadingService: LoadingService,
     private medicalService: InProgressMedicalAttentionService,
-    private alertService: AlertService,
+    private alertService: AlertService
   ) { 
     this.recover = new Recover();
   }
@@ -170,8 +171,8 @@ export class RecoveryPage implements OnInit {
   }
 
   goToNextPage() {
-    //ERROR Error: Uncaught (in promise): overlay does not exist
-    //this.loadingService.showLoadingBasic("Cargando...");
+this.loadingService = new LoadingService(new LoadingController());
+    this.loadingService.showLoadingBasic("Cargando...");
     this.mapViewToModel();
     const fromRoomTo = new FromOperatingRoomTo();
     fromRoomTo.status = StatusService.TERMINADO;
@@ -185,18 +186,20 @@ export class RecoveryPage implements OnInit {
       sm.state = StatusService.FROM_OPERATING_ROOM_TO;
       this.medicalService.saveMedicalAttention(sm, 'sync')
         .then(result => {
+          this.loadingService.dismiss();
+          console.log('RESUTLADO: ',result)
             if(result) {
-              //this.loadingService.dismiss();
               this.navCtrl.navigateForward('/home');
             }
+            
         }).catch(() => {
           console.error('entro a catch')
-          //this.loadingService.dismiss();
+          this.loadingService.dismiss();
           this.navCtrl.navigateForward('/home');
         });
     }).catch(() => {
       console.error('Error consultando la atencion médica');
-      //this.loadingService.dismiss();
+      this.loadingService.dismiss();
       this.navCtrl.navigateForward('/home');
     });
   }
@@ -214,9 +217,5 @@ export class RecoveryPage implements OnInit {
   private valorNumerico(valor: any): number {
     return valor === '' ? null : valor;
   }
-
-
-
-
 
 }

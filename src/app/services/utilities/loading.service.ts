@@ -5,27 +5,32 @@ import { LoadingController } from '@ionic/angular/standalone';
   providedIn: 'root'
 })
 export class LoadingService {
+  private loading: HTMLIonLoadingElement;
 
-  constructor(private loadingCtrl: LoadingController,) { }
+  constructor(private loadingCtrl: LoadingController,) { this.loadingCtrl = new LoadingController()}
 
   async showLoadingWithTimer(message: string, timer: number) {
-    const loading = await this.loadingCtrl.create({
+    this.loading = await this.loadingCtrl.create({
       message: message,
       duration: timer,
     });
 
-    loading.present();
+    this.loading.present();
   }
 
   async showLoadingBasic(message: string) {
-    const loading = await this.loadingCtrl.create({
+    this.loading = await this.loadingCtrl.create({
       message: message
     });
 
-    loading.present();
+    this.loading.present();
   }
 
   async dismiss(){
-    this.loadingCtrl.dismiss();
+    console.log('ocuktando')
+    if (this.loading) {
+      console.log('cdismmis')
+        await this.loading.dismiss();
+    }
   }
 }
