@@ -255,7 +255,12 @@ searchPatientInLocal() {
         'StartSurgery': '/anesthesia-operating-room',
         'EndSurgery':'/operating-room-exit-check',
         'ExitOperatingRoomList':'/exit-menu',
-        'FromOperatingRoomTo':'destination-selection'
+        'FromOperatingRoomTo':'/destination-selection',
+        'DestinoCasa':'/home-destination',
+        'DestinoHospitalizacion':'/hospitalization-destination',
+        'DestinoUCI':'/uci-destination',
+        'DestinoSalaDePaz':'/decease-destination',
+        'DestinoCirugia':'/surgery-destination'
     };
 
     const nextState = stateRouteMap[selectedMedicalAttention.state];

@@ -1,13 +1,49 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>home-destination</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header titleName="paciente"></app-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<ion-content [fullscreen]="true" class="home-destination">
+  <ion-header>
     <ion-toolbar>
-      <ion-title size="large">home-destination</ion-title>
+      <ion-title size="large">Casa</ion-title>
     </ion-toolbar>
   </ion-header>
+  <form>
+    <ion-row class="together">
+      <ion-col>
+        <ion-textarea [(ngModel)]="model.description" name="description" placeholder="Observación adicional (No es obligatoria)"></ion-textarea>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-label text-wrap>Pulse para registrar la hora de envío a casa</ion-label>
+        <ion-datetime-button [(ngModel)]="model.envioDestinoHoraManual" displayFormat="DD/MMM/YYYY HH:mm"  presentation="date-time" datetime="time" name="envioDestinoHoraManual"></ion-datetime-button>
+        <ion-modal class="date-time-modal" [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime
+              id="time"
+              presentation="date-time"
+              displayFormat="DD/MMM/YYYY HH:mm"
+              name="envioDestinoHoraManual"
+              [min]="minimumSelectableDate" 
+              [preferWheel]="true"
+            ></ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-button id="btnContinuar" 
+          shape="round"
+          [disabled]="!isValid()"
+          (click)="goToNextPage()">Finalizar
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+  </form>
 </ion-content>
+<ion-footer>
+  <app-events-panel [showCancelEvent] = false [showScanerDiv] = false sizeCol ='4'></app-events-panel>
+</ion-footer>

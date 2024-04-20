@@ -1,13 +1,12 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>UCI-destination</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header titleName="paciente"></app-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">UCI-destination</ion-title>
+      <ion-title size="large">UCI</ion-title>
     </ion-toolbar>
   </ion-header>
 </ion-content>
+<ion-footer>
+  <app-events-panel [showCancelEvent] = false [showScanerDiv] = false sizeCol ='4'></app-events-panel>
+</ion-footer>
