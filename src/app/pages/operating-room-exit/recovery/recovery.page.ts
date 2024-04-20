@@ -13,7 +13,7 @@ import { ButtonPanelComponent } from 'src/app/components/button-panel/button-pan
 import { StatusService } from 'src/app/services/status.service';
 import { FromOperatingRoomTo } from 'src/app/models/from-operating-room-to.model';
 import { LoadingService } from 'src/app/services/utilities/loading.service';
-import { LoadingController } from '@ionic/angular/standalone';
+import { InternetStatusComponent } from '../../../components/internet-status/internet-status.component';
 
 
 @Component({
@@ -21,7 +21,8 @@ import { LoadingController } from '@ionic/angular/standalone';
   templateUrl: './recovery.page.html',
   styleUrls: ['./recovery.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent,PreScanQrComponent, EventsPanelComponent, ButtonPanelComponent ]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent,PreScanQrComponent, 
+    ButtonPanelComponent,DatePipe, InternetStatusComponent]
 })
 export class RecoveryPage implements OnInit {
   scannDataForm = false;
@@ -46,6 +47,7 @@ export class RecoveryPage implements OnInit {
     private loadingService: LoadingService,
     private medicalService: InProgressMedicalAttentionService,
     private alertService: AlertService
+
   ) { 
     this.recover = new Recover();
   }
@@ -102,8 +104,8 @@ export class RecoveryPage implements OnInit {
       }
     }).catch(error => {
       if (error.message === 'scan canceled.') {
-        this.alertService.presentActionAlert('¡Ups! Parece que cancelaste el escaneo','Por favor, escanea el código QR de recuperación para continuar.', () => {
-          this.navCtrl.navigateForward('home');
+         this.alertService.presentActionAlert('¡Ups! Parece que cancelaste el escaneo','Por favor, escanea el código QR de recuperación para continuar.', () => {
+         this.navCtrl.navigateForward('home');
         });
     } else if (error.message.includes('device') || error.message.includes('camera')) {
       this.alertService.presentActionAlert( '¡Ups! Parece que hay un problema con tu dispositivo o cámara','Asegúrate de que estén funcionando correctamente y vuelve a intentarlo.',() => {
@@ -170,9 +172,10 @@ export class RecoveryPage implements OnInit {
     this.recover.simpleCheckHourOrder = this.datepipe.transform(this.recover.checkDate,'HH:mm:ss')!;
   }
 
-  goToNextPage() {
-this.loadingService = new LoadingService(new LoadingController());
-    this.loadingService.showLoadingBasic("Cargando...");
+  async goToNextPage() {
+
+    await this.loadingService.showLoadingBasic("Cargando...");
+
     this.mapViewToModel();
     const fromRoomTo = new FromOperatingRoomTo();
     fromRoomTo.status = StatusService.TERMINADO;
@@ -187,13 +190,11 @@ this.loadingService = new LoadingService(new LoadingController());
       this.medicalService.saveMedicalAttention(sm, 'sync')
         .then(result => {
           this.loadingService.dismiss();
-          console.log('RESUTLADO: ',result)
             if(result) {
               this.navCtrl.navigateForward('/home');
             }
             
         }).catch(() => {
-          console.error('entro a catch')
           this.loadingService.dismiss();
           this.navCtrl.navigateForward('/home');
         });
