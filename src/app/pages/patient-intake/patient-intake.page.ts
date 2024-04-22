@@ -44,7 +44,7 @@ export class PatientIntakePage implements OnInit {
   manualIntake = false;
   lookingForPatient = false;
   patientList: Patient[] = [];
-  patientToRebootProcess = Patient
+  patientToRebootProcess = new Patient();
   resultsSearchigPatient = [...this.patientList];
   specialtiesList: Specialty[] = [];
   resultsSearchigSpecialties = [...this.specialtiesList];
@@ -77,16 +77,24 @@ export class PatientIntakePage implements OnInit {
     private authService: AuthService,
     private sharedDataService: SharedDataService,
     private navCtrl: NavController
-  ) { }
+  ) { 
+    this.getpatientToRebootProcess();
+  }
 
   ngOnInit() {
     this.getpatientToRebootProcess();
-    this.startBarcodeScanner();
     this.loadMasterData();
   }
 
   getpatientToRebootProcess(){
     this.patientToRebootProcess = this.sharedDataService.getDatos();
+    if(!this.patientToRebootProcess){
+      this.startBarcodeScanner();
+      console.log('patientToRebootProcessstartBarcodeScanner: ',this.patientToRebootProcess)
+    } else{
+    this.patientSelected(this.patientToRebootProcess);
+    this.changeStatusManulIntake(true);
+    }
     console.log('patientToRebootProcess: ',this.patientToRebootProcess)
   }
 
