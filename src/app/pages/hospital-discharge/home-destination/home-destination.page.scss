@@ -19,6 +19,7 @@
         margin-top: 1rem;
         ion-row ion-label {
             color: var(--ion-color-app-blue);
+            font-size: large;
         }
         ion-col{
             text-align: center;
@@ -28,9 +29,10 @@
     #open-datetime{
         --background: #FFF;
         color: var(--ion-color-app-gray);
-        padding: 13px 14px;
+        padding: 1rem 0;
         --border-radius: 0.8rem;
         width: 100%;
+        --box-shadow: transparent;
     }
 
     ion-textarea {

@@ -204,7 +204,6 @@ searchPatientInLocal() {
     const data = medicalAttention;
     this.sharedDataService.setDatos(data);
     this.router.navigateByUrl('/patient-summary');
-
   }
 
   deletePatient(selectedMedicalAttention: MedicalAttention) {

@@ -34,7 +34,6 @@ export class HomeDestinationPage implements OnInit {
     private alertService: AlertService
     ) { 
       this.medicalService.getInProgressMedicalAtenttion().then(sm => {
-        console.log('orden salida: ', new Date(sm.patientsExit.recover.checkDate));
         const ordenDeSalida = new Date(sm.patientsExit.recover.checkDate);
         this.minimumSelectableDate = DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(ordenDeSalida));
       });
@@ -45,10 +44,8 @@ export class HomeDestinationPage implements OnInit {
 
   isValid(): boolean {
     if(!this.model.envioDestinoHoraManual){
-      console.log("hora-dia-false: ",this.model.envioDestinoHoraManual)
       return false
     }
-    console.log("hora-dia-true: ",this.model.envioDestinoHoraManual)
     return true
   }
 

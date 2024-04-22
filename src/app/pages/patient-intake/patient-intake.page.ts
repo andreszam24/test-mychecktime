@@ -23,6 +23,7 @@ import { OperationRoom } from 'src/app/models/operationRoom.model';
 import { AnesthesiologistProfile } from 'src/app/models/anesthesiologist-profile.model';
 import { StatusService } from 'src/app/services/status.service';
 import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
+import { SharedDataService } from 'src/app/services/utilities/shared-data.service';
 
 
 
@@ -43,6 +44,7 @@ export class PatientIntakePage implements OnInit {
   manualIntake = false;
   lookingForPatient = false;
   patientList: Patient[] = [];
+  patientToRebootProcess = Patient
   resultsSearchigPatient = [...this.patientList];
   specialtiesList: Specialty[] = [];
   resultsSearchigSpecialties = [...this.specialtiesList];
@@ -73,12 +75,19 @@ export class PatientIntakePage implements OnInit {
     private medicalAttetionRepository: InProgressMedicalAttentionService,
     private workingAreaRepository: WorkingAreaService,
     private authService: AuthService,
+    private sharedDataService: SharedDataService,
     private navCtrl: NavController
   ) { }
 
   ngOnInit() {
+    this.getpatientToRebootProcess();
     this.startBarcodeScanner();
     this.loadMasterData();
+  }
+
+  getpatientToRebootProcess(){
+    this.patientToRebootProcess = this.sharedDataService.getDatos();
+    console.log('patientToRebootProcess: ',this.patientToRebootProcess)
   }
 
   private startBarcodeScanner() {

@@ -1,11 +1,47 @@
 <app-header titleName="paciente"></app-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<ion-content [fullscreen]="true" class="decease-destination">
+  <ion-header>
     <ion-toolbar>
       <ion-title size="large">Sala de paz</ion-title>
     </ion-toolbar>
   </ion-header>
+  <form>
+    <ion-row>
+      <ion-col>
+        <ion-label text-wrap>Pulse para registrar la hora de fallecimiento</ion-label>
+        <ion-button id="open-datetime">
+          {{ fallecimientoHoraManual ? (fallecimientoHoraManual | date:'dd/MMM/yyyy HH:mm':'UTC') : 'DD/MMM/YYYY HH:mm' }}
+        </ion-button>
+        <ion-modal class="date-time-modal ion-datetime-button-overlay" [keepContentsMounted]="true" trigger="open-datetime">
+          <ng-template>
+            <ion-datetime
+              id="custom-datetime"
+              [value]="minimumSelectableDate"
+              [(ngModel)]="fallecimientoHoraManual"
+              presentation="date-time"              
+              name="fallecimientoHoraManual"
+              [min]="minimumSelectableDate" 
+              [preferWheel]="true"
+              [showDefaultButtons]="true"
+              hourCycle="h23"
+            ></ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-button id="btnContinuar" 
+          shape="round"
+          [disabled]="!isValid()"
+          (click)="goToNextPage()">Finalizar
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+  </form>
 </ion-content>
 <ion-footer>
   <app-events-panel [showCancelEvent] = false [showScanerDiv] = false sizeCol ='4'></app-events-panel>
