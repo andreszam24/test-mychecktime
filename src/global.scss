@@ -25,6 +25,14 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
+html ion-textarea, html ion-input{
+  --highlight-color-focused:transparent !important ;
+  --highlight-color-invalid:transparent !important;
+  --highlight-color-valid:transparent !important;
+  --highlight-color: none !important;
+  --border-color: none !important;
+}
+
 .alert-audio .alert-title{
     text-align: center;
 }
@@ -53,10 +61,3 @@
     border-radius: 4px;
   }
 
-ion-textarea, ion-input{
-  --highlight-color-focused:transparent;
-  --highlight-color-invalid:transparent;
-  --highlight-color-valid:transparent;
-  --highlight-color: transparent;
-  --border-color: transparent;
-}

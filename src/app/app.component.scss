@@ -166,4 +166,11 @@ ion-menu #opciones-anestesia{
   }
 }
 
+html ion-textarea, html ion-input{
+  --highlight-color-focused:transparent !important ;
+  --highlight-color-invalid:transparent !important;
+  --highlight-color-valid:transparent !important;
+  --highlight-color: transparent !important;
+  --border-color: transparent !important;
+}
 

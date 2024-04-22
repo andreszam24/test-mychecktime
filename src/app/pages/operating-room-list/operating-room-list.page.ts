@@ -32,7 +32,7 @@ import { ButtonPanelComponent } from 'src/app/components/button-panel/button-pan
   imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent, IonButton, AudioAlertComponent, ButtonPanelComponent]
 })
 export class OperatingRoomListPage implements OnInit {
-  audioSrc = './../../../assets/audio/audio.mp3';
+  audioSrc = './../../../assets/audio/Audio_2.mp3';
   showAudioAlert = false;
   header = 'Validación lista quirofano';
   alertButtons = [

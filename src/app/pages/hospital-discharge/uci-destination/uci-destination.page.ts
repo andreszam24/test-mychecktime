@@ -38,6 +38,7 @@ export class UCIDestinationPage implements OnInit {
     private medicalService: InProgressMedicalAttentionService,
     private alertService: AlertService
   ) {
+    this.uci = new UCI();
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
       const ordenDeSalida = new Date(sm.patientsExit.recover.checkDate);
       this.minimumSelectableDate = DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(ordenDeSalida));
