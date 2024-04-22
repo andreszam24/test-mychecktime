@@ -45,8 +45,10 @@ export class HomeDestinationPage implements OnInit {
 
   isValid(): boolean {
     if(!this.model.envioDestinoHoraManual){
+      console.log("hora-dia-false: ",this.model.envioDestinoHoraManual)
       return false
     }
+    console.log("hora-dia-true: ",this.model.envioDestinoHoraManual)
     return true
   }
 
@@ -82,7 +84,7 @@ export class HomeDestinationPage implements OnInit {
       }).catch(() => {
         console.error('Error consultando la atencion médica');
         this.loadingService.dismiss();
-        this.navCtrl.navigateForward('home');      });
+        this.navCtrl.navigateForward('home');});
     } else {
       this.showMessageDateLess();
     }

@@ -25,15 +25,13 @@
         }
     }
 
-    ion-datetime-button::part(native) {
-        background: #FFF;
+    #open-datetime{
+        --background: #FFF;
+        color: var(--ion-color-app-gray);
         padding: 13px 14px;
-        border-radius: 0.8rem;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
+        --border-radius: 0.8rem;
         width: 100%;
-      }
-
+    }
 
     ion-textarea {
         background-color: white;

@@ -16,19 +16,37 @@
     <ion-row>
       <ion-col>
         <ion-label text-wrap>Pulse para registrar la hora de envío a casa</ion-label>
-        <ion-datetime-button [(ngModel)]="model.envioDestinoHoraManual" displayFormat="DD/MMM/YYYY HH:mm"  presentation="date-time" datetime="time" name="envioDestinoHoraManual"></ion-datetime-button>
+        <ion-button id="open-datetime">
+          {{ model.envioDestinoHoraManual ? (model.envioDestinoHoraManual | date:'dd/MMM/yyyy HH:mm':'UTC') : 'DD/MMM/YYYY HH:mm' }}
+        </ion-button>
+        <ion-modal class="date-time-modal ion-datetime-button-overlay" [keepContentsMounted]="true" trigger="open-datetime">
+          <ng-template>
+            <ion-datetime
+              id="custom-datetime"
+              [value]="minimumSelectableDate"
+              [(ngModel)]="model.envioDestinoHoraManual"
+              presentation="date-time"              
+              name="envioDestinoHoraManual"
+              [min]="minimumSelectableDate" 
+              [preferWheel]="true"
+              [showDefaultButtons]="true"
+              hourCycle="h23"
+            ></ion-datetime>
+          </ng-template>
+        </ion-modal>
+        <!--<ion-datetime-button [(ngModel)]="model.envioDestinoHoraManual"  presentation="date-time" datetime="date-time" name="envioDestinoHoraManual"></ion-datetime-button>
         <ion-modal class="date-time-modal" [keepContentsMounted]="true">
           <ng-template>
             <ion-datetime
-              id="time"
+              id="date-time"
+              value="DD/MMM/YYYY HH:mm"
               presentation="date-time"
-              displayFormat="DD/MMM/YYYY HH:mm"
               name="envioDestinoHoraManual"
               [min]="minimumSelectableDate" 
               [preferWheel]="true"
             ></ion-datetime>
           </ng-template>
-        </ion-modal>
+        </ion-modal>-->
       </ion-col>
     </ion-row>
 
