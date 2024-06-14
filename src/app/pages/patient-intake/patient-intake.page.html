@@ -93,10 +93,10 @@
         </ion-select>
       </ion-item>
       <ion-item lines="none">
-        <ion-input formControlName="birthday" label-placement="stacked" placeholder="Fecha de nacimiento" pattern="[0-9]*" minlength="1800" maxlength="{{ currentYear }}"></ion-input>
+        <ion-input formControlName="birthday" label-placement="stacked" placeholder="Año de nacimiento" pattern="[0-9]*" minlength="1800" maxlength="{{ currentYear }}"></ion-input>
       </ion-item>
       <ion-text *ngIf="!yearValidator()">
-        <p class="error-message">Ingrese un año válido entre 1800 y {{ currentYear }}.</p>
+        <p class="error-message">Ingrese un año válido entre 1950 y {{ currentYear }}.</p>
       </ion-text>
         <div class="seccion-div item-select">
           <ion-text>
@@ -174,7 +174,7 @@
 <footer>
   <app-button-panel [disabled]="false" (buttonClicked)="toValidatePatientData()"></app-button-panel>
 </footer>
-<ion-fab slot="fixed" vertical="bottom" horizontal="start">
+<ion-fab slot="fixed" vertical="bottom" horizontal="end">
   <ion-fab-button (click)="scan()" [disabled]="!isSupported">
     <ion-icon src="../../../assets/svg/barcode-outline.svg"></ion-icon>
   </ion-fab-button>

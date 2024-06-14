@@ -7,11 +7,16 @@
       box-shadow: none;
       border-radius: 30px;
       border-color: #68afd7;
+      font-size: x-large;
+      ion-text, ion-note{
+        font-size: x-large;
+      }
       strong {
         color: black;
         font-size: medium;
         text-transform: capitalize;
         width: 100%;
+        font-size: x-large;
       }
       ion-col {
         display: grid;
@@ -28,11 +33,11 @@
           height: 15px;
         }
         .content-text {
-          ion-text {
+          display: flex;
+          flex-direction: column;
+          ion-text, ion-note {
             margin: 0 5px;
-          }
-          ion-note {
-            margin: 0 5px;
+            font-size: x-large;
           }
         }
 
@@ -53,7 +58,6 @@
         ion-text {
           text-align: center;
         }
-  
         .procedures {
           margin-top: 16px;
           margin-bottom: 10px;
@@ -87,6 +91,7 @@
                 margin: 0;
                 text-align: start;
                 text-transform: uppercase;
+                font-size: x-large;
               }
             }
           }
@@ -132,6 +137,10 @@
             }
   
         }
+      }
+
+      .content-items{
+        display: flex;
       }
     }
   }

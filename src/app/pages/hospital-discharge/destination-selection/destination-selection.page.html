@@ -1,13 +1,94 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>destination-selection</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header titleName="paciente"></app-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">destination-selection</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="destination-selection">
+  <form>
+    <ion-item no-lines class="together" lines="none">
+      <ion-label>Aldrete</ion-label>
+      <ion-select multiple="false" 
+        name="destino" 
+        placeholder="Seleccione destino"
+        [(ngModel)]="model.destino" >
+        <ion-select-option value="CASA">Casa</ion-select-option>
+        <ion-select-option value="HOSPITALIZACION">Hospitalización</ion-select-option>
+        <ion-select-option value="UCI">UCI</ion-select-option>
+        <ion-select-option value="CIRUGIA">Cirugía</ion-select-option>
+        <ion-select-option value="SALA_DE_PAZ">Sala de paz</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-row>
+      <ion-col>
+        <ion-label class="title-section" text-center>Orden de Salida de Recuperación
+        </ion-label>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-label class="title-section">Condición del paciente
+        </ion-label>
+      </ion-col>
+    </ion-row>
+
+    <ion-item no-lines class="together" lines="none">
+      <ion-label>Aldrete</ion-label>
+      <ion-select multiple="false" 
+        name="aldrete" 
+        placeholder="Aldrete"
+        [(ngModel)]="model.aldrete" >
+        <ion-select-option value="-1">No aplica</ion-select-option>
+        <ion-select-option *ngFor="let valor of [0,1,2,3,4,5,6,7,8,9,10]" [value]="valor">{{ valor }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item no-lines class="together" lines="none">
+      <ion-label>Bromage</ion-label>
+      <ion-select multiple="false" 
+        name="bromage" 
+        placeholder="Bromage"
+        [(ngModel)]="model.bromage" >
+        <ion-select-option value="-1">No aplica</ion-select-option>
+        <ion-select-option *ngFor="let valor of [0,1,2,3]" [value]="valor">{{ valor }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item no-lines class="together" lines="none">
+      <ion-label>Ramsay</ion-label>
+      <ion-select multiple="false" 
+        name="ramsay" 
+        placeholder="Ramsay"
+        [(ngModel)]="model.ramsay" >
+        <ion-select-option value="-1">No aplica</ion-select-option>
+        <ion-select-option *ngFor="let valor of [0,1,2,3,4,5,6]" [value]="valor">{{ valor }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item no-lines class="together" lines="none">
+      <ion-label>Eva</ion-label>
+      <ion-select multiple="false" 
+        name="eva" 
+        placeholder="Eva"
+        [(ngModel)]="model.eva" >
+        <ion-select-option *ngFor="let valor of [0,1,2,3,4,5,6,7,8,9,10]" [value]="valor">{{ valor }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-row>
+      <ion-label class="question">
+          Presenta NAUSEA o VÓMITO algún momento?
+      </ion-label>
+    </ion-row>
+
+    <ion-radio-group name="nausea" [(ngModel)]="model.nausea" (ionChange)="markDepartureOrderDate()">
+      <ion-item lines="none" class="border">
+        <ion-radio [value]="false">No</ion-radio>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-radio [value]="true">Sí</ion-radio>
+      </ion-item>
+    </ion-radio-group>
+
+    <app-button-panel [disabled]="!isValid()" (buttonClicked)="goToNextPage()"></app-button-panel>
+  </form>
 </ion-content>
+
+<ion-footer>
+  <app-events-panel [showCancelEvent] = false [showScanerDiv] = false sizeCol ='4'></app-events-panel>
+</ion-footer>

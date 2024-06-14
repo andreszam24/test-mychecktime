@@ -16,15 +16,18 @@
     }
     ion-row{
         text-align: center;
+
         ion-button{
             --background: var(--ion-color-app-blue);  
         }
+
         #ion-button-death{
             white-space: normal;
-            --padding-end:2.5rem;
-            --padding-start:2.5rem;
-            --padding-top:2.5rem;
-            --padding-bottom:2.5rem;
+            --padding-end:2rem;
+            --padding-start:2rem;
+            --padding-top:2rem;
+            --padding-bottom:2rem;
+            margin-top: 1rem;
         }
     }
 }

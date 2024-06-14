@@ -1,0 +1,57 @@
+.uci-destination {
+    --background:var(--ion-color-app-aqua);
+    ion-header{
+        ion-toolbar{
+            ion-title{
+                background-color: var(--ion-color-app-red);
+                color: white;
+                text-align: center;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+        }
+    } 
+
+    form{
+        margin-top: 1rem;
+        ion-row ion-label {
+            color: var(--ion-color-app-blue);
+            font-size: large;
+        }
+        ion-col{
+            text-align: center;
+        }
+    }
+
+    #open-datetime{
+        --background: #FFF;
+        color: var(--ion-color-app-gray);
+        padding: 1rem 0;
+        --border-radius: 0.8rem;
+        width: 100%;
+        --box-shadow: transparent;
+    }
+
+    ion-textarea, ion-input {
+        background-color: white;
+        color: #444;
+        border-radius: 25px;
+        padding: 5px;
+    }
+
+    ion-button{
+        --background: var(--ion-color-app-blue); 
+        --color: #FFF;
+     }
+}
+
+.date-time-modal{
+    align-items: end;
+}
+
+ion-footer{
+    height: 10%;
+}

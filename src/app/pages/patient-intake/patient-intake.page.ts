@@ -23,6 +23,7 @@ import { OperationRoom } from 'src/app/models/operationRoom.model';
 import { AnesthesiologistProfile } from 'src/app/models/anesthesiologist-profile.model';
 import { StatusService } from 'src/app/services/status.service';
 import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
+import { SharedDataService } from 'src/app/services/utilities/shared-data.service';
 
 
 
@@ -43,6 +44,7 @@ export class PatientIntakePage implements OnInit {
   manualIntake = false;
   lookingForPatient = false;
   patientList: Patient[] = [];
+  patientToRebootProcess = new Patient();
   resultsSearchigPatient = [...this.patientList];
   specialtiesList: Specialty[] = [];
   resultsSearchigSpecialties = [...this.specialtiesList];
@@ -73,12 +75,27 @@ export class PatientIntakePage implements OnInit {
     private medicalAttetionRepository: InProgressMedicalAttentionService,
     private workingAreaRepository: WorkingAreaService,
     private authService: AuthService,
+    private sharedDataService: SharedDataService,
     private navCtrl: NavController
-  ) { }
+  ) { 
+    this.getpatientToRebootProcess();
+  }
 
   ngOnInit() {
-    this.startBarcodeScanner();
+    this.getpatientToRebootProcess();
     this.loadMasterData();
+  }
+
+  getpatientToRebootProcess(){
+    this.patientToRebootProcess = this.sharedDataService.getDatos();
+    if(!this.patientToRebootProcess){
+      this.startBarcodeScanner();
+      console.log('patientToRebootProcessstartBarcodeScanner: ',this.patientToRebootProcess)
+    } else{
+    this.patientSelected(this.patientToRebootProcess);
+    this.changeStatusManulIntake(true);
+    }
+    console.log('patientToRebootProcess: ',this.patientToRebootProcess)
   }
 
   private startBarcodeScanner() {
@@ -260,12 +277,12 @@ export class PatientIntakePage implements OnInit {
   yearValidator():boolean {
       let inputYear= this.profileForm.value.birthday!;
       if (inputYear == null || inputYear.trim() === '') {
-        this.profileForm.value.birthday = '1800';
+        this.profileForm.value.birthday = '1950';
         return true;
       }
       const numericInputYear = parseInt(inputYear, 10);
-      const regex = /^(1800|[1-9]\d{3}|1[89]\d{2}|20[01]\d|202[0-4])$/;
-      return regex.test(inputYear) && numericInputYear <= this.currentYear && numericInputYear >= 1800;
+      const regex = /^(1950|[1-9]\d{3}|1[89]\d{2}|20[01]\d|202[0-4])$/;
+      return regex.test(inputYear) && numericInputYear <= this.currentYear && numericInputYear >= 1950;
   }
 
   toValidateRequiredData(): boolean {
@@ -354,11 +371,11 @@ export class PatientIntakePage implements OnInit {
   private saveMedicalAttention(): void {
 
     if (this.manualIntake) {
-      this.medicalAttention.numeroResgistro = this.profileForm.value.registerCode ?? 'dummy';
+      this.medicalAttention.numeroResgistro = this.profileForm.value.registerCode ?? '';
       this.medicalAttention.programming = this.profileForm.value.programmingType ?? '';
       this.medicalAttention.patient.dni = this.profileForm.value.dni ?? '';
-      this.medicalAttention.patient.name = this.profileForm.value.name ?? 'dummy';
-      this.medicalAttention.patient.lastname = this.profileForm.value.lastName ?? 'dummy';
+      this.medicalAttention.patient.name = this.profileForm.value.name ? this.profileForm.value.name : 'No registra';
+      this.medicalAttention.patient.lastname = this.profileForm.value.lastName ? this.profileForm.value.lastName : 'No registra';
       this.medicalAttention.patient.gender = this.profileForm.value.gender ?? null!;
       this.medicalAttention.patient.birthday = this.parseBirthday(this.profileForm.value.birthday + '-01-01' ?? "1950-01-01") ;
     }

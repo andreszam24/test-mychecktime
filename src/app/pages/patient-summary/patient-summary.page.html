@@ -22,7 +22,7 @@
                     </ion-note>
                   </div>
                   <div class="metadata-end-wrapper">
-                    <ion-note color="medium">fecha de nacimiento: {{ medicalAttention?.patient?.birthday | date: 'dd/MM/yyyy'}}</ion-note>
+                    <ion-note color="medium">Año de nacimiento: {{ medicalAttention?.patient?.birthday | date: 'dd/MM/yyyy'}}</ion-note>
                   </div>
                   <div id="entry-time">
                     <strong>Hora de Ingreso: </strong>
@@ -34,19 +34,21 @@
             </ion-card-header>
             <ion-card-content>
               <ion-row class="ion-align-items-center ion-justify-content-center">
-                <ion-col size="6">
-                  <strong>Especialidas:</strong>
-                  <ion-text>{{ medicalAttention?.specialty?.name }}</ion-text>
-                </ion-col>
-                <ion-col size="6">
-                  <strong>programación:</strong>
-                  <ion-text style="text-transform: uppercase;">
-                    {{
-                      medicalAttention?.programming?.includes('Programación'||'programación')
-                        ? medicalAttention?.programming?.replace('Programación'||'programación', '')?.trim()
-                        : medicalAttention?.programming
-                    }} </ion-text>
-                </ion-col>
+                <div class="content-items">
+                  <ion-col size="6">
+                    <strong>Especialidad:</strong>
+                    <ion-text>{{ medicalAttention?.specialty?.name }}</ion-text>
+                  </ion-col>
+                  <ion-col size="6">
+                    <strong>programación:</strong>
+                    <ion-text style="text-transform: uppercase;">
+                      {{
+                        medicalAttention?.programming?.includes('Programación'||'programación')
+                          ? medicalAttention?.programming?.replace('Programación'||'programación', '')?.trim()
+                          : medicalAttention?.programming
+                      }} </ion-text>
+                  </ion-col>
+                </div>
                 <ion-col size="12" class="procedures" *ngIf="medicalAttention?.procedureCodes">
                   <strong>Procedimientos:</strong>
                   <div  *ngFor="let cup of medicalAttention?.procedureCodes">
@@ -60,7 +62,7 @@
                   </div>
                 </ion-col>
                 <ion-col size="12" class="medical-person">
-                  <strong>Anestesiologo:</strong>
+                  <strong>Anestesiólogo:</strong>
                   <div class="container-anesthesiologist" *ngFor="let anesthesiologist of medicalAttention.anestehsiologist">
                     <div class="data-medical-person">
                       <ion-icon src="../../assets/svg/medical-anes.svg"></ion-icon>

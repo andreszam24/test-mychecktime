@@ -28,7 +28,7 @@ export class PreAnesthesiaPage implements OnInit {
 
   @ViewChild('dateTimeButton') dateTimeButton: IonDatetime;
 
-  audioSrc = './../../../assets/audio/audio.mp3';
+  audioSrc = './../../../assets/audio/Audio_1.mp3';
   showAudioAlert = false;
   header = 'Validación lista de Pre-anestesia';
   scannDataForm = false;

@@ -22,7 +22,7 @@ import { StatusService } from 'src/app/services/status.service';
 })
 export class OperatingRoomExitCheckPage implements OnInit {
   
-  audioSrc = './../../../assets/audio/audio.mp3';
+  audioSrc = './../../../assets/audio/Audio_3.mp3';
   showAudioAlert = false;
   header = 'Validación lista salida quirofano';
   scannDataForm = false;
