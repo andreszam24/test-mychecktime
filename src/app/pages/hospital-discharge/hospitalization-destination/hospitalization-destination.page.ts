@@ -16,15 +16,13 @@ import { StatusService } from 'src/app/services/status.service';
   templateUrl: './hospitalization-destination.page.html',
   styleUrls: ['./hospitalization-destination.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent,ButtonPanelComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent, ButtonPanelComponent]
 })
 export class HospitalizationDestinationPage implements OnInit {
 
-  
   minimumSelectableDate = DateUtilsService.iso8601DateTime(new Date());
-  hospitalizacionDatetime: null;
+  hospitalizacionDatetime: string | null = null;
   datepipe = new DatePipe('en-US');
-
 
   constructor(
     private navCtrl: NavController,
@@ -32,59 +30,66 @@ export class HospitalizationDestinationPage implements OnInit {
     private medicalService: InProgressMedicalAttentionService,
     private alertService: AlertService
   ) { 
-    this.medicalService.getInProgressMedicalAtenttion().then( sm => {
-      const ordenDeSalida = new Date(sm.patientsExit.recover.checkDate);
-      this.minimumSelectableDate = DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(ordenDeSalida));
+    this.medicalService.getInProgressMedicalAtenttion().then(sm => {
+      const ordenDeSalida = sm.patientsExit.recover?.checkDate 
+        ? new Date(sm.patientsExit.recover.checkDate) 
+        : null;
+
+      this.minimumSelectableDate = ordenDeSalida 
+        ? DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(ordenDeSalida)) 
+        : DateUtilsService.iso8601DateTime(new Date());
+    }).catch(() => {
+      console.error('Error al obtener la atención médica en progreso');
     });
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
+  // Mostrar alerta si la fecha seleccionada es menor que la fecha mínima
   showMessageDateLess() {
     this.alertService.presentBasicAlert('Atención', 'Recuerda ingresar la hora real de salida o traslado de la UCPA.');
   }
 
+  // Validar y guardar los datos al continuar
   async goToNextPage() {
-    
     const horaRealdeSalida = DateUtilsService.toUTC(DateUtilsService.stringDate2Date(this.hospitalizacionDatetime!));
-    const horaOrdenDeSalida = new Date(this.minimumSelectableDate);    
+    const horaOrdenDeSalida = new Date(this.minimumSelectableDate);
 
-    if(horaRealdeSalida > horaOrdenDeSalida){
-      
+    // Validar que la hora seleccionada sea mayor a la fecha mínima
+    if (horaRealdeSalida >= horaOrdenDeSalida) {
       await this.loadingService.showLoadingBasic("Cargando...");
-      this.medicalService.getInProgressMedicalAtenttion().then( sm => {
-          
-          sm.patientsExit.checkDate = DateUtilsService.toUTC(DateUtilsService.stringDate2Date(this.hospitalizacionDatetime!));
-          sm.patientsExit.simpleCheckDate = this.datepipe.transform(sm.patientsExit.checkDate,'yyyy-MM-dd')!;
-          sm.patientsExit.simpleCheckHour = this.datepipe.transform(sm.patientsExit.checkDate,'HH:mm:ss')!;
+      
+      this.medicalService.getInProgressMedicalAtenttion().then(sm => {
+        sm.patientsExit.checkDate = DateUtilsService.toUTC(DateUtilsService.stringDate2Date(this.hospitalizacionDatetime!));
+        sm.patientsExit.simpleCheckDate = this.datepipe.transform(sm.patientsExit.checkDate, 'yyyy-MM-dd')!;
+        sm.patientsExit.simpleCheckHour = this.datepipe.transform(sm.patientsExit.checkDate, 'HH:mm:ss')!;
+        sm.patientsExit.state = StatusService.TERMINADO;
+        sm.state = StatusService.TERMINADO;
 
-          sm.patientsExit.state = StatusService.TERMINADO;
-          sm.state = StatusService.TERMINADO;
-
-          this.medicalService.saveMedicalAttention(sm, 'sync')
-            .then(result => {
-              this.loadingService.dismiss();
-                if(result) {
-                  this.navCtrl.navigateForward('home');            
-                }
-            }).catch(() => {
-              this.loadingService.dismiss();
-                console.error('No se pudo guardar el servicio médico');
-                this.navCtrl.navigateForward('home');            
-              });
-        }).catch(() => {
-          console.log('Error consultando la atencion médica');
-          this.loadingService.dismiss();
-          this.navCtrl.navigateForward('home');            
-        });
-      }else{
-        this.showMessageDateLess();
-      }
+        this.medicalService.saveMedicalAttention(sm, 'sync')
+          .then(result => {
+            this.loadingService.dismiss();
+            if (result) {
+              this.navCtrl.navigateForward('home');
+            }
+          })
+          .catch(() => {
+            this.loadingService.dismiss();
+            console.error('No se pudo guardar el servicio médico');
+            this.navCtrl.navigateForward('home');
+          });
+      }).catch(() => {
+        this.loadingService.dismiss();
+        console.error('Error consultando la atención médica');
+        this.navCtrl.navigateForward('home');
+      });
+    } else {
+      this.showMessageDateLess();
+    }
   }
 
+  // Método para habilitar/deshabilitar el botón de finalizar
   isValid(): boolean {
     return !!this.hospitalizacionDatetime;
   }
-
 }

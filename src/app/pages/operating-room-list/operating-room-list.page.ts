@@ -17,12 +17,15 @@ import { Instrumentador } from 'src/app/models/instrumentador.model';
 import { ParametersTimeCalculation } from 'src/app/models/parameters-time-calculation.model';
 import { catchError, of } from 'rxjs';
 import { StatusService } from 'src/app/services/status.service';
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthService, USER_KEY } from 'src/app/services/auth.service';
 import { LoadingService } from 'src/app/services/utilities/loading.service';
 import { Toast } from '@capacitor/toast';
 import { AlertController,IonAlert, IonButton } from '@ionic/angular/standalone';
 import { AudioAlertComponent } from 'src/app/components/audio-alert/audio-alert.component';
 import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
+import { FromOperatingRoomTo } from 'src/app/models/from-operating-room-to.model';
+import { Recover } from 'src/app/models/recover.model';
+import { ExitOperatingRoomList } from 'src/app/models/exit-operating-room-list.model';
 
 @Component({
   selector: 'app-operating-room-list',
@@ -72,8 +75,27 @@ export class OperatingRoomListPage implements OnInit {
     administeredProphylaxis: null,
     diagnosticImages: null
   };
-
+  dataUser: any;
   datepipe = new DatePipe('en-US');
+
+  exitOperatingRoomList: ExitOperatingRoomList;
+  recover: Recover;
+  modelRecover: any = {
+    aldrete: '-1',
+    bromage: '-1',
+    ramsay: '-1',
+    eva: 0,
+    nausea: false
+  };
+  modelExit: any = {
+    confirmProcedure: false,
+    instrumentsCount: false,
+    verifyTagsPatient: false,
+    problemsResolve: false,
+    recoveryReview: null,
+    bloodCount: null,
+    bloodCountUnits: 'ml'
+  };
 
   constructor(
     private navCtrl: NavController,
@@ -86,15 +108,19 @@ export class OperatingRoomListPage implements OnInit {
     private alertCtrl: AlertController,
   ) { 
     this.operatingRoomList = new OperatingRoomList();
+    this.recover = new Recover();
+    this.exitOperatingRoomList = new ExitOperatingRoomList();
+    this.dataUser = localStorage.getItem(USER_KEY);
   }
 
-ngOnInit() {
-  this.loadMasterData()  
+  ngOnInit() {
+    this.loadMasterData();
+    this.initializeModel();
   }
 
   ionViewDidEnter(){
     if (!this.model.confirmMembers) {
-      this.showAudioAlert = true;
+      // this.showAudioAlert = true;
       this.model.confirmMembers = true;
       this.model.confirmIdentity= true;
       this.model.criticalEvents= true;
@@ -103,11 +129,43 @@ ngOnInit() {
       this.model.administeredProphylaxis = false;
       this.model.diagnosticImages= false;
       this.checkDate();
+      this.checkDateExit();
     } else{
       this.showAudioAlert = false;
     }
   }
 
+  initializeModel() {
+    if (this.idRole) {
+      this.selectedInstrumentTechnician = {
+        "id": 92,
+        "name": "Instrumentador",
+        "lastname": "Instrumentador",
+        "lastnameS": "Instumentador",
+        "gender": "Masculino",
+        "phone": "123",
+        "email": "instrumentadora@mychecktime.com",
+        "status": "activo",
+        "role_id": 6
+      };
+      this.selectedSurgeon = {
+        "id": 91,
+        "name": "Cirujano",
+        "lastname": "Cirujano",
+        "lastnameS": "Cirujano",
+        "gender": "Masculino",
+        "phone": "123",
+        "email": "cirujano@mychecktime.com",
+        "status": "activo",
+        "role_id": 5
+      }
+    }
+  }
+  
+  get idRole(): boolean {
+    const userData = JSON.parse(this.dataUser);
+    return userData?.roles?.[0]?.id === 4;
+  }
 
   loadMasterData() {
     this.getAllSurgeons();
@@ -214,7 +272,6 @@ ngOnInit() {
         console.log('entro a getInProgressMedicalAtenttion de showAlertTiempoRecambio ')    
         this.parametersTimeCalculation.idAnes = sm.currentAnesthesiologist.id;
         this.parametersTimeCalculation.idOperatingRoom = sm.idOperatingRoom;
-        console.log('this.operatingRoomList.checkDate: ' , this.operatingRoomList.checkDate)
         this.parametersTimeCalculation.operatingRoomDate = this.operatingRoomList.checkDate.toISOString();
         this.medicalService.calculateChangePatientTime(this.parametersTimeCalculation).subscribe(
           res => {
@@ -237,7 +294,7 @@ ngOnInit() {
             }
           
         });
-    });
+    }).catch((err) => console.log('fallo desde aca', err));
   }
 
   async showAlert(changeTime: string){
@@ -266,6 +323,7 @@ ngOnInit() {
     if(!accepted || parseInt(time[0]) > 0 || parseInt(time[1]) > 0 || parseInt(time[2]) > 30) {
       this.showSearchConcepts = true;
     } else {
+      console.log('entra a gotonext');
       this.goToNextPage();
     }
   }
@@ -283,23 +341,74 @@ ngOnInit() {
     this.operatingRoomList.simpleCheckHour = this.datepipe.transform(this.operatingRoomList.checkDate,'HH:mm:ss')!;
   }
 
+  private checkDateExit() {
+    this.exitOperatingRoomList.checkDate = new Date();
+    this.exitOperatingRoomList.simpleCheckDate = this.datepipe.transform(this.exitOperatingRoomList.checkDate,'yyyy-MM-dd')!;
+    this.exitOperatingRoomList.simpleCheckHour = this.datepipe.transform(this.exitOperatingRoomList.checkDate,'HH:mm:ss')!;
+  }
+
+  private async goToNextPageExit() {
+    console.log('pasando por goToNextPageExit');
+    const exitOperatingRoomList = this.mapViewToModelExit();
+    this.medicalService.getInProgressMedicalAtenttion().then( sm => {
+      sm.exitOperatingRoomList = exitOperatingRoomList;
+      sm.state = StatusService.FROM_OPERATING_ROOM_TO;
+
+      this.medicalService.saveMedicalAttention(sm,'sync')
+        .then(result => {
+          if (result) {
+            this.navCtrl.navigateForward('/home');
+          }
+          }).catch(() => {
+            this.navCtrl.navigateForward('/home');
+            console.error('No se pudo guardar el servicio médico')
+          });
+    }).catch(() => {
+      this.navCtrl.navigateForward('/home');
+      console.log('Error consultando la atencion médica')
+    });
+  }
+
+  private mapViewToModelExit() {
+    this.exitOperatingRoomList.confirmProcedure = this.modelExit.confirmProcedure;
+    this.exitOperatingRoomList.instrumentsCount = this.modelExit.instrumentsCount;
+    this.exitOperatingRoomList.verifyTagsPatient = this.modelExit.verifyTagsPatient;
+    this.exitOperatingRoomList.problemsResolve = this.modelExit.problemsResolve;
+    this.exitOperatingRoomList.recoveryReview = this.modelExit.recoveryReview;
+    this.exitOperatingRoomList.bloodCount = this.modelExit.bloodCount;
+    this.exitOperatingRoomList.bloodCountUnits = this.modelExit.bloodCountUnits;
+    this.exitOperatingRoomList.endProcedureDate = new Date();
+    this.exitOperatingRoomList.simpleEndProcedureDate = this.datepipe.transform(this.exitOperatingRoomList.endProcedureDate,'yyyy-MM-dd')!;
+    this.exitOperatingRoomList.simpleEndProcedureHour = this.datepipe.transform(this.exitOperatingRoomList.endProcedureDate,'HH:mm:ss')!;
+    
+    return this.exitOperatingRoomList;
+  }
+
   goToNextPage() {
     const operatingRoomList = this.mapViewToModel();
     
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
       sm.surgeon = this.selectedSurgeon;
       sm.instrumentator = this.selectedInstrumentTechnician;
-
       sm.operatingRoomList = operatingRoomList;
       sm.state = StatusService.OPERATING_ROOM_LIST;
-
+      console.log('this.idRolethis.idRole', this.idRole);
       this.medicalService.saveMedicalAttention(sm, 'sync')
-        .then(result => {
+        .then(async (result) => {
             if(result) {
-              this.navCtrl.navigateForward('/anesthesia-operating-room');
+              if (this.idRole) {
+                await this.goToNextPageExit()
+              } else {
+                this.navCtrl.navigateForward('/anesthesia-operating-room');
+              }
             }
-        }).catch(() => console.error('No se pudo guardar el servicio médico'));
-    }).catch(() => console.log('Error consultando la atencion médica'));
+        }).catch((err) => {
+          console.error('No se pudo guardar el servicio médico', err)
+          console.error('No se pudo guardar el servicio médico -->', err.message)
+        })
+        .finally(() => this.loadingService.dismiss());
+    }).catch((err) => console.log('Error consultando la atencion médica', err))
+    .finally(() => this.loadingService.dismiss());
   }
 
   private mapViewToModel() {
@@ -317,7 +426,7 @@ ngOnInit() {
 
   searchSurgeons(event: any) {
     const query = event.target.value.toLowerCase().trim();
-    if (query != '' && query.length > 4) {
+    if (query != '' && query.length > 2) {
       this.resultsSearchigSurgeons = [];
       this.searchSurgeonsByName(query);
     } 
@@ -337,7 +446,7 @@ ngOnInit() {
 
   searchInstrumentTechnician(event: any) {
     const query = event.target.value.toLowerCase().trim();
-    if (query != '' && query.length > 4) {
+    if (query != '' && query.length > 2) {
       this.resultsSearchigInstrumentTechnicians = [];
       this.searchInstrumentTechnicianByName(query);
     } 
@@ -357,7 +466,7 @@ ngOnInit() {
 
   searchConceptTime(event: any){
     const query = event.target.value.toLowerCase().trim();
-    if (query != '' && query.length > 4) {
+    if (query != '' && query.length > 2) {
       this.resultsSearchigConceptTimeReplacement = [];
       this.searchConceptTimeByName(query);
     } 

@@ -35,8 +35,13 @@ export class SurgeryDestinationPage implements OnInit {
     private router: Router
   ) {
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
-      const ordenDeSalida = new Date(sm.patientsExit.recover.checkDate);
-      this.minimumSelectableDate = DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(ordenDeSalida));
+      const ordenDeSalida = sm.patientsExit.recover?.checkDate 
+        ? new Date(sm.patientsExit.recover.checkDate) 
+        : null;
+
+      this.minimumSelectableDate = ordenDeSalida 
+        ? DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(ordenDeSalida)) 
+        : DateUtilsService.iso8601DateTime(new Date());
     });
    }
 
@@ -52,7 +57,7 @@ export class SurgeryDestinationPage implements OnInit {
     const horaRealdeSalida = DateUtilsService.toUTC(DateUtilsService.stringDate2Date(this.envioCirugiaDatetime!));
     const horaOrdenDeSalida =new Date(this.minimumSelectableDate);    
 
-    if(horaRealdeSalida > horaOrdenDeSalida){
+    if(horaRealdeSalida >= horaOrdenDeSalida){
       await this.loadingService.showLoadingBasic("Cargando...");
 
       this.medicalService.getInProgressMedicalAtenttion().then(sm => {
@@ -70,17 +75,17 @@ export class SurgeryDestinationPage implements OnInit {
             this.loadingService.dismiss();
             if (result) {
               this.sharedDataService.setDatos(patientToRebootProcess);
-              this.router.navigateByUrl('/patient-intake');
+              this.router.navigateByUrl('/home');
             }
           }).catch(() => {
             this.loadingService.dismiss();
             console.error('No se pudo guardar el servicio médico');
-            this.navCtrl.navigateForward('/patient-intake');            
+            this.navCtrl.navigateForward('/home');            
           });
       }).catch(e => {
         console.log('Error consultando la atencion médica');
         this.loadingService.dismiss();
-        this.navCtrl.navigateForward('/patient-intake');            
+        this.navCtrl.navigateForward('/home');            
       });
 
     }else{

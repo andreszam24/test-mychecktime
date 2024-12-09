@@ -1,19 +1,29 @@
 <app-header titleName="paciente"></app-header>
 
 <ion-content class="exit-menu" [fullscreen]="true">
-    <ion-button shape="round" expand="block"
-    (click)="goToRecovery()">
-      Recuperacion
-      <ion-icon id="recovery" src="../../../assets/svg/recuperacionxhdpi.svg"></ion-icon>
-  </ion-button>
-  <ion-button shape="round" expand="block" 
-    (click)="goToUCI()">
-      UCI
-      <ion-icon src="../../../assets/svg/ucixhdpi.svg"></ion-icon>    
-  </ion-button>
-  <ion-button shape="round" expand="block"
-    (click)="goToDeath()">
-      Sala de paz
-      <ion-icon src="../../../assets/svg/fallecimietoxhdpi.svg"></ion-icon>    
-  </ion-button>
+  <div>
+    <div *ngIf="getRoleUser(); else showAllButtons">
+      <ion-button shape="round" expand="block" (click)="goToRecovery()">
+        Recuperación
+        <ion-icon id="recovery" src="../../../assets/svg/recuperacionxhdpi.svg">
+        </ion-icon>
+      </ion-button>
+    </div>
+
+    <ng-template #showAllButtons>
+      <ion-button shape="round" expand="block" (click)="goToRecovery()">
+        Recuperación
+        <ion-icon id="recovery" src="../../../assets/svg/recuperacionxhdpi.svg">
+        </ion-icon>
+      </ion-button>
+      <ion-button shape="round" expand="block" (click)="goToUCI()">
+        UCI
+        <ion-icon src="../../../assets/svg/ucixhdpi.svg"></ion-icon>
+      </ion-button>
+      <ion-button shape="round" expand="block" (click)="goToDeath()">
+        Sala de paz
+        <ion-icon src="../../../assets/svg/fallecimietoxhdpi.svg"></ion-icon>
+      </ion-button>
+    </ng-template>
+  </div>
 </ion-content>

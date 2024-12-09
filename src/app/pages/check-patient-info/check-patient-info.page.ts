@@ -19,7 +19,7 @@ import { ButtonPanelComponent } from 'src/app/components/button-panel/button-pan
 export class CheckPatientInfoPage implements OnInit {
 
   barcodes: Barcode[] = [];
-  textItem: string = 'Da click en la imagen para escanea la manilla del paciente o ingresa los ultimos 4 digitos de su identificacion  y oprime continuar';
+  textItem: string = 'Si el paciente no tiene manilla, ingrese los últimos 4 dígitos de su identificación y oprima continuar.';
   isSupported = false;
   validPerson: Patient;
   inputData:string = '';
@@ -133,6 +133,10 @@ export class CheckPatientInfoPage implements OnInit {
 
   goToNextPage(){
     this.navCtrl.navigateForward('operating-room-list');
+  }
+
+  goBackRoom() {
+    this.navCtrl.navigateForward('home');
   }
 
   toContinue() {

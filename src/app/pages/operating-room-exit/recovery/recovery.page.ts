@@ -14,6 +14,7 @@ import { StatusService } from 'src/app/services/status.service';
 import { FromOperatingRoomTo } from 'src/app/models/from-operating-room-to.model';
 import { LoadingService } from 'src/app/services/utilities/loading.service';
 import { InternetStatusComponent } from '../../../components/internet-status/internet-status.component';
+import { USER_KEY } from 'src/app/services/auth.service';
 
 
 @Component({
@@ -29,7 +30,7 @@ export class RecoveryPage implements OnInit {
   barcodes: Barcode[] = [];
   isSupported = false;
   datepipe = new DatePipe('en-US');
-
+  dataUser: any;
   recover: Recover;
 
   model: any = {
@@ -50,9 +51,29 @@ export class RecoveryPage implements OnInit {
 
   ) { 
     this.recover = new Recover();
+    this.dataUser = localStorage.getItem(USER_KEY);
   }
 
-  ngOnInit() {this.openModal()}
+  ngOnInit() {
+    this.openModal()
+  }
+
+  initializeModel() {
+    if (this.idRole) {
+      this.model = {
+        aldrete: '-1',
+        bromage: '-1',
+        ramsay: '-1',
+        eva: 0,
+        nausea: false
+      }
+    }
+  }
+
+  get idRole(): boolean {
+    const userData = JSON.parse(this.dataUser);
+    return userData?.roles?.[0]?.id === 4;
+  }
 
   async openModal() {
     const textoModal = "REALIZAR ESCALAS DE RECUPERACIÓN EN LA UCPA";
@@ -180,9 +201,9 @@ export class RecoveryPage implements OnInit {
     const fromRoomTo = new FromOperatingRoomTo();
     fromRoomTo.status = StatusService.TERMINADO;
     fromRoomTo.to = "recuperacion";
-    fromRoomTo.checkDate = this.recover.checkDate;
-    fromRoomTo.simpleCheckDate = this.datepipe.transform(fromRoomTo.checkDate,'yyyy-MM-dd')!;
-    fromRoomTo.simpleCheckHour = this.datepipe.transform(fromRoomTo.checkDate,'HH:mm:ss')!;
+    fromRoomTo.checkDate = this.recover.checkDate || new Date();
+    fromRoomTo.simpleCheckDate = this.datepipe.transform(fromRoomTo.checkDate || new Date(),'yyyy-MM-dd')!;
+    fromRoomTo.simpleCheckHour = this.datepipe.transform(fromRoomTo.checkDate || new Date(),'HH:mm:ss')!;
     fromRoomTo.recover = this.recover;
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
       sm.exitOperatingRoomList.fromOperatingRoomTo = fromRoomTo;

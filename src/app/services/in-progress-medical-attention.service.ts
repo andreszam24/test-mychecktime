@@ -311,7 +311,7 @@ export class InProgressMedicalAttentionService {
     localStorage.setItem(this.inProgressServicesKey, JSON.stringify(allServices));
   }
 
-  private finishServiceRemoteRepository(): Observable<boolean> {
+  finishServiceRemoteRepository(): Observable<boolean> {
     const finishedServices: Array<MedicalAttention> = this.getFinishedServicesFromLocalRepository();
     const sbjResult = new Subject<boolean>();
     this.httpMedicalAttention.saveMedicalAttention(finishedServices).subscribe(
@@ -329,8 +329,11 @@ export class InProgressMedicalAttentionService {
     return sbjResult.asObservable();
   }
 
-  private getFinishedServicesFromLocalRepository(): MedicalAttention[] {
+  getFinishedServicesFromLocalRepository(): MedicalAttention[] {
     return JSON.parse(localStorage.getItem(this.finishedServicesKey) ?? '[]');
+  }
+  updateFinishedServiceList() {
+    return this.getFinishedServicesFromLocalRepository();
   }
 
   selectMedicalAttention(atention: string) {

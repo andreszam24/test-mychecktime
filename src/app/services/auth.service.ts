@@ -11,7 +11,7 @@ import { User } from '../models/user.model';
 
 const helper = new JwtHelperService();
 const TOKEN_KEY = 'jwt-token';
-const USER_KEY = 'user-data';
+export const USER_KEY = 'user-data';
 
 @Injectable({
   providedIn: 'root',
@@ -68,8 +68,8 @@ export class AuthService {
       localStorage.setItem(USER_KEY, JSON.stringify(response.account));
     } else {
       storageObs = defer(() => {
-        sessionStorage.setItem(TOKEN_KEY, response.access_token);
-        sessionStorage.setItem(USER_KEY, JSON.stringify(response.account));
+        localStorage.setItem(TOKEN_KEY, response.access_token);
+        localStorage.setItem(USER_KEY, JSON.stringify(response.account));
         return of(response.access_token);
       });
     }

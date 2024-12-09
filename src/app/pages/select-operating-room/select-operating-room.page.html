@@ -1,11 +1,14 @@
 <app-header titleName="Seleccione el quirófano"></app-header>
 
 <ion-content [fullscreen]="true">
-  <ion-item lines="none" class="select-qr">
-    <ion-icon (click)="scan()"  src="../../../assets/svg/Item-select-qr.svg"></ion-icon>
+  <div class="select-qr">
+    <ion-icon (click)="scan()" src="../../../assets/svg/lens-qr.svg"></ion-icon>
     <p>{{ textItem }}</p>
-  </ion-item>
+  </div>
 </ion-content>
 <footer>
-  <app-button-panel [disabled]="false" (buttonClicked)="toContinue()"></app-button-panel>
+  <app-button-panel
+    [disabled]="false"
+    (buttonClicked)="toContinue()"
+  ></app-button-panel>
 </footer>

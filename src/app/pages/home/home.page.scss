@@ -1,74 +1,82 @@
-ion-card{
+ion-card {
     border-radius: 0;
     border-bottom: 0.5px solid var(--ion-color-app-blue);
     box-shadow: none;
     margin: 0;
     margin-top: 13px;
     width: 100%;
-    
-    ion-card-content{
+
+    ion-card-content {
         border: 0.5px solid var(--ion-color-app-blue);
         border-radius: 20px;
         color: var(--ion-color-app-blue);
         margin-bottom: 13px;
 
-        ion-img{
-            float: left; 
-            margin-right: 10px;  
-            width:9%; 
+        ion-img {
+            float: left;
+            margin-right: 10px;
+            width: 9%;
             height: 100px;
         }
 
-        h2{
+        h2 {
             text-transform: capitalize;
-            font-weight: bold; 
+            font-weight: bold;
         }
 
-        .circle{
+        .circle {
             width: 35px;
             height: 35px;
             float: right;
             border-radius: 50%;
         }
-        .content-text{
+
+        .content-text {
             padding-top: 14px;
 
         }
-        .localizacion{
+
+        .localizacion {
             text-align: center;
             color: var(--ion-color-app-red);
             text-transform: none;
         }
 
     }
-    
+
 }
 
-ion-item-option{
-    .content{
-     text-align: center;
-     p{
-         margin: 0;
-     }
+ion-item-option {
+    .content {
+        text-align: center;
+
+        p {
+            margin: 0;
+        }
     }
- }
+}
 
- ion-list{
+ion-list {
     padding-top: 0px;
- }
-
-.delete{
-    background-color:var(--ion-color-app-red) ;
-}
-    
-.summary{
-background-color:var(--ion-color-app-blue);
 }
 
-ion-fab-button{
+.delete {
+    background-color: var(--ion-color-app-red);
+}
+
+.summary {
+    background-color: var(--ion-color-app-blue);
+}
+
+ion-fab-button {
     --background: var(--ion-color-app-blue);
-    span{
+
+    span {
         position: absolute;
     }
-    
+
+}
+
+.fab-red {
+    --background: var(--ion-color-app-red);
 }

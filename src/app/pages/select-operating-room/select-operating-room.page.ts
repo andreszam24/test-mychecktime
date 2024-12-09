@@ -12,6 +12,8 @@ import { WorkingAreaService } from 'src/app/services/working-area.service';
 import { OperationRoomService } from 'src/app/services/operation-room.service';
 import { PreScanQrComponent } from 'src/app/components/pre-scan-qr/pre-scan-qr.component';
 import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
+import { AlertService } from 'src/app/services/utilities/alert.service';
+import { AndroidSettings, IOSSettings, NativeSettings } from 'capacitor-native-settings';
 
 
 @Component({
@@ -24,7 +26,7 @@ import { ButtonPanelComponent } from 'src/app/components/button-panel/button-pan
 export class SelectOperatingRoomPage implements OnInit {
 
   barcodes: Barcode[] = [];
-  textItem: string = 'Por favor, escanea el código QR de la sala';
+  textItem: string = '';
   isSupported = false;
   selectedOperationRoom: OperationRoom;
   currentClinic: Clinic;
@@ -35,8 +37,8 @@ export class SelectOperatingRoomPage implements OnInit {
     private medicalService: InProgressMedicalAttentionService,
     private workingArea: WorkingAreaService,
     private operationRoomService:OperationRoomService,
-    private modalCtrl: ModalController
-
+    private modalCtrl: ModalController,
+    private alertService: AlertService,
   ) { }
 
   ngOnInit() {
@@ -73,10 +75,23 @@ export class SelectOperatingRoomPage implements OnInit {
     });
   }
 
+  handleOpenPermission = async () => {
+    NativeSettings.open({
+      optionAndroid: AndroidSettings.ApplicationDetails,
+      optionIOS: IOSSettings.App,
+    });
+    this.navCtrl.navigateForward('home')
+  };
+
   async scan(): Promise<void> {
     const granted = await this.requestPermissions();
     if (!granted) {
-      this.textItem = '¡Ups! Sin permisos ¡Activa los permisos de la cámara para usar el escáner de códigos!';
+      this.alertService.presentActionAlertCustom(
+        '¡Ups! Sin permisos',
+        '¡Activa los permisos de la cámara para usar el escáner de códigos!',
+        this.handleOpenPermission,
+        () => this.navCtrl.navigateForward('home'),
+      );
       return;
     }
     // NOTE: To avoid that scan it doesn't work, you may use 5.0.3 version or higher: npm i @capacitor-mlkit/barcode-scanning@5.0.3
@@ -148,7 +163,7 @@ export class SelectOperatingRoomPage implements OnInit {
       sm.operatingRoom.clinic.updated_at = this.datepipe.transform(sm.operatingRoom.clinic.updated_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ')!;
       sm.operatingRoom.clinic.created_at = this.datepipe.transform(sm.operatingRoom.clinic.created_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ')!;
 
-      sm.state = StatusService.SELECT_OPERATING_ROOM;
+      sm.state = StatusService.ADMISSION_LIST;
      this.medicalService.saveMedicalAttention(sm, 'sync')
         .then(result => {
             if(result) {
@@ -181,7 +196,7 @@ export class SelectOperatingRoomPage implements OnInit {
   }
 
   toContinue(){
-    this.textItem = '¡Para continuar debes escanear el QR correspondiente a la sala! Por favor, da click en la imagen para continuar';
+    this.scan();
   }
 
 }

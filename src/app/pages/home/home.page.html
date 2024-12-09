@@ -39,8 +39,10 @@
   </ion-list>
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="start">
-    <ion-fab-button [disabled]="true">
-      <span>0</span>
+    <ion-fab-button 
+      [disabled]="isListFinishedServiceEmpty"
+      [ngClass]="{ 'fab-red': !isListFinishedServiceEmpty }">
+      <span>{{ listFinishedService?.length ?? 0 }}</span>
       <ion-icon src="../../../assets/svg/board.svg"></ion-icon>
     </ion-fab-button>
   </ion-fab>

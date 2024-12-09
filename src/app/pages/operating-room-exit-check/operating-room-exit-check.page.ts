@@ -145,7 +145,7 @@ export class OperatingRoomExitCheckPage implements OnInit {
       this.model.problemsResolve = qr.problemsResolve;
       this.model.recoveryReview = qr.recoveryReview;
       this.scannDataForm = true;
-      this.showAudioAlert = true;
+      // this.showAudioAlert = true;
     } else{
       this.alertService.presentActionAlert('¡Ups! Parece que ocurrió un problema con el QR','Por favor, escanea un código QR valido para continuar.', () => {
         this.navCtrl.navigateForward('home');

@@ -1,30 +1,53 @@
 <app-header titleName="Validación del Paciente"></app-header>
 
 <ion-content>
-        <ion-row>
-        <ion-col>
-          <ion-text>
-            <h5>Oprima el siguiente botón para activar el escaneo de QR de la manilla del paciente</h5>
-          </ion-text>
-        </ion-col>
-        <ion-col class="select-qr" size="12">
-              <ion-icon (click)="startBarcodeScanner()"  src="../../../assets/svg/Item-select-qr.svg"></ion-icon>
-        </ion-col>
-        <ion-col class="Valid-data-input" size="12">
-            <ion-item lines="none">
-                <ion-input fill="solid" [(ngModel)]="inputData" labelPlacement="stacked"  helperText="Manual" placeholder="Ingresa 4 ultimos digitos" pattern="[0-9]*" maxlength="4" required>
-                <ion-icon slot="start" src="../../../assets/svg/person-circle-outline.svg" aria-hidden="true"></ion-icon>
-                </ion-input>
-                <ion-note color="danger" *ngIf="inputData && !validarInputData()">
-                  ¡El input debe contener exactamente 4 números!
-                </ion-note>
-              </ion-item>
-        </ion-col>
-        <p>{{ textItem }}</p>
-      </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-text>
+        <h5>
+          Oprima en la siguiente imagen para activar el escaneo de QR de la
+          manilla del paciente
+        </h5>
+      </ion-text>
+    </ion-col>
+    <ion-col class="select-qr" size="12">
+      <ion-icon
+        (click)="startBarcodeScanner()"
+        src="../../../assets/svg/lens-qr.svg"
+      ></ion-icon>
+    </ion-col>
+    <ion-col class="Valid-data-input" size="12">
+      <ion-item lines="none">
+        <ion-input
+          fill="solid"
+          [(ngModel)]="inputData"
+          labelPlacement="stacked"
+          helperText="Manual"
+          placeholder="Ingresa 4 ultimos digitos"
+          pattern="[0-9]*"
+          maxlength="4"
+          required
+        >
+          <ion-icon
+            slot="start"
+            src="../../../assets/svg/person-circle-outline.svg"
+            aria-hidden="true"
+          ></ion-icon>
+        </ion-input>
+        <ion-note color="danger" *ngIf="inputData && !validarInputData()">
+          ¡El input debe contener exactamente 4 números!
+        </ion-note>
+      </ion-item>
+    </ion-col>
+    <p>{{ textItem }}</p>
+  </ion-row>
 </ion-content>
 <ion-footer>
-    <ion-toolbar position="bottom">
-      <app-button-panel [disabled]="false" (buttonClicked)="toContinue()"></app-button-panel>
-    </ion-toolbar>
+  <ion-toolbar position="bottom">
+    <app-button-panel
+      [disabled]="false"
+      [customBackFunction]="goBackRoom"
+      (buttonClicked)="toContinue()"
+    ></app-button-panel>
+  </ion-toolbar>
 </ion-footer>

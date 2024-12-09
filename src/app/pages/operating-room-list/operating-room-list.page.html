@@ -1,5 +1,4 @@
 <app-header titleName="paciente"></app-header>
-<app-audio-alert *ngIf="showAudioAlert" [audioSrc]="audioSrc" [audioHeader]="header" [alertButtons]="alertButtons" [textValidate]="textValidate" (alertClosed)="showAudioAlert = false"></app-audio-alert>
 
 <ion-content [fullscreen]="true">
   <ion-header>
@@ -7,16 +6,11 @@
       <ion-title size="large">Quirófano</ion-title>
     </ion-toolbar>
   </ion-header>
-  
-  <ion-alert 
-      id="audio-alert" 
-      backdropDismiss=false 
-      #audioAlert 
-      header="Validación lista de quirofano" 
-      [buttons]="alertButtons" 
-      class="alert-audio">
-    <audio id="audio-validate" src="./../../../assets/audio/audio.mp3" controls="controls" #audioPlayer></audio>
-  </ion-alert>
+
+  <app-audio-alert *ngIf="showAudioAlert" [audioSrc]="audioSrc" [audioHeader]="header" [alertButtons]="alertButtons" [textValidate]="textValidate" (alertClosed)="showAudioAlert = false"></app-audio-alert>
+  <!-- <app-audio-modal *ngIf="showAudioAlert">
+
+  </app-audio-modal> -->
   <form class="formulario-chequeo">
     <div *ngIf="!showSearchConcepts">
 
@@ -24,7 +18,7 @@
         <ion-text>
           <h4>Búsqueda de Cirujano</h4>
         </ion-text>
-        <ion-searchbar class="custom" [debounce]="1500" (ionInput)="searchSurgeons($event)"
+        <ion-searchbar class="custom" [debounce]="1000" (ionInput)="searchSurgeons($event)"
           placeholder="Agregar Cirujano">
         </ion-searchbar>
        <ion-list class="list">
@@ -45,7 +39,7 @@
         <ion-text>
           <h3>Búsqueda de Instrumentador</h3>
         </ion-text>
-        <ion-searchbar class="custom" [debounce]="1500" (ionInput)="searchInstrumentTechnician($event)"
+        <ion-searchbar class="custom" [debounce]="1000" (ionInput)="searchInstrumentTechnician($event)"
           placeholder="Agregar Instrumentador">
         </ion-searchbar>
        <ion-list class="list">
@@ -159,7 +153,7 @@
       <ion-text>
         <h4>Búsqueda de conceptos de tiempo de recambio</h4>
       </ion-text>
-      <ion-searchbar class="custom" [debounce]="1500" (ionInput)="searchConceptTime($event)"
+      <ion-searchbar class="custom" [debounce]="1000" (ionInput)="searchConceptTime($event)"
           placeholder="Agregar concepto de tiempo de recambio">
       </ion-searchbar>
       <ion-list class="list">

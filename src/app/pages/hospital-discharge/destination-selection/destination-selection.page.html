@@ -18,7 +18,9 @@
 
     <ion-row>
       <ion-col>
-        <ion-label class="title-section" text-center>Orden de Salida de Recuperación
+        <ion-label *ngIf="idRole" class="title-section" text-center>Orden de Salida
+        </ion-label>
+        <ion-label *ngIf="!idRole" class="title-section" text-center>Orden de Salida de Recuperación
         </ion-label>
       </ion-col>
     </ion-row>

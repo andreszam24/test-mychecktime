@@ -9,13 +9,14 @@ ion-content{
         height: 60%;
         text-align: center;
         ion-icon{
-            width: 500px;
+            width: -webkit-fill-available;
             height: 300px
         }
         p{
             width: 100%;
             text-align: center;
             margin-top: 15px;
+            padding: 0px 16px;
         }
     }
 }

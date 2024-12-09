@@ -14,6 +14,8 @@ import { EventsPanelComponent } from '../../components/events-panel/events-panel
 import { PreScanQrComponent } from 'src/app/components/pre-scan-qr/pre-scan-qr.component';
 import { AudioAlertComponent } from 'src/app/components/audio-alert/audio-alert.component';
 import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
+import { USER_KEY } from 'src/app/services/auth.service';
+import { AndroidSettings, IOSSettings, NativeSettings } from 'capacitor-native-settings';
 
 
 
@@ -22,7 +24,7 @@ import { ButtonPanelComponent } from 'src/app/components/button-panel/button-pan
   templateUrl: './pre-anesthesia.page.html',
   styleUrls: ['./pre-anesthesia.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe, IonModal, IonDatetimeButton, IonDatetime, IonTextarea, EventsPanelComponent, PreScanQrComponent, AudioAlertComponent, ButtonPanelComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, IonSelectOption, DatePipe, IonModal, IonDatetimeButton, IonDatetime, IonTextarea, EventsPanelComponent, PreScanQrComponent, ButtonPanelComponent, AudioAlertComponent]
 })
 export class PreAnesthesiaPage implements OnInit {
 
@@ -32,10 +34,11 @@ export class PreAnesthesiaPage implements OnInit {
   showAudioAlert = false;
   header = 'Validación lista de Pre-anestesia';
   scannDataForm = false;
+  manualIntake = false;
   alertButtons = [
     {
       text: 'Volver',
-      cssClass: 'alert-button-cancel',
+      cssClass: 'alert-button-cancel space-cancel-audio',
       role: 'cancel',
       handler: () => {
         this.navCtrl.back();
@@ -61,7 +64,6 @@ export class PreAnesthesiaPage implements OnInit {
     intervention: null,
     otherIntervention: ''
   };
-
   datepipe = new DatePipe('en-US');
 
   constructor(
@@ -98,21 +100,39 @@ export class PreAnesthesiaPage implements OnInit {
     }
   }
 
-  private startBarcodeScanner() {
-    BarcodeScanner.isSupported().then((result) => {
-      this.isSupported = result.supported;
-      this.scan();
-    }).catch(async (error) => {
-      console.error(error.message);
-      await this.unsupportedBarcodeMessage();
-    });
+  async startBarcodeScanner() {
+    BarcodeScanner.isSupported()
+      .then((result) => {
+        this.isSupported = result.supported;
+        this.scan();
+      })
+      .catch(async (error) => {
+        console.error('startBarcodeScanner pre-anes', error.message);
+        await this.unsupportedBarcodeMessage();
+      });
   }
+  async requestPermissions(): Promise<boolean> {
+    const { camera } = await BarcodeScanner.requestPermissions();
+    return camera === 'granted' || camera === 'limited';
+  }
+
+  handleOpenPermission = async () => {
+    NativeSettings.open({
+      optionAndroid: AndroidSettings.ApplicationDetails,
+      optionIOS: IOSSettings.App,
+    });
+    this.navCtrl.navigateForward('home')
+  };
 
   async scan(): Promise<void> {
     const granted = await this.requestPermissions();
     if (!granted) {
-      this.alertService.presentBasicAlert('¡Ups! Sin permisos', '¡Activa los permisos de la cámara para y scanea el qr del area pre-operatoria!');
-      this.navCtrl.navigateForward('home');
+      this.alertService.presentActionAlertCustom(
+        '¡Ups! Sin permisos',
+        '¡Activa los permisos de la cámara para usar el escáner de códigos!',
+        this.handleOpenPermission,
+        () => this.navCtrl.navigateForward('home'),
+      );
       return;
     }
 
@@ -160,7 +180,7 @@ export class PreAnesthesiaPage implements OnInit {
       this.model.riskOfHemorrhage = qr.riskOfHemorrhage;
       this.model.intervention = qr.intervention ?? 'Ninguna';
       this.scannDataForm = true;
-      this.showAudioAlert = true;
+      // this.showAudioAlert = true;
     }else{
       this.alertService.presentActionAlert('¡Ups! Parece que ocurrió un problema con el QR','Por favor, escanea un código QR valido para continuar.', () => {
         this.navCtrl.navigateForward('home');
@@ -184,11 +204,6 @@ export class PreAnesthesiaPage implements OnInit {
       console.log(e);
       return {};
     }
-  }
-
-  async requestPermissions(): Promise<boolean> {
-    const { camera } = await BarcodeScanner.requestPermissions();
-    return camera === 'granted' || camera === 'limited';
   }
 
   isValid() {
@@ -219,6 +234,7 @@ export class PreAnesthesiaPage implements OnInit {
   goToNextPage() {
     this.checkDate();
     const admissionList = this.mapViewToModel();
+    console.log('admissionList --> goToNextPage', admissionList);
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
       sm.admissionList = admissionList;
       sm.state = StatusService.ADMISSION_LIST;
@@ -232,8 +248,8 @@ export class PreAnesthesiaPage implements OnInit {
   }
 
   private mapViewToModel() {
-    this.model.arrivalDate = DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(this.model.arrivalDate));
-    this.admissionList.arrivalDate = DateUtilsService.stringHour2Date(this.model.arrivalDate);
+    this.model.arrivalDate = new Date(this.model.arrivalDate);
+    this.admissionList.arrivalDate = this.model.arrivalDate;
     this.admissionList.simpleArrivalDate = this.datepipe.transform(this.admissionList.arrivalDate,'yyyy-MM-dd')!;
     this.admissionList.simpleArrivalHour = this.datepipe.transform(this.admissionList.arrivalDate,'HH:mm:ss')!;
     this.admissionList.basicConfirmation = this.model.basicConfirmation;

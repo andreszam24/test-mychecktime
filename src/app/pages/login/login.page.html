@@ -29,8 +29,8 @@
         <ion-toggle formControlName="stayInChk" aria-label="recordarme">Recordarme</ion-toggle>
       </ion-item>
 
+      <p>Version (1) 11/27</p>
       <div *ngIf="errorMensaje" class="error-message">{{ errorMensaje }}</div>
-
     </ion-list>
     <div class="content-button">
         <ion-button id="login-button" size="default" [disabled]="isLoading" (click)="doLogin()">Iniciar sesión</ion-button>
@@ -39,5 +39,5 @@
   </form>
 </ion-content>
 <ion-footer>
-    App Versión:
+    App Versión: 1.1
 </ion-footer>
