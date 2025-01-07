@@ -30,7 +30,6 @@ export class PreAnesthesiaPage implements OnInit {
 
   @ViewChild('dateTimeButton') dateTimeButton: IonDatetime;
 
-  audioSrc = './../../../assets/audio/Audio_1.mp3';
   showAudioAlert = false;
   header = 'Validación lista de Pre-anestesia';
   scannDataForm = false;
@@ -65,6 +64,8 @@ export class PreAnesthesiaPage implements OnInit {
     otherIntervention: ''
   };
   datepipe = new DatePipe('en-US');
+  dataUser: any;
+  audioSrc: string;
 
   constructor(
     private alertService: AlertService,
@@ -75,10 +76,29 @@ export class PreAnesthesiaPage implements OnInit {
     this.admissionList = new AdmissionList();
     this.flagInputOtherIntervention = false;
     this.fechaMaxima = DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(new Date()));
+    this.dataUser = localStorage.getItem(USER_KEY);
    }
 
   ngOnInit() {
     this.openModal();
+    this.initializeModel();
+  }
+
+  initializeModel() {
+    if (this.idRole) {
+      this.audioSrc = './../../../assets/audio/Audio_1_Sec.mp3';
+      this.textValidate = 
+      'CONFIRME IDENTIDAD, CONSENTIMIENTO, PROCEDIMIENTO Y LATERALIDAD. VERIFIQUE SIGNOS VITALES, ALERGIAS Y VÍA AÉREA. REVISE DISPOSITIVOS, MÁQUINA, MEDICAMENTOS Y EQUIPO DE VÍA AÉREA.'
+    } else {
+      this.audioSrc = './../../../assets/audio/Audio_1.mp3';
+      this.textValidate = 
+      'ANTES DE INGRESAR AL QUIRÓFANO, CONFIRME LA IDENTIDAD DEL PACIENTE, EL CONSENTIMIENTO, EL PROCEDIMIENTO Y LA LATERALIDAD. VERIFIQUE LOS SIGNOS VITALES, LA PRESENCIA DE ALERGIAS, LA VÍA AÉREA Y EL RIESGO DE SANGRADO. REVISE LOS DISPOSITIVOS MÉDICOS, LA MÁQUINA DE ANESTESIA, LOS MEDICAMENTOS Y EL EQUIPO DE MANEJO DE LA VÍA AÉREA.'
+    }
+  }
+  
+  get idRole(): boolean {
+    const userData = JSON.parse(this.dataUser);
+    return userData?.roles?.[0]?.id === 4;
   }
 
   async openModal() {
@@ -180,7 +200,7 @@ export class PreAnesthesiaPage implements OnInit {
       this.model.riskOfHemorrhage = qr.riskOfHemorrhage;
       this.model.intervention = qr.intervention ?? 'Ninguna';
       this.scannDataForm = true;
-      // this.showAudioAlert = true;
+      this.showAudioAlert = true;
     }else{
       this.alertService.presentActionAlert('¡Ups! Parece que ocurrió un problema con el QR','Por favor, escanea un código QR valido para continuar.', () => {
         this.navCtrl.navigateForward('home');
@@ -236,10 +256,12 @@ export class PreAnesthesiaPage implements OnInit {
     const admissionList = this.mapViewToModel();
     console.log('admissionList --> goToNextPage', admissionList);
     this.medicalService.getInProgressMedicalAtenttion().then( sm => {
+      console.log('smsmsmsm', sm);
       sm.admissionList = admissionList;
       sm.state = StatusService.ADMISSION_LIST;
      this.medicalService.saveMedicalAttention(sm, 'sync')
         .then(result => {
+          console.log('resultresult', result);
             if(result) {
               this.navCtrl.navigateForward('home');
             }

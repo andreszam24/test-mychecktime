@@ -49,7 +49,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/shift-handover/shift-handover.page').then( m => m.ShiftHandoverPage)
   },
   {
-    path: 'select-operating-room',
+    path: 'select-operating-room/:dni',
     loadComponent: () => import('./pages/select-operating-room/select-operating-room.page').then( m => m.SelectOperatingRoomPage)
   },
   {

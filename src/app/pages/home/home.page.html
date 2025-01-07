@@ -2,7 +2,7 @@
 <ion-content [fullscreen]="true">
   <ion-list *ngFor="let medicalAttention of attentionsInProgress">
     <ion-item-sliding>
-      <ion-item lines="none" (click)="selectAttentionServiceAndContinue(medicalAttention)">
+      <ion-item lines="none" (click)="selectAttentionServiceAndContinue(medicalAttention, medicalAttention.patient.dni)">
         <ion-card >
           <ion-card-content>
             <ion-img src="../../../assets/svg/pacientexhdpi.svg">

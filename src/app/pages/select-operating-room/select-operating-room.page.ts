@@ -14,6 +14,9 @@ import { PreScanQrComponent } from 'src/app/components/pre-scan-qr/pre-scan-qr.c
 import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 import { AlertService } from 'src/app/services/utilities/alert.service';
 import { AndroidSettings, IOSSettings, NativeSettings } from 'capacitor-native-settings';
+import { MedicalAttention } from 'src/app/models/medical-attention.model';
+import { ActivatedRoute } from '@angular/router';
+import { USER_KEY } from 'src/app/services/auth.service';
 
 
 @Component({
@@ -31,6 +34,9 @@ export class SelectOperatingRoomPage implements OnInit {
   selectedOperationRoom: OperationRoom;
   currentClinic: Clinic;
   datepipe = new DatePipe('en-US');
+  private inProgressServicesKey = 'inprogress_services';
+  dni: string | null;
+  dataUser: any;
 
   constructor(
     private navCtrl: NavController,
@@ -39,11 +45,20 @@ export class SelectOperatingRoomPage implements OnInit {
     private operationRoomService:OperationRoomService,
     private modalCtrl: ModalController,
     private alertService: AlertService,
-  ) { }
+    private route: ActivatedRoute
+  ) { 
+    this.dataUser = localStorage.getItem(USER_KEY);
+  }
 
   ngOnInit() {
     this.openModal()
     this.currentClinic = this.workingArea.getClinic();
+    this.dni = this.route.snapshot.paramMap.get('dni');
+  }
+
+  get idRole(): boolean {
+    const userData = JSON.parse(this.dataUser);
+    return userData?.roles?.[0]?.id === 4;
   }
 
   async openModal() {
@@ -119,16 +134,55 @@ export class SelectOperatingRoomPage implements OnInit {
 
   }
 
+  private loadServicesFromLocalRepository(): MedicalAttention[] {
+    return JSON.parse(localStorage.getItem(this.inProgressServicesKey) ?? '[]');
+  }
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    if(qr && qr.operatingRoom){
-      this.selectedOperationRoom = qr.operatingRoom;
-      this.verifySelectedOperatingRoomQR(); 
+  
+    const list = this.loadServicesFromLocalRepository();
+  
+    const states = [
+      'OperatingRoomList',
+      'EndSurgery',
+      'ExitOperatingRoomList',
+    ];
+  
+    if (qr && qr.operatingRoom) {
+      const isRoomOccupied = list.some((item) => {
+        const isMatchingState = this.idRole
+          ? item.state === 'FromOperatingRoomTo'
+          : states.includes(item.state);
+  
+        return (
+          item.operatingRoom?.name === qr.operatingRoom.name &&
+          isMatchingState &&
+          item.patient.dni !== this.dni
+        );
+      });
+  
+      if (isRoomOccupied) {
+        this.textItem = 'La sala se encuentra ocupada, por favor gestione el paciente.';
+        this.alertService.presentActionAlertCustom(
+          '¡Ups!',
+          `La sala "${qr.operatingRoom.name}" ya está ocupada por otro paciente.`,
+          this.scan,
+          () => this.navCtrl.navigateForward('home'),
+          'Volver a scanear'
+        );
+      } else {
+        this.selectedOperationRoom = qr.operatingRoom;
+        this.verifySelectedOperatingRoomQR();
+      }
     } else {
-      throw new Error('¡Ups! Parece que ocurrió un problema con el QR. Por favor, escanea un código QR valido para continuar.');     
+      throw new Error(
+        '¡Ups! Parece que ocurrió un problema con el QR. Por favor, escanea un código QR válido para continuar.'
+      );
     }
   }
+  
+  
 
   verifySelectedOperatingRoomQR(){
     if(this.doesMatch()){

@@ -45,13 +45,14 @@ export class AlertService {
     message: string,
     okAction: () => void,
     cancelAction?: () => void,
+    textOk?: string,
   ): Promise<void> {
     const alert = await this.alertController.create({
       header: header,
       message: message,
       buttons: [
         {
-          text: 'OK',
+          text: textOk || 'OK',
           handler: () => {
             alert.onDidDismiss,
             okAction()

@@ -36,7 +36,7 @@ export class OperatingRoomExitCheckPage implements OnInit {
       },
     },
   ];
-  textValidate='REVISE CON EL EQUIPO LOS ASPECTOS CRÍTICOS DE LA RECUPERACIÓN Y TRATAMIENTO DEL PACIENTE, ANTES DE SALIR DE QUIRÓFANO. PÍDALE A LA INSTRUMENTADORA QUE CONFIRME VERBALMENTE: SI HAY PROBLEMAS QUE RESOLVER RELACIONADOS CON EL INSTRUMENTAL Y LOS EQUIPOS. EL NOMBRE DEL PROCEDIMIENTO, EL RECUENTO DE INSTRUMENTOS, GASAS Y AGUJAS. SOLICITE QUE SE HAGA LECTURA DE LA ETIQUETA DE LAS MUESTRAS EN VOZ ALTA, INCLUIDO EL NOMBRE DEL PACIENTE.';
+  textValidate='ANTES DE SALIR DEL QUIRÓFANO, INDIQUE AL EQUIPO REVISAR LOS ASPECTOS CRÍTICOS RELACIONADOS CON LA RECUPERACIÓN Y EL TRATAMIENTO DEL PACIENTE. SOLICITE A LA INSTRUMENTADORA CONFIRMAR SI HUBO PROBLEMAS RELACIONADOS CON EL INSTRUMENTAL O EQUIPOS, EL NOMBRE DEL PROCEDIMIENTO REALIZADO, Y EL RECUENTO COMPLETO DE INSTRUMENTOS, GASAS Y AGUJAS. FINALMENTE, ASEGÚRESE DE QUE SE LEA EN VOZ ALTA LA ETIQUETA DE LAS MUESTRAS, VERIFICANDO EL NOMBRE DEL PACIENTE.';
   barcodes: Barcode[] = [];
   isSupported = false;
   datepipe = new DatePipe('en-US');
@@ -145,7 +145,7 @@ export class OperatingRoomExitCheckPage implements OnInit {
       this.model.problemsResolve = qr.problemsResolve;
       this.model.recoveryReview = qr.recoveryReview;
       this.scannDataForm = true;
-      // this.showAudioAlert = true;
+      this.showAudioAlert = true;
     } else{
       this.alertService.presentActionAlert('¡Ups! Parece que ocurrió un problema con el QR','Por favor, escanea un código QR valido para continuar.', () => {
         this.navCtrl.navigateForward('home');

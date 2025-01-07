@@ -51,8 +51,8 @@ export class LoginPage implements OnInit {
   // testanes@gmail.com
   ngOnInit() {
     this.formLogin = this.fb.group({
-      user: new FormControl('testsecretaria@gmail.com', [Validators.required, Validators.email]),
-      password: new FormControl('1234', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')]),
+      user: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z0-9]{3,}')]),
       stayInChk: new FormControl(false)
     });
   }

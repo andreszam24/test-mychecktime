@@ -294,10 +294,10 @@ export class HomePage implements OnInit {
   }
 
   
-  selectAttentionServiceAndContinue(selectedMedicalAttention: MedicalAttention) {
+  selectAttentionServiceAndContinue(selectedMedicalAttention: MedicalAttention, dni?: string) {
     const stateRouteMap: { [key: string]: string } = {
         'nueva': '/pre-anesthesia',
-        'AdmissionList': '/select-operating-room',
+        'AdmissionList': `/select-operating-room/${dni}`,
         'SelectOperatingRoom': '/check-patient-info',
         'OperatingRoomList': '/anesthesia-operating-room',
         'StartAnesthesia': '/anesthesia-operating-room',

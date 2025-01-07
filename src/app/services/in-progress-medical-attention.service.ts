@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError, map, Observable, of, Subject } from 'rxjs';
+import { catchError, map, Observable, of, Subject, timeout } from 'rxjs';
 import { MedicalAttention } from '../models/medical-attention.model';
 import { MedicalAttentionService } from './medical-attention.service';
 import { ServiceStatus } from '../models/service-status.model';
@@ -85,7 +85,8 @@ export class InProgressMedicalAttentionService {
 
   calculateChangePatientTime(parameters: ParametersTimeCalculation): Observable<string> {
     return this.http.post<string>(URLChangePatientTime + AuthService.getTokenParams(), parameters, { headers, observe: 'response' }).pipe(
-      map((response: HttpResponse<string>) => { // Update the type here
+      // timeout(7000),
+      map((response: HttpResponse<string>) => {
         if (response.status === 200) {
           return JSON.stringify(response.body).replace(/\\/g, "");
         } else {
