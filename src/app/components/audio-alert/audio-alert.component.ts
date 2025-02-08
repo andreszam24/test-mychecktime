@@ -42,7 +42,8 @@ export class AudioAlertComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.audioElement = this.audioPlayer.nativeElement;
     this.audioElement.src = this.audioSrc;
-
+    this.audioElement.playbackRate = 1.3;
+    
     if (this.audioAlert) {
       this.audioAlert.isOpen = true;
 

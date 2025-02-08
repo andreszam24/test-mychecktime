@@ -30,7 +30,7 @@ export class RecoveryPage implements OnInit {
   barcodes: Barcode[] = [];
   isSupported = false;
   datepipe = new DatePipe('en-US');
-  dataUser: any;
+  // dataUser: any;
   recover: Recover;
 
   model: any = {
@@ -51,29 +51,29 @@ export class RecoveryPage implements OnInit {
 
   ) { 
     this.recover = new Recover();
-    this.dataUser = localStorage.getItem(USER_KEY);
+    // this.dataUser = localStorage.getItem(USER_KEY);
   }
 
   ngOnInit() {
     this.openModal()
   }
 
-  initializeModel() {
-    if (this.idRole) {
-      this.model = {
-        aldrete: '-1',
-        bromage: '-1',
-        ramsay: '-1',
-        eva: 0,
-        nausea: false
-      }
-    }
-  }
+  // initializeModel() {
+  //   if (this.idRole) {
+  //     this.model = {
+  //       aldrete: '-1',
+  //       bromage: '-1',
+  //       ramsay: '-1',
+  //       eva: 0,
+  //       nausea: false
+  //     }
+  //   }
+  // }
 
-  get idRole(): boolean {
-    const userData = JSON.parse(this.dataUser);
-    return userData?.roles?.[0]?.id === 4;
-  }
+  // get idRole(): boolean {
+  //   const userData = JSON.parse(this.dataUser);
+  //   return userData?.roles?.[0]?.id === 4;
+  // }
 
   async openModal() {
     const textoModal = "REALIZAR ESCALAS DE RECUPERACIÓN EN LA UCPA";
@@ -144,8 +144,12 @@ export class RecoveryPage implements OnInit {
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    if(qr){
-      console.log('qr escaneado!');
+    if(qr && qr.onlyRecovery){
+      this.model.aldrete = qr.aldrete
+      this.model.bromage = qr.bromage
+      this.model.ramsay = qr.ramsay
+      this.model.eva = qr.eva
+      this.model.nausea = qr.nausea
       this.scannDataForm = true;
     } else{
       this.alertService.presentActionAlert('¡Ups! Parece que ocurrió un problema con el QR','Por favor, escanea un código QR valido para continuar.', () => {

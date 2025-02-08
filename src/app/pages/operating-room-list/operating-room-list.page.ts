@@ -371,10 +371,8 @@ export class OperatingRoomListPage implements OnInit {
 
   async showAlert(changeTime: string) {
     const alert = await this.alertCtrl.create({
-      message:
-        '¿El tiempo de recambio es de ' +
-        changeTime +
-        ' (Días:Horas:Minutos:Segundos)?',
+      message: `El tiempo de recambio fue mayor a 30 minutos o considera que la cirugía inició tarde? Si o No`,
+      // \n ${changeTime}.
       buttons: [
         {
           text: 'No',
@@ -448,7 +446,7 @@ export class OperatingRoomListPage implements OnInit {
       .getInProgressMedicalAtenttion()
       .then((sm) => {
         sm.exitOperatingRoomList = exitOperatingRoomList;
-        sm.state = StatusService.FROM_OPERATING_ROOM_TO;
+        sm.state = StatusService.EXIT_OPERATING_ROOM_LIST;
 
         this.medicalService
           .saveMedicalAttention(sm, 'sync')
