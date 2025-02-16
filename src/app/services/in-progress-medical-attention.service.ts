@@ -371,4 +371,10 @@ export class InProgressMedicalAttentionService {
     this.updateLocalRepository([]);
   }
 
+  removeAttentionsFromProgressService(attentions: MedicalAttention[]){
+    attentions.forEach(attention => {
+      this.borrarServicioLocal(attention);
+    });
+  }
+  
 }

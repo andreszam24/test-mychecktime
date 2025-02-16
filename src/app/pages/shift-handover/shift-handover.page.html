@@ -27,6 +27,25 @@
       <p>Servicios en progreso: {{ servicesToChangeCount }}</p>
     </ion-item>
   </ion-card>
+  <div *ngIf="selectedAnes">
+    <ion-list *ngFor="let item of attentionsInProgress">
+      <ion-item lines="none" (click)="selectAttentionToTransfer(item.attention)"
+        [ngClass]="{ 'opacity-low': item.isSelected }">
+        <ion-card>
+          <ion-card-content>
+            <ion-img src="../../../assets/svg/pacientexhdpi.svg">
+            </ion-img>
+            <div class="content-text">
+              <h2>{{item.attention.patient.name}} {{item.attention.patient.lastname}}</h2>
+              <p>{{item.attention.patient.dni}}</p>
+              <p># Registro institucional: {{ item.attention?.numeroResgistro ?? '' }}</p>
+              <p>Especialidad: {{ item.attention?.specialty?.name ?? '' }}</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+    </ion-list>
+  </div>
 </ion-content>
 <ion-footer>
   <ion-toolbar position="bottom">

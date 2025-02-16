@@ -14,6 +14,7 @@ import { IonAvatar, IonCardContent, IonCardHeader, IonCol, IonIcon, IonInput, Io
 import { InternetStatusComponent } from '../../components/internet-status/internet-status.component';
 import { HeaderComponent } from '../../components/header/header.component';
 import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
+import { MedicalAttention } from 'src/app/models/medical-attention.model';
 
 @Component({
   selector: 'app-shift-handover',
@@ -28,6 +29,9 @@ export class ShiftHandoverPage implements OnInit {
   resultsSearchigAnesthesiologist = [...this.anesthesiologisList];
   selectedAnes: AnesthesiologistProfile;
   servicesToChangeCount: number = 0;
+  attentionsInProgress: { attention: MedicalAttention; isSelected: boolean }[] = [];
+  attentionsToTransfer: MedicalAttention[] = [];
+
 
   constructor(private loadingService: LoadingService,
     private anesthesiologistService: AnesthesiologistService,
@@ -39,11 +43,31 @@ export class ShiftHandoverPage implements OnInit {
 
   ngOnInit() {
     this.inProgressRepository.getPendingMedicalAtenttionsByClinic(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id).then(
-      services => this.servicesToChangeCount = services.length
+      services => {
+        this.servicesToChangeCount = services.length;
+        services.forEach(service => {
+          this.attentionsInProgress.push({ attention: service, isSelected: false });
+        });
+      }
     ).catch(() => {
         this.servicesToChangeCount = 0;
         console.error('No se pudo consultar el número de servicios pendientes');
       });
+  }
+
+  selectAttentionToTransfer(attention: MedicalAttention) {
+    const index = this.attentionsInProgress.findIndex(item => item.attention._id === attention._id);
+
+    if (index !== -1) {
+      this.attentionsInProgress[index].isSelected = !this.attentionsInProgress[index].isSelected;
+    }
+    console.log("In progress: ", this.attentionsInProgress)
+    if (!this.attentionsToTransfer.includes(attention)) {
+      this.attentionsToTransfer.push(attention);
+    } else {
+      this.attentionsToTransfer = this.attentionsToTransfer.filter(att => att._id !== attention._id);
+    }
+    console.log("A transferir: ", this.attentionsToTransfer);
   }
 
   handleInputAnesthesiologistName(event: any) {
@@ -83,39 +107,32 @@ export class ShiftHandoverPage implements OnInit {
   shiftHandover() {
     this.loadingService.showLoadingBasic("Cargando...");
 
-    this.inProgressRepository.getPendingMedicalAtenttionsByClinic(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id).then(
-      services => {
+    const futureAnes = new AnesthesiologistProfile();
+    futureAnes.id = this.selectedAnes.id;
+    futureAnes.name = this.selectedAnes.name;
+    futureAnes.lastname = this.selectedAnes.lastname;
+    futureAnes.lastnameS = this.selectedAnes.lastnameS;
+    futureAnes.gender = this.selectedAnes.gender;
+    futureAnes.phone = this.selectedAnes.phone;
+    futureAnes.email = this.selectedAnes.email;
+    futureAnes.status = this.selectedAnes.status;
 
-        const futureAnes = new AnesthesiologistProfile();
-        futureAnes.id = this.selectedAnes.id;
-        futureAnes.name = this.selectedAnes.name;
-        futureAnes.lastname = this.selectedAnes.lastname;
-        futureAnes.lastnameS = this.selectedAnes.lastnameS;
-        futureAnes.gender = this.selectedAnes.gender;
-        futureAnes.phone = this.selectedAnes.phone;
-        futureAnes.email = this.selectedAnes.email;
-        futureAnes.status = this.selectedAnes.status;
-
-        services.forEach(s => {
-          s.currentAnesthesiologist = futureAnes;
-          s.anestehsiologist.push(this.selectedAnes);
-        });
-
-        this.inProgressRepository.saveManyRemoteRepository(services)
-          .subscribe(() => {
-            this.inProgressRepository.clearInProgressServices();
-            this.alertService.presentBasicAlert('¡Bien hecho!', 'Cambio de turno guardado correctamente.');
-            this.loadingService.dismiss();
-            this.goToPatientHall();
-          }), (() => {
-            this.loadingService.dismiss();
-            this.alertService.presentBasicAlert('Oops!', 'Parece algo salio mal mientras se guardaba el cambio de turno');
-          });
-      }
-    ).catch(() => {
-      this.loadingService.dismiss();
-      console.error('No se pudo consultar la lista de servicios pendientes');
+    this.attentionsToTransfer.forEach(s => {
+      s.currentAnesthesiologist = futureAnes;
+      s.anestehsiologist.push(this.selectedAnes);
     });
+    
+    this.inProgressRepository.saveManyRemoteRepository(this.attentionsToTransfer)
+    .subscribe(() => {
+      this.inProgressRepository.removeAttentionsFromProgressService(this.attentionsToTransfer);
+      this.alertService.presentBasicAlert('¡Bien hecho!', 'Cambio de turno guardado correctamente.');
+      this.loadingService.dismiss();
+      this.goToPatientHall();
+    }), (() => {
+      this.loadingService.dismiss();
+      this.alertService.presentBasicAlert('Oops!', 'Parece algo salio mal mientras se guardaba el cambio de turno');
+    });
+
   }
 
   goToBackPage() {

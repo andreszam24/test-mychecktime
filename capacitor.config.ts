@@ -5,6 +5,16 @@ const config: CapacitorConfig = {
   appName: 'MyCheckTime',
   webDir: 'www',
   bundledWebRuntime: false,
+  plugins: {
+    BarcodeScanner: {
+      formats: "QR_CODE,PDF_417",
+      orientationLocked: true
+    }
+  },
+  server: {
+    allowNavigation: ["mychecktime.com.co"],
+    cleartext: true
+  }
 };
 
 export default config;
