@@ -11,7 +11,7 @@
       <ion-col>
         <ion-label text-wrap>Pulse para registar la hora en la que se envía a hospitalización</ion-label>
         <ion-button id="open-datetime">
-          {{ envioCirugiaDatetime ? (envioCirugiaDatetime | date:'dd/MMM/yyyy HH:mm':'UTC') : 'DD/MMM/YYYY HH:mm' }}
+          {{ envioCirugiaDatetime ? (envioCirugiaDatetime | date:'HH:mm':'UTC') : 'HH:mm' }}
         </ion-button>
         <ion-modal class="date-time-modal ion-datetime-button-overlay" [keepContentsMounted]="true" trigger="open-datetime">
           <ng-template>

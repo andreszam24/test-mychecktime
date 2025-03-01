@@ -163,7 +163,7 @@ export class SelectOperatingRoomPage implements OnInit {
       });
   
       if (isRoomOccupied) {
-        this.textItem = 'La sala se encuentra ocupada, por favor gestione el paciente.';
+        this.textItem = 'La sala se encuentra ocupada, por favor gestione el paciente anterior.';
         this.alertService.presentActionAlertCustom(
           '¡Ups!',
           `La sala "${qr.operatingRoom.name}" ya está ocupada por otro paciente.`,

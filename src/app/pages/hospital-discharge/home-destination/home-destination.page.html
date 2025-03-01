@@ -17,7 +17,7 @@
       <ion-col>
         <ion-label text-wrap>Pulse para registrar la hora de envío a casa</ion-label>
         <ion-button id="open-datetime">
-          {{ model.envioDestinoHoraManual ? (model.envioDestinoHoraManual | date:'dd/MMM/yyyy HH:mm':'UTC') : 'DD/MMM/YYYY HH:mm' }}
+          {{ model.envioDestinoHoraManual ? (model.envioDestinoHoraManual | date:'HH:mm':'UTC') : 'HH:mm' }}
         </ion-button>
         <ion-modal class="date-time-modal ion-datetime-button-overlay" [keepContentsMounted]="true" trigger="open-datetime">
           <ng-template>
@@ -25,7 +25,7 @@
               id="custom-datetime"
               [value]="minimumSelectableDate"
               [(ngModel)]="model.envioDestinoHoraManual"
-              presentation="date-time"              
+              presentation="time"     
               name="envioDestinoHoraManual"
               [min]="minimumSelectableDate" 
               [preferWheel]="true"

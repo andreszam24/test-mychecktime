@@ -176,11 +176,11 @@ export class OperatingRoomListPage implements OnInit {
     if (this.idRole) {
       this.audioSrc = './../../../assets/audio/Audio_2_Sec.mp3';
       this.textValidate =
-      'CONFIRMEN LA IDENTIDAD DEL PACIENTE, EL PROCEDIMIENTO, LA LATERALIDAD, LAS IMÁGENES Y ASPECTOS CRÍTICOS. VERIFIQUE LA ESTERILIDAD DEL MATERIAL Y RESUELVA DUDAS SOBRE EQUIPOS O INSUMOS. CONFIRME LA ADMINISTRACIÓN CORRECTA DE MEDICAMENTOS Y LA PREPARACIÓN ADECUADA DEL PACIENTE.';
+        'CONFIRMEN LA IDENTIDAD DEL PACIENTE, EL PROCEDIMIENTO, LA LATERALIDAD, LAS IMÁGENES Y ASPECTOS CRÍTICOS. VERIFIQUE LA ESTERILIDAD DEL MATERIAL Y RESUELVA DUDAS SOBRE EQUIPOS O INSUMOS. CONFIRME LA ADMINISTRACIÓN CORRECTA DE MEDICAMENTOS Y LA PREPARACIÓN ADECUADA DEL PACIENTE.';
     } else {
       this.audioSrc = './../../../assets/audio/Audio_2.mp3';
       this.textValidate =
-      'ANTES DE INICIAR LA ANESTESIA, SOLICITE AL CIRUJANO CONFIRMAR VERBALMENTE LA IDENTIDAD DEL PACIENTE, EL PROCEDIMIENTO, LA LATERALIDAD, LA REVISIÓN DE IMÁGENES Y LOS ASPECTOS CRÍTICOS DEL CASO. VERIFIQUE CON LA INSTRUMENTADORA Y LA CASA MÉDICA LA ESTERILIDAD DEL MATERIAL, Y RESUELVA CUALQUIER DUDA SOBRE EL INSTRUMENTAL O LOS EQUIPOS. FINALMENTE, CONFIRME CON LA CIRCULANTE LA HORA EXACTA DE ADMINISTRACIÓN DE LA PROFILAXIS ANTIBIÓTICA.';
+        'ANTES DE INICIAR LA ANESTESIA, SOLICITE AL CIRUJANO CONFIRMAR VERBALMENTE LA IDENTIDAD DEL PACIENTE, EL PROCEDIMIENTO, LA LATERALIDAD, LA REVISIÓN DE IMÁGENES Y LOS ASPECTOS CRÍTICOS DEL CASO. VERIFIQUE CON LA INSTRUMENTADORA Y LA CASA MÉDICA LA ESTERILIDAD DEL MATERIAL, Y RESUELVA CUALQUIER DUDA SOBRE EL INSTRUMENTAL O LOS EQUIPOS. FINALMENTE, CONFIRME CON LA CIRCULANTE LA HORA EXACTA DE ADMINISTRACIÓN DE LA PROFILAXIS ANTIBIÓTICA.';
     }
   }
 
@@ -371,17 +371,18 @@ export class OperatingRoomListPage implements OnInit {
 
   async showAlert(changeTime: string) {
     const alert = await this.alertCtrl.create({
-      message: `El tiempo de recambio fue mayor a 30 minutos o considera que la cirugía inició tarde? Si o No`,
-      // \n ${changeTime}.
+      header: `Tiempo De Recambio - ${changeTime}.`,
+      cssClass: 'centered-header',
+      message: `Si el tiempo de recambio fue mayor a 30 minutos o considera que la cirugía inició tarde? Si o No`,
       buttons: [
         {
           text: 'No',
           role: 'cancel',
-          handler: () => this.processReplacementResponse(false),
+          handler: () => this.processReplacementResponse(true),
         },
         {
           text: 'Si',
-          handler: () => this.processReplacementResponse(true),
+          handler: () => this.processReplacementResponse(false),
         },
       ],
     });
@@ -440,7 +441,6 @@ export class OperatingRoomListPage implements OnInit {
   }
 
   private async goToNextPageExit() {
-    console.log('pasando por goToNextPageExit');
     const exitOperatingRoomList = this.mapViewToModelExit();
     this.medicalService
       .getInProgressMedicalAtenttion()
@@ -492,21 +492,22 @@ export class OperatingRoomListPage implements OnInit {
 
   goToNextPage() {
     const operatingRoomList = this.mapViewToModel();
-
+    const exitOperatingRoomList = this.mapViewToModelExit();
     this.medicalService
       .getInProgressMedicalAtenttion()
       .then((sm) => {
         sm.surgeon = this.selectedSurgeon;
         sm.instrumentator = this.selectedInstrumentTechnician;
+
         sm.operatingRoomList = operatingRoomList;
         sm.state = StatusService.OPERATING_ROOM_LIST;
-        console.log('this.idRolethis.idRole', this.idRole);
+
         this.medicalService
           .saveMedicalAttention(sm, 'sync')
           .then(async (result) => {
             if (result) {
               if (this.idRole) {
-                await this.goToNextPageExit();
+                await this.navCtrl.navigateForward('/home');
               } else {
                 this.navCtrl.navigateForward('/anesthesia-operating-room');
               }

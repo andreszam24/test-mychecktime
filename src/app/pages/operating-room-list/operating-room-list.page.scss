@@ -2,6 +2,9 @@ ion-fab-button {
     --background: var(--ion-color-app-blue);
   }
 
+.centered-header::part(header) {
+  text-align: center;
+}
 
 ion-searchbar.custom {
 --background: #68afd7;

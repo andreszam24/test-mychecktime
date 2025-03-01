@@ -64,6 +64,7 @@ export class HomePage implements OnInit {
     this.cdr.detectChanges();
   }
   ngOnInit(): void {
+    console.log('this.attentionsInProgressthis.attentionsInProgress', this.attentionsInProgress)
     // this.updateFinishedServiceList();
     // this.listenStorageChanges(); 
   }
@@ -231,7 +232,7 @@ export class HomePage implements OnInit {
     };
 
     if (medicalAttentionStage === StatusService.FROM_OPERATING_ROOM_TO && this.idRole) {
-      return 'var(--ion-color-app-red)';
+      return 'var(--ion-color-warning)';
     }
     if (StatusService.PATIENTS_IN_PREANESTHESIA.includes(medicalAttentionStage)) {
       return 'var(--ion-color-app-orange)';
@@ -295,16 +296,17 @@ export class HomePage implements OnInit {
 
   
   selectAttentionServiceAndContinue(selectedMedicalAttention: MedicalAttention, dni?: string) {
+    console.log('selectedMedicalAttention', selectedMedicalAttention.state);
     const stateRouteMap: { [key: string]: string } = {
         'nueva': '/pre-anesthesia',
         'AdmissionList': `/select-operating-room/${dni}`,
         'SelectOperatingRoom': '/check-patient-info',
-        'OperatingRoomList': '/anesthesia-operating-room',
+        'OperatingRoomList': this.idRole ? '/exit-menu' : '/anesthesia-operating-room',
         'StartAnesthesia': '/anesthesia-operating-room',
         'EndStartAnesthesia': '/anesthesia-operating-room',
         'StartSurgery': '/anesthesia-operating-room',
         'EndSurgery':'/operating-room-exit-check',
-        'ExitOperatingRoomList':'/exit-menu',
+        'ExitOperatingRoomList': this.idRole ? '/recovery' :  '/exit-menu',
         'FromOperatingRoomTo':'/destination-selection',
         'DestinoCasa':'/home-destination',
         'DestinoHospitalizacion':'/hospitalization-destination',

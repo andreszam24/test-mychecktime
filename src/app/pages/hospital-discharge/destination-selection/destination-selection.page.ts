@@ -65,7 +65,7 @@ export class DestinationSelectionPage implements OnInit {
   }
 
   ngOnInit() {
-    this.openModal()
+    // this.openModal()
     this.initializeModel();
   }
 
