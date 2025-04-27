@@ -42,11 +42,8 @@
                   <ion-col size="6">
                     <strong>programación:</strong>
                     <ion-text style="text-transform: uppercase;">
-                      {{
-                        medicalAttention?.programming?.includes('Programación'||'programación')
-                          ? medicalAttention?.programming?.replace('Programación'||'programación', '')?.trim()
-                          : medicalAttention?.programming
-                      }} </ion-text>
+                      {{ formatProgrammingText(medicalAttention?.programming) }}
+                    </ion-text>
                   </ion-col>
                 </div>
                 <ion-col size="12" class="procedures" *ngIf="medicalAttention?.procedureCodes">
