@@ -373,7 +373,7 @@ export class OperatingRoomListPage implements OnInit {
     const alert = await this.alertCtrl.create({
       header: `Tiempo De Recambio - ${changeTime}.`,
       cssClass: 'centered-header',
-      message: `Si el tiempo de recambio fue mayor a 30 minutos o considera que la cirugía inició tarde? Si o No`,
+      message: `El tiempo de recambio fue mayor a 30 minutos o considera que la cirugía inició tarde? Si o No`,
       buttons: [
         {
           text: 'No',

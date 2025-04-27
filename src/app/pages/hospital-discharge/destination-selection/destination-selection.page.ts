@@ -78,7 +78,7 @@ export class DestinationSelectionPage implements OnInit {
         eva: 0,
         nausea: false,
         destino: null,
-        fechaOrdenDeSalida: null
+        fechaOrdenDeSalida: this.markDepartureOrderDate()
       };
     }
   }

@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import {
-  IonDatetime,
   IonItem,
   IonSearchbar,
   IonAvatar,
@@ -16,14 +15,12 @@ import {
   IonRow,
   IonCol,
   NavController,
-  AlertController,
 } from '@ionic/angular/standalone';
 import {
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
-  Validators,
 } from '@angular/forms';
 import {
   AndroidSettings,
@@ -59,8 +56,6 @@ import { SharedDataService } from 'src/app/services/utilities/shared-data.servic
   styleUrls: ['./patient-intake.page.scss'],
   standalone: true,
   imports: [
-    IonDatetime,
-    DatePipe,
     IonItem,
     IonSearchbar,
     IonAvatar,
@@ -490,7 +485,7 @@ export class PatientIntakePage implements OnInit {
       this.medicalAttention.patient.gender =
         this.profileForm.value.gender ?? null!;
       this.medicalAttention.patient.birthday = this.parseBirthday(
-        this.profileForm.value.birthday + '-01-01' ?? '1950-01-01'
+        (this.profileForm.value.birthday ?? '1950') + '-01-01'
       );
     }
 

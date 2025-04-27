@@ -39,7 +39,7 @@
   </ion-list>
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="start">
-    <ion-fab-button 
+    <ion-fab-button (click)="checkingInternetStatus()"
       [disabled]="isListFinishedServiceEmpty"
       [ngClass]="{ 'fab-red': !isListFinishedServiceEmpty }">
       <span>{{ listFinishedService?.length ?? 0 }}</span>

@@ -65,8 +65,6 @@ export class HomePage implements OnInit {
   }
   ngOnInit(): void {
     console.log('this.attentionsInProgressthis.attentionsInProgress', this.attentionsInProgress)
-    // this.updateFinishedServiceList();
-    // this.listenStorageChanges(); 
   }
 
   ngOnDestroy(): void {
@@ -78,18 +76,6 @@ export class HomePage implements OnInit {
   get idRole(): boolean {
     const userData = JSON.parse(this.dataUser);
     return userData?.roles?.[0]?.id === 4;
-  }
-
-  private updateFinishedServiceList(): void {
-    const data = localStorage.getItem(this.finishedServicesKey);
-    this.listFinishedService = data ? JSON.parse(data) : [];
-    this.cdr.detectChanges();
-  }
-
-  private listenStorageChanges(): void {
-    window.addEventListener('storage', () => {
-      this.updateFinishedServiceList();
-    });
   }
 
   get isListFinishedServiceEmpty(): boolean {
@@ -112,7 +98,7 @@ export class HomePage implements OnInit {
   }
 
 
-  private async checkingInternetStatus() { 
+async checkingInternetStatus() { 
     const status = await Network.getStatus();
     if (status.connected) {
       this.getPendingMedicalAtenttions(
@@ -184,24 +170,25 @@ export class HomePage implements OnInit {
 
   async getPendingMedicalAtenttions(clinicId: number, anesthesiologistId: number) {
     this.loadingService.showLoadingBasic('Cargando Hall...');
-    this.httpInProgressMedicalAttention.searchPendingServices(clinicId, anesthesiologistId).subscribe({
+    return new Promise((resolve, reject) => {
+      this.httpInProgressMedicalAttention.searchPendingServices(clinicId, anesthesiologistId).subscribe({
       next: (data) => {
-        this.attentionsInProgress = data;
-        this.attentionsInProgress.sort((a, b) => a._id.localeCompare(b._id));
+        this.searchPatientInLocal();
         this.cdr.detectChanges();
         this.loadingService.dismiss();
+        resolve(data);
       },
       error: (error) => {
         console.error('Ups! Algo salió mal al consultar atenciones médicas pendientes: ', error);
         this.loadingService.dismiss();
+        reject(error);
       },
       complete: () => {
         this.loadingService.dismiss();
-      },
-      
+      }
     });
-    this.loadingService.dismiss();
-  }
+  });
+}
 
   searchPatientInLocal() {
     this.httpInProgressMedicalAttention.getPendingMedicalAtenttions(this.workingAreaRepository.getClinic().id, this.authService.getLoggedAccount().id).then(

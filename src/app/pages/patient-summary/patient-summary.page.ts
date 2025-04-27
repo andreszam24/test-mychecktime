@@ -40,4 +40,9 @@ export class PatientSummaryPage implements OnInit{
     this.navCtrl.back();
   }
 
+  formatProgrammingText(text: string | undefined): string {
+    if (!text) return '';
+    return text.replace(/Programación|programación/i, '').trim();
+  }
+
 }
