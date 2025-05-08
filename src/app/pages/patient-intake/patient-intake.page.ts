@@ -43,7 +43,7 @@ import { AlertService } from 'src/app/services/utilities/alert.service';
 import { LoadingService } from 'src/app/services/utilities/loading.service';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { WorkingAreaService } from 'src/app/services/working-area.service';
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthService, USER_KEY } from 'src/app/services/auth.service';
 import { OperationRoom } from 'src/app/models/operationRoom.model';
 import { AnesthesiologistProfile } from 'src/app/models/anesthesiologist-profile.model';
 import { StatusService } from 'src/app/services/status.service';
@@ -94,7 +94,7 @@ export class PatientIntakePage implements OnInit {
   currentYear = new Date().getFullYear();
   invalidYear: boolean = false;
   profileForm = new FormGroup({
-    registerCode: new FormControl(''),
+    registerCode: new FormControl('1111'),
     programmingType: new FormControl(''),
     dni: new FormControl(''),
     name: new FormControl(''),
@@ -102,8 +102,10 @@ export class PatientIntakePage implements OnInit {
     gender: new FormControl(''),
     birthday: new FormControl(''),
   });
-
+  dataUser: any;
   datepipe = new DatePipe('en-US');
+  medicalAttentionsResponse: any;
+
 
   constructor(
     private patientsService: PatientService,
@@ -117,11 +119,19 @@ export class PatientIntakePage implements OnInit {
     private authService: AuthService,
     private sharedDataService: SharedDataService,
     private navCtrl: NavController
-  ) {}
+  ) {
+    this.dataUser = localStorage.getItem(USER_KEY);
+  }
 
   ngOnInit() {
     this.getpatientToRebootProcess();
     this.loadMasterData();
+  }
+
+  get idClinic() {
+    const userData = JSON.parse(this.dataUser);
+    console.log('userDatauserDatauserData', userData);
+    return userData.clinics[0].id;
   }
 
   getpatientToRebootProcess() {
@@ -334,7 +344,7 @@ export class PatientIntakePage implements OnInit {
   patientSearchByDNI(dni: string) {
     this.loadingService.showLoadingBasic('Cargando...');
     this.patientsService
-      .searchByDni(dni)
+      .searchPatientClinic(dni, this.idClinic)
       .pipe(
         catchError((error) => {
           this.loadingService.dismiss();
@@ -348,10 +358,11 @@ export class PatientIntakePage implements OnInit {
       .subscribe((result) => {
         if (result && result.length > 0) {
           this.loadingService.dismiss();
-          this.patientList = result;
-          this.resultsSearchigPatient = this.patientList.filter(
-            (patient) => patient.dni.toLowerCase().indexOf(dni) > -1
-          );
+          this.medicalAttentionsResponse = result;
+          this.patientList = result.map((ma: any) => ma.patient);
+            this.resultsSearchigPatient = this.patientList.filter(
+              (patient) => patient.dni.toLowerCase().indexOf(dni) > -1
+            );
         } else {
           this.medicalAttention = new MedicalAttention();
           this.medicalAttention.patient = new Patient();
@@ -406,8 +417,26 @@ export class PatientIntakePage implements OnInit {
   }
 
   patientSelected(patient: Patient) {
-    this.medicalAttention = new MedicalAttention();
-    this.medicalAttention.patient = patient;
+    const medicalAttentionFound = this.medicalAttentionsResponse.find(
+      (ma: any) => ma.patient.dni === patient.dni
+    );
+  
+    if (medicalAttentionFound) {
+      this.medicalAttention = new MedicalAttention();
+      this.medicalAttention.patient = patient;
+      this.medicalAttention.programming = medicalAttentionFound.programming
+      this.medicalAttention.specialty = medicalAttentionFound.specialty;
+      this.medicalAttention.procedureCodes = medicalAttentionFound.procedureCodesEntity || [];
+      if (medicalAttentionFound.programming) {
+        this.medicalAttention.programming = this.programmingTypeMap[medicalAttentionFound.programming] || medicalAttentionFound.programming;
+      }
+    } else {
+      this.medicalAttention = new MedicalAttention();
+      this.medicalAttention.patient = patient;
+      this.medicalAttention.specialty = new Specialty();
+      this.medicalAttention.procedureCodes = [];
+    }
+  
     this.setFormPatient();
     this.resultsSearchigPatient = [];
     this.changeStatusLookingForPatient(true);
@@ -565,10 +594,17 @@ export class PatientIntakePage implements OnInit {
       .catch((e) => this.loadingService.dismiss());
   }
 
+  programmingTypeMap: { [key: string]: string } = {
+    'Programación ambulatoria': 'cirugía electiva',
+  };
+  
+
   setFormPatient() {
+    const mappedProgramming = this.programmingTypeMap[this.medicalAttention.programming] || 
+    this.medicalAttention.programming;
     this.profileForm.patchValue({
       registerCode: this.medicalAttention.numeroResgistro,
-      programmingType: this.medicalAttention.programming,
+      programmingType: mappedProgramming,
       dni: this.medicalAttention.patient.dni,
       name: this.medicalAttention.patient.name,
       lastName: this.medicalAttention.patient.lastname,

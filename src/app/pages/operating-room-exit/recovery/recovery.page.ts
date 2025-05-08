@@ -200,7 +200,7 @@ export class RecoveryPage implements OnInit {
   async goToNextPage() {
 
     await this.loadingService.showLoadingBasic("Cargando...");
-
+    this.checkDate();
     this.mapViewToModel();
     const fromRoomTo = new FromOperatingRoomTo();
     fromRoomTo.status = StatusService.TERMINADO;

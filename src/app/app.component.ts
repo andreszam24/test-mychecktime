@@ -9,8 +9,7 @@ import { InternetStatusComponent } from './components/internet-status/internet-s
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from './services/auth.service';
 import { InProgressMedicalAttentionService } from './services/in-progress-medical-attention.service';
-
-
+import { Keyboard } from '@capacitor/keyboard';
 
 @Component({
   selector: 'app-root',
@@ -36,6 +35,15 @@ export class AppComponent {
     this.updateAppPages(router.url);
     this.nameUser = this.getUser(router.url);
     this.handleRouterEvents();
+    
+    // Initialize keyboard
+    Keyboard.addListener('keyboardWillShow', () => {
+      document.body.classList.add('keyboard-visible');
+    });
+
+    Keyboard.addListener('keyboardWillHide', () => {
+      document.body.classList.remove('keyboard-visible');
+    });
   }
 
 

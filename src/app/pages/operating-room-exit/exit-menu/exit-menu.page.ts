@@ -39,12 +39,18 @@ export class ExitMenuPage implements OnInit {
   ngOnInit() {}
 
   mapViewToModelExit() {
-    this.exitOperatingRoomList.confirmProcedure =
-      this.modelExit.confirmProcedure;
-    this.exitOperatingRoomList.instrumentsCount =
-      this.modelExit.instrumentsCount;
-    this.exitOperatingRoomList.verifyTagsPatient =
-      this.modelExit.verifyTagsPatient;
+    this.exitOperatingRoomList.checkDate = new Date();
+    this.exitOperatingRoomList.simpleCheckDate = this.datepipe.transform(
+      this.exitOperatingRoomList.checkDate, 
+      'yyyy-MM-dd'
+    )!;
+    this.exitOperatingRoomList.simpleCheckHour = this.datepipe.transform(
+      this.exitOperatingRoomList.checkDate,
+      'HH:mm:ss'
+    )!;
+    this.exitOperatingRoomList.confirmProcedure = this.modelExit.confirmProcedure;
+    this.exitOperatingRoomList.instrumentsCount = this.modelExit.instrumentsCount;
+    this.exitOperatingRoomList.verifyTagsPatient = this.modelExit.verifyTagsPatient;
     this.exitOperatingRoomList.problemsResolve = this.modelExit.problemsResolve;
     this.exitOperatingRoomList.recoveryReview = this.modelExit.recoveryReview;
     this.exitOperatingRoomList.bloodCount = this.modelExit.bloodCount;

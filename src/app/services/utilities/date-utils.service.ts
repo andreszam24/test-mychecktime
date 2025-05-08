@@ -31,18 +31,15 @@ export class DateUtilsService {
 
     /* Para validación de hora máxima seleccionable en ion-datetime */
     static iso8601DateTime(date: Date): string {
-        console.log('date --> iso8601DateTime', date);
         const completeStringDate = date.toISOString();
-        console.log('completeStringDate', completeStringDate);
         const timeIndex = completeStringDate.indexOf('T');
-        console.log('timeIndex', timeIndex);
-        console.log('completeStringDate.substr(0, timeIndex + 6)', completeStringDate.substr(0, timeIndex + 6));
+        
         return completeStringDate.substr(0, timeIndex + 6);
     }
 
     static toColombianOffset(date: Date): Date {
         if (!date) {
-            console.log('pasa por el if --> toColombianOffset');
+           
             return new Date("1/1/1");
         }
 

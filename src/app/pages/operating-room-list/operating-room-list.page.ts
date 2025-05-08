@@ -68,8 +68,7 @@ export class OperatingRoomListPage implements OnInit {
   parametersTimeCalculation = new ParametersTimeCalculation();
   isChangePatientTime = true;
   listConceptTimeReplacement: ConceptoTiempoRecambio[] = [];
-  selectedConceptTimeReplacement: ConceptoTiempoRecambio =
-    new ConceptoTiempoRecambio();
+  selectedConceptTimeReplacement: ConceptoTiempoRecambio = new ConceptoTiempoRecambio();
   resultsSearchigConceptTimeReplacement = [...this.listConceptTimeReplacement];
   listSurgeons: Cirujano[] = [];
   resultsSearchigSurgeons = [...this.listSurgeons];
@@ -401,7 +400,6 @@ export class OperatingRoomListPage implements OnInit {
     ) {
       this.showSearchConcepts = true;
     } else {
-      console.log('entra a gotonext');
       this.goToNextPage();
     }
   }
@@ -431,7 +429,7 @@ export class OperatingRoomListPage implements OnInit {
   private checkDateExit() {
     this.exitOperatingRoomList.checkDate = new Date();
     this.exitOperatingRoomList.simpleCheckDate = this.datepipe.transform(
-      this.exitOperatingRoomList.checkDate,
+      this.exitOperatingRoomList.checkDate, 
       'yyyy-MM-dd'
     )!;
     this.exitOperatingRoomList.simpleCheckHour = this.datepipe.transform(
@@ -467,12 +465,9 @@ export class OperatingRoomListPage implements OnInit {
   }
 
   private mapViewToModelExit() {
-    this.exitOperatingRoomList.confirmProcedure =
-      this.modelExit.confirmProcedure;
-    this.exitOperatingRoomList.instrumentsCount =
-      this.modelExit.instrumentsCount;
-    this.exitOperatingRoomList.verifyTagsPatient =
-      this.modelExit.verifyTagsPatient;
+    this.exitOperatingRoomList.confirmProcedure = this.modelExit.confirmProcedure;
+    this.exitOperatingRoomList.instrumentsCount = this.modelExit.instrumentsCount;
+    this.exitOperatingRoomList.verifyTagsPatient = this.modelExit.verifyTagsPatient;
     this.exitOperatingRoomList.problemsResolve = this.modelExit.problemsResolve;
     this.exitOperatingRoomList.recoveryReview = this.modelExit.recoveryReview;
     this.exitOperatingRoomList.bloodCount = this.modelExit.bloodCount;
@@ -530,11 +525,9 @@ export class OperatingRoomListPage implements OnInit {
     this.operatingRoomList.confirmMembers = this.model.confirmMembers;
     this.operatingRoomList.confirmIdentity = this.model.confirmIdentity;
     this.operatingRoomList.criticalEvents = this.model.criticalEvents;
-    this.operatingRoomList.anesthesiaTeamReview =
-      this.model.anesthesiaTeamReview;
+    this.operatingRoomList.anesthesiaTeamReview = this.model.anesthesiaTeamReview;
     this.operatingRoomList.nurseTeamReview = this.model.nurseTeamReview;
-    this.operatingRoomList.administeredProphylaxis =
-      this.model.administeredProphylaxis;
+    this.operatingRoomList.administeredProphylaxis = this.model.administeredProphylaxis;
     this.operatingRoomList.diagnosticImages = this.model.diagnosticImages;
     this.operatingRoomList.recambio = this.recambio;
     this.operatingRoomList.status = StatusService.OPERATING_ROOM_LIST;
@@ -550,9 +543,10 @@ export class OperatingRoomListPage implements OnInit {
   }
 
   searchSurgeonsByName(name: string) {
-    this.resultsSearchigSurgeons = this.listSurgeons.filter(
-      (surgeon) => surgeon.name.toLowerCase().indexOf(name) > -1
-    );
+    this.resultsSearchigSurgeons = this.listSurgeons.filter((surgeon) => {
+      const fullName = `${surgeon.name} ${surgeon.lastname}`.toLowerCase();
+      return fullName.includes(name);
+    });
     if (this.resultsSearchigSurgeons.length === 0) {
       this.alertService.presentBasicAlert(
         'Oops!',
@@ -575,11 +569,12 @@ export class OperatingRoomListPage implements OnInit {
   }
 
   searchInstrumentTechnicianByName(name: string) {
-    this.resultsSearchigInstrumentTechnicians =
-      this.listInstrumentTechnicians.filter(
-        (instrumentTechnician) =>
-          instrumentTechnician.name.toLowerCase().indexOf(name) > -1
-      );
+    this.resultsSearchigInstrumentTechnicians = this.listInstrumentTechnicians.filter(
+      (instrumentTechnician) => {
+        const fullName = `${instrumentTechnician.name} ${instrumentTechnician.lastname}`.toLowerCase();
+        return fullName.includes(name);
+      }
+    );
     if (this.resultsSearchigInstrumentTechnicians.length === 0) {
       this.alertService.presentBasicAlert(
         'Oops!',

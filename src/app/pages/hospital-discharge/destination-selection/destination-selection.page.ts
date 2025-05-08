@@ -23,7 +23,7 @@ import { AlertService } from 'src/app/services/utilities/alert.service';
   templateUrl: './destination-selection.page.html',
   styleUrls: ['./destination-selection.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent,ButtonPanelComponent]
+  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent, ButtonPanelComponent]
 })
 export class DestinationSelectionPage implements OnInit {
 
@@ -58,7 +58,7 @@ export class DestinationSelectionPage implements OnInit {
     private medicalService: InProgressMedicalAttentionService,
     private modalCtrl: ModalController,
     private alertService: AlertService,
-  ) { 
+  ) {
     this.patientExit = new PatientsExitList();
     this.recover = new Recover();
     this.dataUser = localStorage.getItem(USER_KEY);
@@ -70,20 +70,18 @@ export class DestinationSelectionPage implements OnInit {
   }
 
   initializeModel() {
-    if (this.idRole) {
-      this.model = {
-        aldrete: '-1',
-        bromage: '-1',
-        ramsay: '-1',
-        eva: 0,
-        nausea: false,
-        destino: null,
-        fechaOrdenDeSalida: this.markDepartureOrderDate()
-      };
-    }
+    this.model = {
+      aldrete: '-1',
+      bromage: '-1',
+      ramsay: '-1',
+      eva: 0,
+      nausea: false,
+      destino: null,
+      fechaOrdenDeSalida: null
+    };
   }
 
-  
+
   get idRole(): boolean {
     const userData = JSON.parse(this.dataUser);
     return userData?.roles?.[0]?.id === 4;
@@ -102,7 +100,7 @@ export class DestinationSelectionPage implements OnInit {
       const { data } = await modal.onWillDismiss();
       if (data === 'scan') {
         this.startBarcodeScanner();
-      }else{
+      } else {
         this.navCtrl.navigateForward('home');
       }
     }
@@ -140,17 +138,17 @@ export class DestinationSelectionPage implements OnInit {
       }
     }).catch(error => {
       if (error.message === 'scan canceled.') {
-         this.alertService.presentActionAlert('¡Ups! Parece que cancelaste el escaneo','Por favor, escanea el código QR de recuperación para continuar.', () => {
-         this.navCtrl.navigateForward('home');
+        this.alertService.presentActionAlert('¡Ups! Parece que cancelaste el escaneo', 'Por favor, escanea el código QR de recuperación para continuar.', () => {
+          this.navCtrl.navigateForward('home');
         });
-    } else if (error.message.includes('device') || error.message.includes('camera')) {
-      this.alertService.presentActionAlert( '¡Ups! Parece que hay un problema con tu dispositivo o cámara','Asegúrate de que estén funcionando correctamente y vuelve a intentarlo.',() => {
-        this.navCtrl.navigateForward('home');
-      });
-    } else {
+      } else if (error.message.includes('device') || error.message.includes('camera')) {
+        this.alertService.presentActionAlert('¡Ups! Parece que hay un problema con tu dispositivo o cámara', 'Asegúrate de que estén funcionando correctamente y vuelve a intentarlo.', () => {
+          this.navCtrl.navigateForward('home');
+        });
+      } else {
         console.error(error.message);
         this.navCtrl.navigateForward('home');
-    }
+      }
 
     });
 
@@ -170,15 +168,15 @@ export class DestinationSelectionPage implements OnInit {
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    if(qr){
+    if (qr) {
       console.log('qr escaneado!');
       this.scannDataForm = true;
-    } else{
-      this.alertService.presentActionAlert('¡Ups! Parece que ocurrió un problema con el QR','Por favor, escanea un código QR valido para continuar.', () => {
+    } else {
+      this.alertService.presentActionAlert('¡Ups! Parece que ocurrió un problema con el QR', 'Por favor, escanea un código QR valido para continuar.', () => {
         this.navCtrl.navigateForward('home');
       });
     }
-    
+
   }
 
   private async unsupportedBarcodeMessage() {
@@ -188,64 +186,24 @@ export class DestinationSelectionPage implements OnInit {
     );
   }
 
-  private async goToNextPageRecover() {
-    this.recover.checkDate = new Date();
-    this.recover.simpleCheckDateOrder = this.datepipe.transform(new Date(),'yyyy-MM-dd')!;
-    this.recover.simpleCheckHourOrder = this.datepipe.transform(new Date(),'HH:mm:ss')!;
-
-    await this.loadingService.showLoadingBasic("Cargando...");
-    this.mapViewToModelRecover();
-    const fromRoomTo = new FromOperatingRoomTo();
-    fromRoomTo.status = StatusService.TERMINADO;
-    fromRoomTo.to = "recuperacion";
-    fromRoomTo.checkDate = new Date();
-    fromRoomTo.simpleCheckDate = this.datepipe.transform(new Date(),'yyyy-MM-dd')!;
-    fromRoomTo.simpleCheckHour = this.datepipe.transform(new Date(),'HH:mm:ss')!;
-    fromRoomTo.recover = this.recover;
-    this.medicalService.getInProgressMedicalAtenttion().then( sm => {
-      sm.exitOperatingRoomList.fromOperatingRoomTo = fromRoomTo;
-      sm.state = this.destinationStatus();
-      this.medicalService.saveMedicalAttention(sm, 'sync')
-        .then(result => {
-          return result
-        }).catch((err) => {
-          console.log('errerrerr --->>>', err);
-          this.loadingService.dismiss();
-        });
-    }).catch((err) => {
-      console.error('Error consultando la atencion médica ---> goToNextPageRecover', err);
-      this.loadingService.dismiss();
-    });
-  }
-
-  private mapViewToModelRecover(): Recover {
-    this.recover.aldrete = this.valorNumerico(this.modelRecover.aldrete);
-    this.recover.bromage = this.valorNumerico(this.modelRecover.bromage);
-    this.recover.ramsay = this.valorNumerico(this.modelRecover.ramsay);
-    this.recover.eva = this.modelRecover.eva;
-    this.recover.nausea = this.modelRecover.nausea;
-    this.recover.state = StatusService.TERMINADO;
-    return this.recover;
-  }
-
-  private valorNumerico(valor: any): number {
-    return valor === '' ? null : valor;
-  }
 
   async goToNextPage() {
+    this.patientExit.checkDate = new Date();
+    this.patientExit.simpleCheckDate = this.datepipe.transform(this.patientExit.checkDate, 'yyyy-MM-dd')!;
+    this.patientExit.simpleCheckHour = this.datepipe.transform(this.patientExit.checkDate, 'HH:mm:ss')!;
     this.patientExit.destination = this.model.destino;
     this.patientExit.state = StatusService.SELECCION_DESTINO;
     this.patientExit.recover = this.mapViewToModel();
     await this.loadingService.showLoadingBasic("Cargando...");
 
-    this.medicalService.getInProgressMedicalAtenttion().then( sm => {
+    this.medicalService.getInProgressMedicalAtenttion().then(sm => {
       sm.patientsExit = this.patientExit;
       sm.state = this.destinationStatus();
       this.updateMedicalService(sm, this.loadingService);
 
     }).catch(e => {
       this.loadingService.dismiss();
-      console.log('Error consultando la atencion médica',e);
+      console.log('Error consultando la atencion médica', e);
     }).finally(() => {
       this.loadingService.dismiss();
     });
@@ -260,8 +218,8 @@ export class DestinationSelectionPage implements OnInit {
     recover.nausea = this.model.nausea;
     recover.state = StatusService.TERMINADO;
     recover.checkDate = this.model.fechaOrdenDeSalida;
-    recover.simpleCheckDateOrder = this.datepipe.transform(recover.checkDate,'yyyy-MM-dd')!;
-    recover.simpleCheckHourOrder = this.datepipe.transform(recover.checkDate,'HH:mm:ss')!;
+    recover.simpleCheckDateOrder = this.datepipe.transform(recover.checkDate, 'yyyy-MM-dd')!;
+    recover.simpleCheckHourOrder = this.datepipe.transform(recover.checkDate, 'HH:mm:ss')!;
     return recover;
   }
 
@@ -269,30 +227,30 @@ export class DestinationSelectionPage implements OnInit {
     return valor === '' ? null : valor;
   }
 
-  private redirectToSelectedPage(): void  {
-    if(this.model.destino === 'CASA') {
+  private redirectToSelectedPage(): void {
+    if (this.model.destino === 'CASA') {
       this.navCtrl.navigateForward('/home-destination');
-    } else if(this.model.destino === 'HOSPITALIZACION') {
+    } else if (this.model.destino === 'HOSPITALIZACION') {
       this.navCtrl.navigateForward('/hospitalization-destination');
-    } else if(this.model.destino === 'UCI') {
+    } else if (this.model.destino === 'UCI') {
       this.navCtrl.navigateForward('/uci-destination');
-    } else if(this.model.destino === 'SALA_DE_PAZ') {
+    } else if (this.model.destino === 'SALA_DE_PAZ') {
       this.navCtrl.navigateForward('/decease-destination');
-    } else if(this.model.destino === 'CIRUGIA') {
+    } else if (this.model.destino === 'CIRUGIA') {
       this.navCtrl.navigateForward('/surgery-destination');
     }
   }
 
   private destinationStatus(): string {
-    if(this.model.destino === 'CASA') {
+    if (this.model.destino === 'CASA') {
       return StatusService.DESTINO_CASA;
-    } else if(this.model.destino === 'HOSPITALIZACION') {
+    } else if (this.model.destino === 'HOSPITALIZACION') {
       return StatusService.DESTINO_HOSPITALIZACION;
-    } else if(this.model.destino === 'UCI') {
+    } else if (this.model.destino === 'UCI') {
       return StatusService.DESTINO_UCI;
-    } else if(this.model.destino === 'SALA_DE_PAZ') {
+    } else if (this.model.destino === 'SALA_DE_PAZ') {
       return StatusService.DESTINO_SALA_DE_PAZ;
-    } else if(this.model.destino === 'CIRUGIA') {
+    } else if (this.model.destino === 'CIRUGIA') {
       return StatusService.DESTINO_CIRUGIA;
     }
     return '';
@@ -300,23 +258,17 @@ export class DestinationSelectionPage implements OnInit {
 
   private updateMedicalService(sm: MedicalAttention, loading: any) {
     this.medicalService.saveMedicalAttention(sm, 'sync')
-    .then(result => {
+      .then(result => {
         loading.dismiss();
-        if(result) {
-          if (this.idRole) {
-            this.goToNextPageRecover().then(() => {
-              this.redirectToSelectedPage();
-            }).finally(() => {
-              this.loadingService.dismiss();
-            });
-          } else {
-            this.redirectToSelectedPage();
-          }
+        if (result) {
+
+          this.redirectToSelectedPage();
+
         }
-    }).catch(err => {
-      loading.dismiss();
-      console.error('No se pudo guardar el servicio médico',err);
-    });
+      }).catch(err => {
+        loading.dismiss();
+        console.error('No se pudo guardar el servicio médico', err);
+      });
   }
 
   markDepartureOrderDate() {

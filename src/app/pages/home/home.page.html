@@ -1,5 +1,5 @@
 <app-header class="title-hall" titleName="Hall de pacientes - {{clinicName}}"></app-header>
-<ion-content [fullscreen]="true">
+<ion-content>
   <ion-list *ngFor="let medicalAttention of attentionsInProgress">
     <ion-item-sliding>
       <ion-item lines="none" (click)="selectAttentionServiceAndContinue(medicalAttention, medicalAttention.patient.dni)">

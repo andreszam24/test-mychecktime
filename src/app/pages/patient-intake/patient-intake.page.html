@@ -81,7 +81,7 @@
       <ion-item lines="none" *ngFor="let patient of resultsSearchigPatient">
         <ion-img src="../../../assets/icon/man-4.png"></ion-img>
         <ion-label (click)="patientSelected(patient)" id="label-patient-name"
-          >{{ patient.name }}</ion-label
+          >{{ patient.name }} {{ patient.lastname }}</ion-label
         >
       </ion-item>
     </ion-list>

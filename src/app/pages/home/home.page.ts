@@ -294,7 +294,7 @@ async checkingInternetStatus() {
         'StartSurgery': '/anesthesia-operating-room',
         'EndSurgery':'/operating-room-exit-check',
         'ExitOperatingRoomList': this.idRole ? '/recovery' :  '/exit-menu',
-        'FromOperatingRoomTo':'/destination-selection',
+        'FromOperatingRoomTo': this.idRole ? '/home-destination' : '/destination-selection',
         'DestinoCasa':'/home-destination',
         'DestinoHospitalizacion':'/hospitalization-destination',
         'DestinoUCI':'/uci-destination',

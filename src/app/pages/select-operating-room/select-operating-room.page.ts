@@ -140,23 +140,22 @@ export class SelectOperatingRoomPage implements OnInit {
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-  
     const list = this.loadServicesFromLocalRepository();
-  
+    // Este estado es para preguntar si ya existe alguien en este 
+    // estado para no dejar ingresar a otro usuario a este estado
     const states = [
       'OperatingRoomList',
       'EndSurgery',
       'ExitOperatingRoomList',
+      'EndStartAnesthesia',
     ];
   
     if (qr && qr.operatingRoom) {
       const isRoomOccupied = list.some((item) => {
-        const isMatchingState = this.idRole
-          ? item.state === 'FromOperatingRoomTo'
-          : states.includes(item.state);
+        const isMatchingState = states.includes(item.state);
   
         return (
-          item.operatingRoom?.name === qr.operatingRoom.name &&
+          item.operatingRoom?.name?.toLowerCase() === qr.operatingRoom?.name?.toLowerCase() && 
           isMatchingState &&
           item.patient.dni !== this.dni
         );
@@ -194,16 +193,23 @@ export class SelectOperatingRoomPage implements OnInit {
 
   doesMatch(): boolean {
     let operationRoomsLists = this.operationRoomService.getLocalRooms();
-    const matchingOperationRoom = operationRoomsLists.find(operationRoom => 
-        operationRoom.id === this.selectedOperationRoom.id && operationRoom.clinic_id === this.selectedOperationRoom.clinic_id && operationRoom.clinic.name === this.selectedOperationRoom.clinic.name
-    );
+    const matchingOperationRoom = operationRoomsLists.find(operationRoom => {
+      console.log('Comparando con sala:', operationRoom);
+  
+      const isMatch = operationRoom.id === this.selectedOperationRoom.id && 
+        operationRoom.clinic_id === this.selectedOperationRoom.clinic_id && 
+        operationRoom.clinic?.name?.toLowerCase() === this.selectedOperationRoom.clinic?.name?.toLowerCase() &&
+        operationRoom?.name?.toLowerCase() === this.selectedOperationRoom?.name?.toLowerCase();
+      return isMatch;
+    });
+  
     if (matchingOperationRoom) {
         this.selectedOperationRoom = matchingOperationRoom;
         return true;
     } else {
         return false;
     }
-}
+  }
 
 
   goToNextPage() {
