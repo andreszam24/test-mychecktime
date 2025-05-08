@@ -344,6 +344,7 @@ export class InProgressMedicalAttentionService {
   getInProgressMedicalAtenttion(): Promise<MedicalAttention> {
     return new Promise((resolve) => {
       const list = this.loadServicesFromLocalRepository() || [];
+
       const result = list.find(sm => sm._id === this.selectedService);
       if (result) {
         resolve(result);

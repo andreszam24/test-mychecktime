@@ -34,6 +34,17 @@ html ion-input {
   --border-color: none !important;
 }
 
+/* Keyboard handling */
+.keyboard-visible {
+  ion-content {
+    --keyboard-offset: 0px;
+  }
+  
+  ion-footer {
+    display: none;
+  }
+}
+
 .alert-audio .alert-title {
   text-align: center;
 }
@@ -51,7 +62,6 @@ html ion-input {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-
 }
 
 .alert-button-inner.sc-ion-alert-md {

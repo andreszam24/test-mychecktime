@@ -61,13 +61,11 @@ export class ShiftHandoverPage implements OnInit {
     if (index !== -1) {
       this.attentionsInProgress[index].isSelected = !this.attentionsInProgress[index].isSelected;
     }
-    console.log("In progress: ", this.attentionsInProgress)
     if (!this.attentionsToTransfer.includes(attention)) {
       this.attentionsToTransfer.push(attention);
     } else {
       this.attentionsToTransfer = this.attentionsToTransfer.filter(att => att._id !== attention._id);
     }
-    console.log("A transferir: ", this.attentionsToTransfer);
   }
 
   handleInputAnesthesiologistName(event: any) {
