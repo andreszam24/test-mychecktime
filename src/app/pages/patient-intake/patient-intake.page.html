@@ -152,25 +152,29 @@
           <ion-list class="list">
             <ion-item lines="none" *ngFor="let cup of resultsSearchigCups">
               <ion-label (click)="cupsSelected(cup)"
-                >[ {{ cup.code }} ] {{ cup.name }}</ion-label
+                >{{ cup.code }} - {{ cup.name }}</ion-label
               >
             </ion-item>
             <ng-container *ngIf="medicalAttention.procedureCodes.length === 0">
               <p class="error-message">Campo obligatorio.</p>
             </ng-container>
           </ion-list>
-          <ion-item
-            id="cups"
-            lines="none"
+          <div
+            class="content-cup"
             *ngIf="medicalAttention.procedureCodes.length !== 0"
           >
-            <div *ngFor="let cup of medicalAttention.procedureCodes">
-              <ion-badge slot="start" (click)="moreDetailsCup(cup)"
-                >{{ cup.code }}</ion-badge
-              >
+            <div
+              class="items-cup"
+              *ngFor="let cup of medicalAttention.procedureCodes"
+            >
+              <div (click)="moreDetailsCup(cup)">
+                <p>
+                  [{{ cup.code }}] - {{ cup.name }}
+                </p>
+              </div>
               <a (click)="unselectCup(cup)">X</a>
             </div>
-          </ion-item>
+          </div>
         </div>
 
         <ion-text>
@@ -217,7 +221,6 @@
           </ion-select>
         </ion-item>
         <ion-item lines="none">
-
           <ion-input
             formControlName="birthday"
             label-placement="stacked"
