@@ -3,9 +3,10 @@ import {
   HttpRequest,
   HttpHandler,
   HttpEvent,
-  HttpInterceptor
+  HttpInterceptor,
+  HttpErrorResponse
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
@@ -37,8 +38,11 @@ export class TokenInterceptor implements HttpInterceptor {
           return next.handle(request);
         }
       }),
-      catchError((error) => {
-        return next.handle(request);
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          this.authService.logout();
+        }
+        return throwError(() => error);
       })
     );
   }
