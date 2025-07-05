@@ -3,20 +3,19 @@ apply plugin: 'com.android.application'
 android {
     namespace "app.checktime"
     compileSdkVersion rootProject.ext.compileSdkVersion
-
     defaultConfig {
         applicationId "app.checktime"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
+        versionCode 5
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-
-    // 1. Mover la configuración de firma a signingConfigs
     signingConfigs {
         release {
             storeFile file("./mychecktime-key.keystore")
@@ -26,13 +25,11 @@ android {
         }
     }
 
-    // 2. Configurar buildTypes correctamente
     buildTypes {
         release {
-            // Referenciar el signingConfigs.release
             signingConfig signingConfigs.release
-            // Agregar otras configuraciones de release si son necesarias
-            minifyEnabled false // Ejemplo: habilitar ofuscación
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

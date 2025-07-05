@@ -1,6 +1,6 @@
-ion-header{
-    ion-toolbar{
-        ion-title{
+ion-header {
+    ion-toolbar {
+        ion-title {
             background-color: var(--ion-color-app-blue);
             color: white;
             text-align: center;
@@ -13,46 +13,48 @@ ion-header{
     }
 }
 
-ion-content{
-    #login-spacer{
+ion-content {
+    #login-spacer {
         padding: 30px;
         text-align: center;
-        .menuIcon{
+
+        .menuIcon {
             max-width: 40%;
         }
     }
 
-    #login-form1{
+    #login-form1 {
         ion-input {
             color: white;
             border-radius: 5px;
-              ::ng-deep input {
+
+            ::ng-deep input {
                 padding-left: 55px;
                 caret-color: white;
-              }
+            }
         }
-    
+
         ion-input input.text-input {
             padding-left: 12px;
         }
-    
+
         ion-input input.text-input::placeholder,
         ion-input input.text-input::-webkit-input-placeholder {
             color: whitesmoke;
             opacity: 0.7;
         }
-    
-        .userinput{
-            ion-input{
-                background: url('../../../assets/svg/userxhdpi.svg') no-repeat,linear-gradient(to right, transparent 20%, var(--ion-color-app-blue) 20%);
+
+        .userinput {
+            ion-input {
+                background: url('../../../assets/svg/userxhdpi.svg') no-repeat, linear-gradient(to right, transparent 20%, var(--ion-color-app-blue) 20%);
 
 
             }
         }
-    
-        .passinput{
-            ion-input{
-                background: url('../../../assets/svg/passwordxhdpi.svg') no-repeat,linear-gradient(to right, transparent 20%, var(--ion-color-app-blue) 20%);
+
+        .passinput {
+            ion-input {
+                background: url('../../../assets/svg/passwordxhdpi.svg') no-repeat, linear-gradient(to right, transparent 20%, var(--ion-color-app-blue) 20%);
 
             }
 
@@ -64,27 +66,28 @@ ion-content{
                 font-size: 20px;
                 pointer-events: auto;
                 z-index: 10;
-              }
-              
-             ion-icon.eye-off {
+            }
+
+            ion-icon.eye-off {
                 display: none;
-              }
-              
+            }
+
             ion-icon.eye {
                 display: block;
-              }
-              
-        } 
+            }
 
-        .content-button{
+        }
+
+        .content-button {
             padding-top: 40px;
             width: 100%;
             text-align: center;
-            ion-button{
+
+            ion-button {
                 --background: var(--ion-color-app-blue);
-                --border-radius: 20px;   
+                --border-radius: 20px;
             }
-        }  
+        }
     }
 
     .error-message {
@@ -92,9 +95,5 @@ ion-content{
         text-align: center;
         font-size: 12px;
         margin: 5;
-      }
+    }
 }
-
-
-
-

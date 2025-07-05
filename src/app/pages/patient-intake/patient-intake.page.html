@@ -168,9 +168,7 @@
               *ngFor="let cup of medicalAttention.procedureCodes"
             >
               <div (click)="moreDetailsCup(cup)">
-                <p>
-                  [{{ cup.code }}] - {{ cup.name }}
-                </p>
+                <p>[{{ cup.code }}] - {{ cup.name }}</p>
               </div>
               <a (click)="unselectCup(cup)">X</a>
             </div>

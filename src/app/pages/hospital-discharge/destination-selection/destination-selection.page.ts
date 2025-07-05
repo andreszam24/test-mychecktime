@@ -217,6 +217,7 @@ export class DestinationSelectionPage implements OnInit {
     recover.eva = this.model.eva;
     recover.nausea = this.model.nausea;
     recover.state = StatusService.TERMINADO;
+    this.markDepartureOrderDate();
     recover.checkDate = this.model.fechaOrdenDeSalida;
     recover.simpleCheckDateOrder = this.datepipe.transform(recover.checkDate, 'yyyy-MM-dd')!;
     recover.simpleCheckHourOrder = this.datepipe.transform(recover.checkDate, 'HH:mm:ss')!;
