@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, NavController } from '@ionic/angular';
@@ -14,7 +14,6 @@ import { USER_KEY } from 'src/app/services/auth.service';
 import { Recover } from 'src/app/models/recover.model';
 import { PatientsExitList } from 'src/app/models/patients-exit-list.model';
 
-
 @Component({
   selector: 'app-home-destination',
   templateUrl: './home-destination.page.html',
@@ -22,8 +21,7 @@ import { PatientsExitList } from 'src/app/models/patients-exit-list.model';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, EventsPanelComponent, ButtonPanelComponent]
 })
-export class HomeDestinationPage implements OnInit {
-
+export class HomeDestinationPage {
   minimumSelectableDate = DateUtilsService.iso8601DateTime(new Date());
   datepipe = new DatePipe('en-US');
   model: any = {
@@ -32,6 +30,7 @@ export class HomeDestinationPage implements OnInit {
   };
   dataUser: any;
   recover: Recover = new Recover();
+
   constructor(
     private readonly navCtrl: NavController,
     private readonly loadingService: LoadingService,
@@ -41,8 +40,11 @@ export class HomeDestinationPage implements OnInit {
     this.dataUser = localStorage.getItem(USER_KEY);
   }
 
-  ngOnInit() {
-    this.medicalService.getInProgressMedicalAtenttion().then(sm => {
+  async ionViewWillEnter() {
+
+    await this.loadingService.showLoadingBasic("Cargando...");
+    try {
+      const sm = await this.medicalService.getInProgressMedicalAtenttion();
       if (!sm.patientsExit) {
         sm.patientsExit = new PatientsExitList();
       }
@@ -50,12 +52,17 @@ export class HomeDestinationPage implements OnInit {
         sm.patientsExit.recover = new Recover();
       }
       if (this.idRole) {
+        
         this.recover = this.addDummyDataToRecoveryDischarge();
         sm.patientsExit.recover = this.recover;
       }
       const ordenDeSalida = new Date(sm.patientsExit.recover.checkDate);
       this.minimumSelectableDate = DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(ordenDeSalida));
-    });
+    } catch (error) {
+      console.error('Error cargando datos iniciales:', error);
+    } finally {
+      this.loadingService.dismiss();
+    }
   }
 
   get idRole(): boolean {
@@ -75,6 +82,7 @@ export class HomeDestinationPage implements OnInit {
   }
 
   addDummyDataToRecoveryDischarge(): Recover {
+
     const recover = new Recover();
     recover.aldrete = -1;
     recover.bromage = -1;
@@ -83,15 +91,16 @@ export class HomeDestinationPage implements OnInit {
     recover.nausea = false;
     recover.state = StatusService.TERMINADO;
     const now = new Date();
-    now.setSeconds(now.getSeconds() - 60);
+    now.setTime(now.getTime() - (10 * 60 * 1000));
     recover.checkDate = now;
     recover.simpleCheckDateOrder = this.datepipe.transform(recover.checkDate, 'yyyy-MM-dd')!;
     recover.simpleCheckHourOrder = this.datepipe.transform(recover.checkDate, 'HH:mm:ss')!;
+
     return recover;
   }
 
   async goToNextPage() {
-    const horaRealdeSalida = DateUtilsService.toUTC(DateUtilsService.stringDate2Date(this.model.envioDestinoHoraManual));
+    const horaRealdeSalida = new Date(this.model.envioDestinoHoraManual);
     const horaOrdenDeSalida = new Date(this.minimumSelectableDate);
 
     if (horaRealdeSalida > horaOrdenDeSalida) {
@@ -103,7 +112,7 @@ export class HomeDestinationPage implements OnInit {
           sm.patientsExit.destination = 'CASA';
         }
         sm.patientsExit.recover = this.recover;
-        sm.patientsExit.checkDate = DateUtilsService.toUTC(DateUtilsService.stringDate2Date(this.model.envioDestinoHoraManual));
+        sm.patientsExit.checkDate = horaRealdeSalida;
         sm.patientsExit.simpleCheckDate = this.datepipe.transform(sm.patientsExit.checkDate, 'yyyy-MM-dd')!;
         sm.patientsExit.simpleCheckHour = this.datepipe.transform(sm.patientsExit.checkDate, 'HH:mm:ss')!;
 
