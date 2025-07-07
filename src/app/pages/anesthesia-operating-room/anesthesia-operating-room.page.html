@@ -1,36 +1,162 @@
 <app-header titleName="paciente"></app-header>
 <ion-content [fullscreen]="true">
-    <ion-menu-toggle auto-hide="false" menu="menu-anestesia">
-      <ion-button shape="round" expand="block"
-      [style.--background]="color('StartAnesthesia')"
-      [disabled]="disabled('StartAnesthesia')"
-      (click)="goToInicoAnestesia()">
-        Inicio inducción de anestesia
-        <ion-icon src="../../../assets/svg/mascaretaxhdpi.svg"></ion-icon>
-      </ion-button>
-    </ion-menu-toggle>
-    <ion-button shape="round" expand="block"
-    [style.--background]="color('EndStartAnesthesia')"
-    [disabled]="disabled('EndStartAnesthesia')"
-    (click)="goToFinInicioAnestesia()">
-      Fin de inducción de anestesia
-      <ion-icon src="../../../assets/svg/tubotraxhdpi.svg"></ion-icon>
-    </ion-button>
-    <ion-button shape="round" expand="block"
+  <!-- Contador de tiempo -->
+  <div *ngIf="isTimerRunning" class="timer-container">
+    <div class="timer-display">
+      <div class="timer-icon">
+        <svg
+          [class]="isTimerRunning && !isTimerFinished ? 'running-animation' : 'pulse-animation'"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <!-- Reloj de arena -->
+          <path d="M8 2h8v2H8V2z" fill="var(--ion-color-app-yellow)" />
+          <path d="M6 4h12v2H6V4z" fill="var(--ion-color-app-yellow)" />
+          <path d="M7 6l5 8 5-8H7z" fill="var(--ion-color-app-yellow)" />
+          <path d="M7 18l5-8 5 8H7z" fill="var(--ion-color-app-yellow)" />
+          <path d="M6 18h12v2H6v-2z" fill="var(--ion-color-app-yellow)" />
+          <path d="M8 20h8v2H8v-2z" fill="var(--ion-color-app-yellow)" />
+          <!-- Arena cayendo (solo visible cuando está corriendo) -->
+          <circle
+            cx="12"
+            cy="12"
+            r="1"
+            fill="var(--ion-color-app-yellow)"
+            *ngIf="isTimerRunning && !isTimerFinished"
+          >
+            <animate
+              attributeName="cy"
+              values="8;16;8"
+              dur="1s"
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="opacity"
+              values="1;0;1"
+              dur="1s"
+              repeatCount="indefinite"
+            />
+          </circle>
+          <circle
+            cx="12"
+            cy="12"
+            r="0.5"
+            fill="var(--ion-color-app-yellow)"
+            *ngIf="isTimerRunning && !isTimerFinished"
+          >
+            <animate
+              attributeName="cy"
+              values="8;16;8"
+              dur="1.5s"
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="opacity"
+              values="1;0;1"
+              dur="1.5s"
+              repeatCount="indefinite"
+            />
+          </circle>
+        </svg>
+      </div>
+      <ion-text class="timer-label">⏱️ Tiempo de Cirugía</ion-text>
+      <div class="timer-value-container">
+        <ion-text class="timer-value">{{ elapsedTime }}</ion-text>
+        <div class="timer-dots" *ngIf="!isTimerFinished">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+      <div class="timer-status">
+        <svg
+          class="status-icon-svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          *ngIf="!isTimerFinished"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="#4CAF50"
+            stroke-width="2"
+            fill="none"
+          />
+          <circle cx="12" cy="12" r="3" fill="#4CAF50" />
+          <circle
+            cx="12"
+            cy="12"
+            r="6"
+            stroke="#4CAF50"
+            stroke-width="1"
+            fill="none"
+            opacity="0.5"
+          >
+            <animate
+              attributeName="r"
+              values="6;8;6"
+              dur="2s"
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="opacity"
+              values="0.5;0.8;0.5"
+              dur="2s"
+              repeatCount="indefinite"
+            />
+          </circle>
+        </svg>
+        <svg
+          class="status-icon-finished"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          *ngIf="isTimerFinished"
+        >
+          <circle cx="12" cy="12" r="10" fill="#4CAF50" />
+          <path
+            d="M9 12l2 2 4-4"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <ion-text class="status-text"
+          >{{ isTimerFinished ? 'Finalizado' : 'En Progreso' }}</ion-text
+        >
+      </div>
+    </div>
+  </div>
+
+  <ion-button
+    shape="round"
+    expand="block"
     [style.--background]="color('StartSurgery')"
     [disabled]="disabled('StartSurgery')"
-    (click)="goToIncisionQuirurgica()">
-      Incisión quirúrgica
-      <ion-icon src="../../../assets/svg/bisturixhdpi.svg"></ion-icon>
-    </ion-button>
-    <ion-button shape="round" expand="block"
+    (click)="goToIncisionQuirurgica()"
+    class="button-incision"
+  >
+    Incisión quirúrgica
+    <ion-icon src="../../../assets/svg/bisturixhdpi.svg"></ion-icon>
+  </ion-button>
+  <ion-button
+    shape="round"
+    expand="block"
     [style.--background]="color('EndSurgery')"
     [disabled]="disabled('EndSurgery')"
-    (click)="goToFinCirugia()">
-      Fin de cirugía
-      <ion-icon src="../../../assets/svg/suturaxhdpi.svg"></ion-icon>
-    </ion-button>
+    (click)="goToFinCirugia()"
+  >
+    Fin de cirugía
+    <ion-icon src="../../../assets/svg/suturaxhdpi.svg"></ion-icon>
+  </ion-button>
 </ion-content>
 <ion-footer>
-  <app-events-panel [showCancelEvent] = "eventoCancelarVisible" sizeCol ='4'></app-events-panel>
+  <app-events-panel
+    [showCancelEvent]="eventoCancelarVisible"
+    sizeCol="4"
+  ></app-events-panel>
 </ion-footer>

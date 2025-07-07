@@ -148,7 +148,7 @@ export class OperatingRoomListPage implements OnInit {
   }
 
   initializeModel() {
-    if (this.idRole) {
+    if (this.idRole || this.idUser) {
       this.selectedInstrumentTechnician = {
         id: 92,
         name: 'Instrumentador',
@@ -186,6 +186,10 @@ export class OperatingRoomListPage implements OnInit {
   get idRole(): boolean {
     const userData = JSON.parse(this.dataUser);
     return userData?.roles?.[0]?.id === 4;
+  }
+  get idUser(): boolean {
+    const userData = JSON.parse(this.dataUser);
+    return userData.id === 870;
   }
 
   loadMasterData() {

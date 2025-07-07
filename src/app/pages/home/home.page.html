@@ -1,6 +1,8 @@
 <app-header class="title-hall" titleName="Hall de pacientes - {{clinicName}}"></app-header>
 <ion-content>
-  <ion-list *ngFor="let medicalAttention of attentionsInProgress">
+  <!-- Lista de pacientes cuando hay datos -->
+  <ng-container *ngIf="attentionsInProgress && attentionsInProgress.length > 0">
+    <ion-list *ngFor="let medicalAttention of attentionsInProgress">
     <ion-item-sliding>
       <ion-item lines="none" (click)="selectAttentionServiceAndContinue(medicalAttention, medicalAttention.patient.dni)">
         <ion-card >
@@ -35,8 +37,20 @@
           </div>
         </ion-item-option>
       </ion-item-options>
-    </ion-item-sliding>
-  </ion-list>
+          </ion-item-sliding>
+    </ion-list>
+  </ng-container>
+
+  <!-- Vista cuando no hay datos -->
+  <div class="empty-state" *ngIf="!attentionsInProgress || attentionsInProgress.length === 0">
+    <ion-icon name="people-outline" class="empty-icon"></ion-icon>
+    <h2>No hay pacientes en el hall</h2>
+    <p>No hay atenciones médicas en progreso en este momento.</p>
+    <ion-button fill="outline" (click)="goToPatientIntake()">
+      <ion-icon src="../../../assets/svg/person-add-outline.svg"></ion-icon>
+      Agregar Paciente
+    </ion-button>
+  </div>
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="start">
     <ion-fab-button (click)="checkingInternetStatus()"

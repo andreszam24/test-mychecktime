@@ -81,6 +81,13 @@ export class HomeDestinationPage {
     this.alertService.presentBasicAlert('Atención', 'Recuerda ingresar la hora real de salida o traslado de la UCPA.');
   }
 
+  checkDate() {
+    const horaRealdeSalida = new Date(this.model.envioDestinoHoraManual);
+    this.recover.checkDate = horaRealdeSalida;
+    this.recover.simpleCheckDateOrder = this.datepipe.transform(this.recover.checkDate, 'yyyy-MM-dd')!;
+    this.recover.simpleCheckHourOrder = this.datepipe.transform(this.recover.checkDate, 'HH:mm:ss')!;
+  }
+
   addDummyDataToRecoveryDischarge(): Recover {
 
     const recover = new Recover();
@@ -99,22 +106,25 @@ export class HomeDestinationPage {
     return recover;
   }
 
+  // Necesitamos la hora real de salida para poder guardarla en la base de datos
+  
   async goToNextPage() {
     const horaRealdeSalida = new Date(this.model.envioDestinoHoraManual);
     const horaOrdenDeSalida = new Date(this.minimumSelectableDate);
 
     if (horaRealdeSalida > horaOrdenDeSalida) {
       await this.loadingService.showLoadingBasic("Cargando...");
+      this.checkDate();
 
       this.medicalService.getInProgressMedicalAtenttion().then(sm => {
         if (!sm.patientsExit) {
           sm.patientsExit = new PatientsExitList();
-          sm.patientsExit.destination = 'CASA';
         }
+        sm.patientsExit.destination = 'CASA';
         sm.patientsExit.recover = this.recover;
-        sm.patientsExit.checkDate = horaRealdeSalida;
-        sm.patientsExit.simpleCheckDate = this.datepipe.transform(sm.patientsExit.checkDate, 'yyyy-MM-dd')!;
-        sm.patientsExit.simpleCheckHour = this.datepipe.transform(sm.patientsExit.checkDate, 'HH:mm:ss')!;
+        sm.patientsExit.checkDate = this.recover.checkDate;
+        sm.patientsExit.simpleCheckDate = this.recover.simpleCheckDateOrder;
+        sm.patientsExit.simpleCheckHour = this.recover.simpleCheckHourOrder;
 
         sm.patientsExit.description = this.model.description;
         sm.patientsExit.state = StatusService.TERMINADO;

@@ -6,8 +6,8 @@ const config: CapacitorConfig = {
   webDir: 'www',
   bundledWebRuntime: false,
   plugins: {
-    BarcodeScanner: {
-      formats: "QR_CODE,PDF_417",
+    '@capacitor-mlkit/barcode-scanning': {
+      formats: ["QR_CODE", "PDF_417"],
       orientationLocked: true
     }
   },

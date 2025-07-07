@@ -31,4 +31,16 @@ ion-content {
     .btn-scan {
         margin-top: 24px;
     }
+    
+    .btn-demo {
+        --border-color: var(--ion-color-app-blue);
+        --color: var(--ion-color-app-blue);
+        --background: transparent;
+        --border-width: 2px;
+        --border-radius: 2rem;
+        margin-top: 16px;
+        width: 200px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
 }

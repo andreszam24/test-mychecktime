@@ -198,6 +198,20 @@ ion-content {
         margin: 5;
     }
 
+    // Animación para el icono de cámara cuando se solicitan permisos
+    .spinning {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
     .content-cup {
         display: flex;
         flex-wrap: wrap;
@@ -322,9 +336,17 @@ ion-content {
 }
 
 ion-fab-button {
-    --background: var(--ion-color-app-blue);
     margin-bottom: 3.5rem;
-
+    
+    &.scan-button {
+        --background: var(--ion-color-app-blue);
+        --color: white;
+    }
+    
+    &.camera-disabled {
+        --background: var(--ion-color-medium);
+        --color: var(--ion-color-medium-contrast);
+    }
 }
 
 footer {

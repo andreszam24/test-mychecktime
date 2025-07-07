@@ -13,21 +13,29 @@ import { OperationRoomService } from 'src/app/services/operation-room.service';
 import { PreScanQrComponent } from 'src/app/components/pre-scan-qr/pre-scan-qr.component';
 import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
 import { AlertService } from 'src/app/services/utilities/alert.service';
-import { AndroidSettings, IOSSettings, NativeSettings } from 'capacitor-native-settings';
+import {
+  AndroidSettings,
+  IOSSettings,
+  NativeSettings,
+} from 'capacitor-native-settings';
 import { MedicalAttention } from 'src/app/models/medical-attention.model';
 import { ActivatedRoute } from '@angular/router';
 import { USER_KEY } from 'src/app/services/auth.service';
-
 
 @Component({
   selector: 'app-select-operating-room',
   templateUrl: './select-operating-room.page.html',
   styleUrls: ['./select-operating-room.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, HeaderComponent, ButtonPanelComponent]
+  imports: [
+    IonicModule,
+    CommonModule,
+    FormsModule,
+    HeaderComponent,
+    ButtonPanelComponent,
+  ],
 })
 export class SelectOperatingRoomPage implements OnInit {
-
   barcodes: Barcode[] = [];
   textItem: string = '';
   isSupported = false;
@@ -42,16 +50,16 @@ export class SelectOperatingRoomPage implements OnInit {
     private navCtrl: NavController,
     private medicalService: InProgressMedicalAttentionService,
     private workingArea: WorkingAreaService,
-    private operationRoomService:OperationRoomService,
+    private operationRoomService: OperationRoomService,
     private modalCtrl: ModalController,
     private alertService: AlertService,
     private route: ActivatedRoute
-  ) { 
+  ) {
     this.dataUser = localStorage.getItem(USER_KEY);
   }
 
   ngOnInit() {
-    this.openModal()
+    this.openModal();
     this.currentClinic = this.workingArea.getClinic();
     this.dni = this.route.snapshot.paramMap.get('dni');
   }
@@ -62,12 +70,13 @@ export class SelectOperatingRoomPage implements OnInit {
   }
 
   async openModal() {
-    const textoModal = "LISTA DE VERIFICACIÓN EN SALA. ANTES DE CUALQUIER INTERVENCIÓN, VERIFIQUE QUE ESTE EL CIRUJANO Y LA INSTRUMENTADORA.";
+    const textoModal =
+      'LISTA DE VERIFICACIÓN EN SALA. ANTES DE CUALQUIER INTERVENCIÓN, VERIFIQUE QUE ESTE EL CIRUJANO Y LA INSTRUMENTADORA.';
     const modal = await this.modalCtrl.create({
       component: PreScanQrComponent,
       componentProps: {
-        text: textoModal
-      }
+        text: textoModal,
+      },
     });
     modal.present();
 
@@ -75,19 +84,23 @@ export class SelectOperatingRoomPage implements OnInit {
 
     if (data === 'scan') {
       this.startBarcodeScanner();
-    }else{
+    } else if (data === 'demo') {
+      this.showDemoOptions();
+    } else {
       this.navCtrl.navigateForward('home');
     }
   }
 
   private startBarcodeScanner() {
-    BarcodeScanner.isSupported().then((result) => {
-      this.isSupported = result.supported;
-      this.scan();
-    }).catch(async (error) => {
-      console.error(error.message);
-      await this.unsupportedBarcodeMessage();
-    });
+    BarcodeScanner.isSupported()
+      .then((result) => {
+        this.isSupported = result.supported;
+        this.scan();
+      })
+      .catch(async (error) => {
+        console.error(error.message);
+        await this.unsupportedBarcodeMessage();
+      });
   }
 
   handleOpenPermission = async () => {
@@ -95,7 +108,7 @@ export class SelectOperatingRoomPage implements OnInit {
       optionAndroid: AndroidSettings.ApplicationDetails,
       optionIOS: IOSSettings.App,
     });
-    this.navCtrl.navigateForward('home')
+    this.navCtrl.navigateForward('home');
   };
 
   async scan(): Promise<void> {
@@ -105,33 +118,41 @@ export class SelectOperatingRoomPage implements OnInit {
         '¡Ups! Sin permisos',
         '¡Activa los permisos de la cámara para usar el escáner de códigos!',
         this.handleOpenPermission,
-        () => this.navCtrl.navigateForward('home'),
+        () => this.navCtrl.navigateForward('home')
       );
       return;
     }
     // NOTE: To avoid that scan it doesn't work, you may use 5.0.3 version or higher: npm i @capacitor-mlkit/barcode-scanning@5.0.3
     //Check if the Google ML Kit barcode scanner is available
-    await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable().then(async (data) => {
-      if (data.available) {
-        // Start the barcode scanner
-        await this.readQR();
-      } else {
-        // Install the Google ML Kit barcode scanner
-        await BarcodeScanner.installGoogleBarcodeScannerModule().then(async () => {
+    await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable()
+      .then(async (data) => {
+        if (data.available) {
+          // Start the barcode scanner
           await this.readQR();
-        });
-      }
-    }).catch(error => {
-      if (error.message === 'scan canceled.') {
-        this.textItem = '¡Ups! Parece que cancelaste el escaneo. Por favor, escanea el código QR de la sala para continuar.';
-    } else if (error.message.includes('device') || error.message.includes('camera')) {
-        this.textItem = '¡Ups! Parece que hay un problema con tu dispositivo o cámara. Asegúrate de que estén funcionando correctamente y vuelve a intentarlo.';
-    } else {
-        console.error(error.message);
-        this.textItem = error.message;
-    }
-    });
-
+        } else {
+          // Install the Google ML Kit barcode scanner
+          await BarcodeScanner.installGoogleBarcodeScannerModule().then(
+            async () => {
+              await this.readQR();
+            }
+          );
+        }
+      })
+      .catch((error) => {
+        if (error.message === 'scan canceled.') {
+          this.textItem =
+            '¡Ups! Parece que cancelaste el escaneo. Por favor, escanea el código QR de la sala para continuar.';
+        } else if (
+          error.message.includes('device') ||
+          error.message.includes('camera')
+        ) {
+          this.textItem =
+            '¡Ups! Parece que hay un problema con tu dispositivo o cámara. Asegúrate de que estén funcionando correctamente y vuelve a intentarlo.';
+        } else {
+          console.error(error.message);
+          this.textItem = error.message;
+        }
+      });
   }
 
   private loadServicesFromLocalRepository(): MedicalAttention[] {
@@ -141,7 +162,7 @@ export class SelectOperatingRoomPage implements OnInit {
     const { barcodes } = await BarcodeScanner.scan();
     let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
     const list = this.loadServicesFromLocalRepository();
-    // Este estado es para preguntar si ya existe alguien en este 
+    // Este estado es para preguntar si ya existe alguien en este
     // estado para no dejar ingresar a otro usuario a este estado
     const states = [
       'OperatingRoomList',
@@ -149,20 +170,22 @@ export class SelectOperatingRoomPage implements OnInit {
       'ExitOperatingRoomList',
       'EndStartAnesthesia',
     ];
-  
+
     if (qr && qr.operatingRoom) {
       const isRoomOccupied = list.some((item) => {
         const isMatchingState = states.includes(item.state);
-  
+
         return (
-          item.operatingRoom?.name?.toLowerCase() === qr.operatingRoom?.name?.toLowerCase() && 
+          item.operatingRoom?.name?.toLowerCase() ===
+            qr.operatingRoom?.name?.toLowerCase() &&
           isMatchingState &&
           item.patient.dni !== this.dni
         );
       });
-  
+
       if (isRoomOccupied) {
-        this.textItem = 'La sala se encuentra ocupada, por favor gestione el paciente anterior.';
+        this.textItem =
+          'La sala se encuentra ocupada, por favor gestione el paciente anterior.';
         this.alertService.presentActionAlertCustom(
           '¡Ups!',
           `La sala "${qr.operatingRoom.name}" ya está ocupada por otro paciente.`,
@@ -180,59 +203,77 @@ export class SelectOperatingRoomPage implements OnInit {
       );
     }
   }
-  
-  
 
-  verifySelectedOperatingRoomQR(){
-    if(this.doesMatch()){
+  verifySelectedOperatingRoomQR() {
+    if (this.doesMatch()) {
       this.goToNextPage();
     } else {
-      throw new Error('¡Ups! Parece que ocurrió un problema, el contenido del código QR no corresponde a una sala valida para esta clinica');     
+      throw new Error(
+        '¡Ups! Parece que ocurrió un problema, el contenido del código QR no corresponde a una sala valida para esta clinica'
+      );
     }
   }
 
   doesMatch(): boolean {
     let operationRoomsLists = this.operationRoomService.getLocalRooms();
-    const matchingOperationRoom = operationRoomsLists.find(operationRoom => {
+    const matchingOperationRoom = operationRoomsLists.find((operationRoom) => {
       console.log('Comparando con sala:', operationRoom);
-  
-      const isMatch = operationRoom.id === this.selectedOperationRoom.id && 
-        operationRoom.clinic_id === this.selectedOperationRoom.clinic_id && 
-        operationRoom.clinic?.name?.toLowerCase() === this.selectedOperationRoom.clinic?.name?.toLowerCase() &&
-        operationRoom?.name?.toLowerCase() === this.selectedOperationRoom?.name?.toLowerCase();
+
+      const isMatch =
+        operationRoom.id === this.selectedOperationRoom.id &&
+        operationRoom.clinic_id === this.selectedOperationRoom.clinic_id &&
+        operationRoom.clinic?.name?.toLowerCase() ===
+          this.selectedOperationRoom.clinic?.name?.toLowerCase() &&
+        operationRoom?.name?.toLowerCase() ===
+          this.selectedOperationRoom?.name?.toLowerCase();
       return isMatch;
     });
-  
+
     if (matchingOperationRoom) {
-        this.selectedOperationRoom = matchingOperationRoom;
-        return true;
+      this.selectedOperationRoom = matchingOperationRoom;
+      return true;
     } else {
-        return false;
+      return false;
     }
   }
 
-
   goToNextPage() {
-    this.medicalService.getInProgressMedicalAtenttion().then( sm => {
-      sm.operatingRoom = this.selectedOperationRoom;
-      sm.idOperatingRoom = this.selectedOperationRoom.id;
+    this.medicalService
+      .getInProgressMedicalAtenttion()
+      .then((sm) => {
+        sm.operatingRoom = this.selectedOperationRoom;
+        sm.idOperatingRoom = this.selectedOperationRoom.id;
 
-      sm.operatingRoom.updated_at = this.datepipe.transform(sm.operatingRoom.updated_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ')!;
-      sm.operatingRoom.created_at = this.datepipe.transform(sm.operatingRoom.created_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ')!;
+        sm.operatingRoom.updated_at = this.datepipe.transform(
+          sm.operatingRoom.updated_at,
+          "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        )!;
+        sm.operatingRoom.created_at = this.datepipe.transform(
+          sm.operatingRoom.created_at,
+          "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        )!;
 
-      sm.operatingRoom.clinic.updated_at = this.datepipe.transform(sm.operatingRoom.clinic.updated_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ')!;
-      sm.operatingRoom.clinic.created_at = this.datepipe.transform(sm.operatingRoom.clinic.created_at, 'yyyy-MM-dd\'T\'HH:mm:ss.SSSZ')!;
+        sm.operatingRoom.clinic.updated_at = this.datepipe.transform(
+          sm.operatingRoom.clinic.updated_at,
+          "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        )!;
+        sm.operatingRoom.clinic.created_at = this.datepipe.transform(
+          sm.operatingRoom.clinic.created_at,
+          "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        )!;
 
-      sm.state = StatusService.ADMISSION_LIST;
-     this.medicalService.saveMedicalAttention(sm, 'sync')
-        .then(result => {
-            if(result) {
-              console.log(result)
+        sm.state = StatusService.ADMISSION_LIST;
+        this.medicalService
+          .saveMedicalAttention(sm, 'sync')
+          .then((result) => {
+            if (result) {
+              console.log(result);
               this.navCtrl.navigateForward('check-patient-info');
             }
-          }).catch(() => console.error('No se pudo guardar el servicio médico'));
-    }).catch(() => console.log('Error consultando la atencion médica'));
-
+          })
+          .catch(() => console.error('No se pudo guardar el servicio médico'));
+      })
+      .catch(() => console.log('Error consultando la atencion médica'));
   }
 
   async requestPermissions(): Promise<boolean> {
@@ -241,22 +282,39 @@ export class SelectOperatingRoomPage implements OnInit {
   }
 
   private async unsupportedBarcodeMessage() {
-    this.textItem = '¡Ups! Parece que tu dispositivo no puede escanear códigos con la cámara en este momento. Lamentablemente, esta función no está disponible en tu dispositivo.';
+    this.textItem =
+      '¡Ups! Parece que tu dispositivo no puede escanear códigos con la cámara en este momento. Lamentablemente, esta función no está disponible en tu dispositivo.';
   }
 
   parseJSONMedicalAttentionSafely(obj: any) {
     try {
       obj = JSON.parse(obj);
       return obj;
-    }
-    catch (e) {
+    } catch (e) {
       console.log(e);
       return {};
     }
   }
 
-  toContinue(){
+  toContinue() {
     this.scan();
   }
 
+  showDemoOptions() {
+    const demoQR = {
+      operatingRoom: {
+        id: 48,
+        name: 'Sala 3',
+        clinic_id: 15,
+        clinic: {
+          id: 15,
+          name: 'CLINICA VISUAL Y AUDITIVA INCS'
+        }
+      } as any,
+    };
+    console.log('Datos demo QR:', demoQR);
+
+    this.selectedOperationRoom = demoQR.operatingRoom;
+    this.verifySelectedOperatingRoomQR();
+  }
 }

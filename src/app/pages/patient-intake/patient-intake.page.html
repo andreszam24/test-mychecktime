@@ -273,8 +273,16 @@
     (buttonClicked)="toValidatePatientData()"
   ></app-button-panel>
 </footer>
-<ion-fab slot="fixed" vertical="bottom" horizontal="end">
-  <ion-fab-button (click)="scan()" [disabled]="!isSupported">
-    <ion-icon src="../../../assets/svg/barcode-outline.svg"></ion-icon>
+<ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="!idUser">
+  <ion-fab-button
+    (click)="scan()"
+    [disabled]="!isSupported || cameraPermissionRequested"
+    [class.camera-disabled]="cameraPermissionRequested"
+    class="scan-button"
+  >
+    <ion-icon
+      src="../../../assets/svg/barcode-outline.svg"
+      [class.spinning]="cameraPermissionRequested"
+    ></ion-icon>
   </ion-fab-button>
 </ion-fab>

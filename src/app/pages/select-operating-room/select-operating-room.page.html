@@ -4,7 +4,17 @@
   <div class="select-qr">
     <ion-icon (click)="scan()" src="../../../assets/svg/lens-qr.svg"></ion-icon>
     <p>{{ textItem }}</p>
+    <ion-button
+      fill="outline"
+      size="small"
+      (click)="showDemoOptions()"
+      class="demo-button"
+    >
+      Datos Demo
+    </ion-button>
   </div>
+  
+  <!-- Botón de datos demo centrado abajo -->
 </ion-content>
 <footer>
   <app-button-panel

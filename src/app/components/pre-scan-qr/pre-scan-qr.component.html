@@ -15,6 +15,12 @@
       <ion-col>
         <ion-button class="btn-scan" (click)="scan()">SCANEAR</ion-button>
       </ion-col>
+      <!-- <ion-col *ngIf="idUser"> -->
+      <ion-col *ngIf="idUser">
+        <ion-button class="btn-demo" fill="outline" (click)="showDemoOptions()">
+          Datos Demo
+        </ion-button>
+      </ion-col>
     </ion-col>
   </ion-row>
 </ion-content>

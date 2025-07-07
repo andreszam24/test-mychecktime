@@ -47,28 +47,47 @@ export class AlertService {
     cancelAction?: () => void,
     textOk?: string,
   ): Promise<void> {
-    const alert = await this.alertController.create({
-      header: header,
-      message: message,
-      buttons: [
-        {
-          text: textOk || 'OK',
-          handler: () => {
-            alert.onDidDismiss,
-            okAction()
+    try {
+      const alert = await this.alertController.create({
+        header: header,
+        message: message,
+        buttons: [
+          {
+            text: textOk || 'OK',
+            handler: () => {
+              try {
+                okAction();
+              } catch (error) {
+                console.error('Error en okAction:', error);
+              }
+            },
           },
-        },
-        {
-          text: 'Cancelar',
-          handler: () => {
-            alert.onDidDismiss
-            if (cancelAction) {
-              cancelAction()
-            }
+          {
+            text: 'Cancelar',
+            handler: () => {
+              try {
+                if (cancelAction) {
+                  cancelAction();
+                }
+              } catch (error) {
+                console.error('Error en cancelAction:', error);
+              }
+            },
           },
-        },
-      ],
-    });
-    await alert.present();
+        ],
+        backdropDismiss: false,
+      });
+      
+      await alert.present();
+      alert.onDidDismiss().then(() => {
+      });
+    } catch (error) {
+      console.error('Error creando alert:', error);
+      try {
+        okAction();
+      } catch (actionError) {
+        console.error('Error en fallback action:', actionError);
+      }
+    }
   }
 }

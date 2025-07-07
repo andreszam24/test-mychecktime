@@ -1,5 +1,5 @@
 export class CupsCodes {
-    //id: number;
+    id: number;
     code: string;
     name: string;
   }

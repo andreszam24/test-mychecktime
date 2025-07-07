@@ -46,16 +46,13 @@ ion-content {
 
         .userinput {
             ion-input {
-                background: url('../../../assets/svg/userxhdpi.svg') no-repeat, linear-gradient(to right, transparent 20%, var(--ion-color-app-blue) 20%);
-
-
+                background: url('../../../assets/svg/userxhdpi.svg') no-repeat, var(--ion-color-app-blue);
             }
         }
 
         .passinput {
             ion-input {
-                background: url('../../../assets/svg/passwordxhdpi.svg') no-repeat, linear-gradient(to right, transparent 20%, var(--ion-color-app-blue) 20%);
-
+                background: url('../../../assets/svg/passwordxhdpi.svg') no-repeat, var(--ion-color-app-blue);
             }
 
             ion-icon {
