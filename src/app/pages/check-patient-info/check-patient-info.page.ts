@@ -7,6 +7,7 @@ import { HeaderComponent } from 'src/app/components/header/header.component';
 import { InProgressMedicalAttentionService } from 'src/app/services/in-progress-medical-attention.service';
 import { Patient } from 'src/app/models/patient.model';
 import { ButtonPanelComponent } from 'src/app/components/button-panel/button-panel.component';
+import { AuthService, USER_KEY } from 'src/app/services/auth.service';
 
 
 @Component({
@@ -24,16 +25,30 @@ export class CheckPatientInfoPage implements OnInit {
   validPerson: Patient;
   inputData:string = '';
   medicalServiceInProgressDataPatient:Patient;
+  dataUser: any;
 
 
 
   constructor(
     private navCtrl: NavController,
     private medicalService: InProgressMedicalAttentionService,
-  ) { }
+  ) {
+    this.dataUser = localStorage.getItem(USER_KEY);
+  }
+
+  get idUser(): boolean {
+    const userData = JSON.parse(this.dataUser);
+    return userData.id === 870 || userData.id === 866;
+  }
 
   ngOnInit() {
     this.medicalServiceInProgress();
+    
+    // Si es el usuario 870 o 866, llenar automáticamente el input con "1570"
+    if (this.idUser) {
+      this.inputData = '1570';
+    }
+    
     //this.startBarcodeScanner();
   }
 

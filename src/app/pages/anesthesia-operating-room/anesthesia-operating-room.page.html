@@ -1,7 +1,7 @@
 <app-header titleName="paciente"></app-header>
 <ion-content [fullscreen]="true">
   <!-- Contador de tiempo -->
-  <div *ngIf="isTimerRunning" class="timer-container">
+  <div *ngIf="isTimerRunning || isTimerPaused || isTimerFinished" class="timer-container">
     <div class="timer-display">
       <div class="timer-icon">
         <svg
@@ -63,7 +63,7 @@
       <ion-text class="timer-label">⏱️ Tiempo de Cirugía</ion-text>
       <div class="timer-value-container">
         <ion-text class="timer-value">{{ elapsedTime }}</ion-text>
-        <div class="timer-dots" *ngIf="!isTimerFinished">
+        <div class="timer-dots" *ngIf="isTimerRunning && !isTimerFinished">
           <span class="dot"></span>
           <span class="dot"></span>
           <span class="dot"></span>
@@ -75,7 +75,7 @@
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          *ngIf="!isTimerFinished"
+          *ngIf="!isTimerFinished && !isTimerPaused"
         >
           <circle
             cx="12"
@@ -110,6 +110,19 @@
           </circle>
         </svg>
         <svg
+          class="status-icon-paused"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          *ngIf="isTimerPaused && !isTimerFinished"
+        >
+          <circle cx="12" cy="12" r="10" fill="#FF9800" />
+          <path
+            d="M10 8v8l6-4z"
+            fill="white"
+          />
+        </svg>
+        <svg
           class="status-icon-finished"
           viewBox="0 0 24 24"
           fill="none"
@@ -125,9 +138,34 @@
             stroke-linejoin="round"
           />
         </svg>
-        <ion-text class="status-text"
-          >{{ isTimerFinished ? 'Finalizado' : 'En Progreso' }}</ion-text
+        <ion-text class="status-text">
+          {{ isTimerFinished ? 'Finalizado' : (isTimerPaused ? 'Detenido' : 'En Progreso') }}
+        </ion-text>
+      </div>
+      
+      <div class="timer-times" *ngIf="startSurgeryTime || endSurgeryTime">
+        <div class="time-info" *ngIf="startSurgeryTime">
+          <ion-text class="time-label">Hora de inicio:</ion-text>
+          <ion-text class="time-value">{{ startSurgeryTime }}</ion-text>
+        </div>
+        <div class="time-info" *ngIf="endSurgeryTime">
+          <ion-text class="time-label">Hora de fin:</ion-text>
+          <ion-text class="time-value">{{ endSurgeryTime }}</ion-text>
+        </div>
+      </div>
+      
+      <!-- Botón de continuar cuando está pausado o finalizado -->
+      <div class="finalize-controls" *ngIf="showFinalizeButton">
+        <ion-button
+          fill="solid"
+          size="small"
+          color="success"
+          (click)="finalizeTimer()"
+          class="finalize-button"
         >
+          <ion-icon name="arrow-forward" slot="start"></ion-icon>
+          Continuar
+        </ion-button>
       </div>
     </div>
   </div>
@@ -152,6 +190,19 @@
   >
     Fin de cirugía
     <ion-icon src="../../../assets/svg/suturaxhdpi.svg"></ion-icon>
+  </ion-button>
+  
+  <!-- Botón Continuar que aparece después de Fin de cirugía -->
+  <ion-button
+    *ngIf="showFinalizeButton"
+    shape="round"
+    expand="block"
+    color="success"
+    (click)="finalizeTimer()"
+    class="continue-button"
+  >
+    Continuar
+    <ion-icon name="arrow-forward" slot="end"></ion-icon>
   </ion-button>
 </ion-content>
 <ion-footer>

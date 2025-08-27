@@ -132,7 +132,8 @@ export class OperatingRoomListPage implements OnInit {
 
   ionViewDidEnter() {
     if (!this.model.confirmMembers) {
-      this.showAudioAlert = true;
+      // Solo mostrar alerta de audio si NO es el usuario 870 o 866
+      this.showAudioAlert = !this.idUser;
       this.model.confirmMembers = true;
       this.model.confirmIdentity = true;
       this.model.criticalEvents = true;
@@ -189,7 +190,7 @@ export class OperatingRoomListPage implements OnInit {
   }
   get idUser(): boolean {
     const userData = JSON.parse(this.dataUser);
-    return userData.id === 870;
+    return userData.id === 870 || userData.id === 866;
   }
 
   loadMasterData() {
@@ -283,6 +284,7 @@ export class OperatingRoomListPage implements OnInit {
         .subscribe((result) => {
           if (result && result.length > 0) {
             this.listConceptTimeReplacement = result;
+            this.selectDefaultConceptForIdUser();
           } else {
             this.alertService.presentBasicAlert(
               'Oops!',
@@ -290,6 +292,9 @@ export class OperatingRoomListPage implements OnInit {
             );
           }
         });
+    } else {
+      // Si ya hay datos locales, seleccionar el concepto por defecto
+      this.selectDefaultConceptForIdUser();
     }
   }
 
@@ -618,5 +623,23 @@ export class OperatingRoomListPage implements OnInit {
   ) {
     this.selectedConceptTimeReplacement = conceptTimeReplacement;
     this.resultsSearchigConceptTimeReplacement = [];
+  }
+
+  /**
+   * Selecciona automáticamente el concepto con ID 7 para usuarios idUser (870 o 866)
+   */
+  private selectDefaultConceptForIdUser() {
+    if (this.idUser && this.listConceptTimeReplacement.length > 0) {
+      const defaultConcept = this.listConceptTimeReplacement.find(
+        concept => concept.id === 7
+      );
+      
+      if (defaultConcept) {
+        this.selectedConceptTimeReplacement = defaultConcept;
+        console.log('✅ Concepto seleccionado automáticamente para idUser:', defaultConcept);
+      } else {
+        console.log('⚠️ No se encontró el concepto con ID 7 para selección automática');
+      }
+    }
   }
 }

@@ -24,7 +24,7 @@ export class PreScanQrComponent implements OnInit {
 
   get idUser(): boolean {
     const userData = JSON.parse(this.dataUser);
-    return userData?.id === 870;
+    return userData?.id === 870 || userData?.id === 866;
   }
 
   scan() {

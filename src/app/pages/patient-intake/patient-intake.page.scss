@@ -2,6 +2,25 @@
     font-size: large;
 }
 
+.info-message {
+    background: linear-gradient(135deg, var(--ion-color-app-blue) 0%, #1a4b8c 100%);
+    color: white;
+    padding: 10px 15px;
+    margin: 10px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    ion-text {
+        font-size: 14px;
+        line-height: 1.4;
+        
+        strong {
+            color: var(--ion-color-app-yellow);
+        }
+    }
+}
+
 ion-header {
     ion-toolbar {
         ion-title {

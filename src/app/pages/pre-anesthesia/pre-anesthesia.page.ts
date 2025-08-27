@@ -128,7 +128,7 @@ export class PreAnesthesiaPage implements OnInit {
 
   get idUser(): boolean {
     const userData = JSON.parse(this.dataUser);
-    return userData?.id === 870;
+    return userData?.id === 870 || userData?.id === 866;
   }
 
   async openModal() {
@@ -246,7 +246,8 @@ export class PreAnesthesiaPage implements OnInit {
       this.model.riskOfHemorrhage = qr.riskOfHemorrhage;
       this.model.intervention = qr.intervention ?? 'Ninguna';
       this.scannDataForm = true;
-      this.showAudioAlert = true;
+      // Solo mostrar alerta de audio si NO es el usuario 870 o 866
+      this.showAudioAlert = !this.idUser;
     } else {
       this.alertService.presentActionAlert(
         '¡Ups! Parece que ocurrió un problema con el QR',
@@ -398,6 +399,7 @@ export class PreAnesthesiaPage implements OnInit {
     this.model.riskOfHemorrhage = demoQR.riskOfHemorrhage;
     this.model.intervention = demoQR.intervention ?? 'Ninguna';
     this.scannDataForm = true;
-    this.showAudioAlert = true;
+    // Solo mostrar alerta de audio si NO es el usuario 870 o 866
+    this.showAudioAlert = !this.idUser;
   }
 }

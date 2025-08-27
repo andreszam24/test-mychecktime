@@ -188,12 +188,11 @@ export class DestinationSelectionPage implements OnInit {
 
 
   async goToNextPage() {
-    this.patientExit.checkDate = new Date();
-    this.patientExit.simpleCheckDate = this.datepipe.transform(this.patientExit.checkDate, 'yyyy-MM-dd')!;
-    this.patientExit.simpleCheckHour = this.datepipe.transform(this.patientExit.checkDate, 'HH:mm:ss')!;
+    // Fecha de orden de salida (punto 9) - se guarda en patientsExit.recover.checkDate
     this.patientExit.destination = this.model.destino;
     this.patientExit.state = StatusService.SELECCION_DESTINO;
     this.patientExit.recover = this.mapViewToModel();
+    
     await this.loadingService.showLoadingBasic("Cargando...");
 
     this.medicalService.getInProgressMedicalAtenttion().then(sm => {
@@ -218,14 +217,22 @@ export class DestinationSelectionPage implements OnInit {
     recover.nausea = this.model.nausea;
     recover.state = StatusService.TERMINADO;
     this.markDepartureOrderDate();
+    // Fecha de orden de salida (punto 9)
     recover.checkDate = this.model.fechaOrdenDeSalida;
     recover.simpleCheckDateOrder = this.datepipe.transform(recover.checkDate, 'yyyy-MM-dd')!;
     recover.simpleCheckHourOrder = this.datepipe.transform(recover.checkDate, 'HH:mm:ss')!;
     return recover;
   }
 
-  private numericValue(valor: any): number {
-    return valor === '' ? null : valor;
+  private numericValue(valor: any): number | null {
+    if (valor === '' || valor === null || valor === undefined) {
+      return null;
+    }
+    // Si el valor es '-1' (No aplica), retornamos null
+    if (valor === '-1') {
+      return null;
+    }
+    return Number(valor);
   }
 
   private redirectToSelectedPage(): void {

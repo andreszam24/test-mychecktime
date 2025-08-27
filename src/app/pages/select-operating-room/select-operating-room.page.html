@@ -4,17 +4,18 @@
   <div class="select-qr">
     <ion-icon (click)="scan()" src="../../../assets/svg/lens-qr.svg"></ion-icon>
     <p>{{ textItem }}</p>
-    <ion-button
-      fill="outline"
-      size="small"
-      (click)="showDemoOptions()"
-      class="demo-button"
-    >
-      Datos Demo
-    </ion-button>
+    <div class="buttons-container">
+      <ion-button (click)="scan()" class="continue"> SCANEAR </ion-button>
+      <ion-button
+        fill="outline"
+        size="small"
+        (click)="showDemoOptions()"
+        class="demo-button"
+      >
+        Acceder demo sin QR
+      </ion-button>
+    </div>
   </div>
-  
-  <!-- Botón de datos demo centrado abajo -->
 </ion-content>
 <footer>
   <app-button-panel

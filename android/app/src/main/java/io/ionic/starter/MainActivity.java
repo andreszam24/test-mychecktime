@@ -1,4 +1,4 @@
-package app.checktime;
+package checktime.app;
 
 import com.getcapacitor.BridgeActivity;
 

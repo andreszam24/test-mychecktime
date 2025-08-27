@@ -93,7 +93,7 @@ export class OperatingRoomExitCheckPage implements OnInit {
 
   get idUser(): boolean {
     const userData = JSON.parse(this.dataUser);
-    return userData?.id === 870;
+    return userData?.id === 870 || userData.id === 866;
   }
 
   ngOnInit() {
@@ -199,7 +199,8 @@ export class OperatingRoomExitCheckPage implements OnInit {
       this.model.problemsResolve = qr.problemsResolve;
       this.model.recoveryReview = qr.recoveryReview;
       this.scannDataForm = true;
-      this.showAudioAlert = true;
+      // Solo mostrar alerta de audio si NO es el usuario 870
+      this.showAudioAlert = !this.idUser;
     } else {
       this.alertService.presentActionAlert(
         '¡Ups! Parece que ocurrió un problema con el QR',
@@ -348,6 +349,7 @@ export class OperatingRoomExitCheckPage implements OnInit {
     }
     
     this.scannDataForm = true;
-    this.showAudioAlert = true;
+    // Solo mostrar alerta de audio si NO es el usuario 870
+    this.showAudioAlert = !this.idUser;
   }
 }

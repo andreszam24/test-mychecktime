@@ -1,9 +1,9 @@
 
 export class Recover {
 
-  aldrete: number;
-  bromage: number;
-  ramsay: number;
+  aldrete: number | null;
+  bromage: number | null;
+  ramsay: number | null;
   eva: number;
   nausea: boolean;
   checkDate: Date; // Fecha Orden de salida

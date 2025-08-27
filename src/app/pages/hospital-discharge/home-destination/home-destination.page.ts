@@ -51,15 +51,30 @@ export class HomeDestinationPage {
       if (!sm.patientsExit.recover) {
         sm.patientsExit.recover = new Recover();
       }
-      if (this.idRole) {
-        
-        this.recover = this.addDummyDataToRecoveryDischarge();
-        sm.patientsExit.recover = this.recover;
-      }
-      const ordenDeSalida = new Date(sm.patientsExit.recover.checkDate);
-      this.minimumSelectableDate = DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(ordenDeSalida));
+      // Ya no necesitamos crear datos dummy para idRole = 4
+      // porque ahora se guardan los datos reales en recovery.page.ts
+      // if (this.idRole) {
+      //   this.recover = this.addDummyDataToRecoveryDischarge();
+      //   sm.patientsExit.recover = this.recover;
+      // }
+              const ordenDeSalida = new Date(sm.patientsExit.recover.checkDate);
+        console.log('🔄 === HOME-DESTINATION - LEYENDO DATOS ===');
+        console.log('📊 sm.patientsExit.recover:', sm.patientsExit.recover);
+        console.log('📅 ordenDeSalida original:', ordenDeSalida);
+        console.log('⏰ simpleCheckHourOrder:', sm.patientsExit.recover.simpleCheckHourOrder);
+        console.log('⏰ simpleCheckDateOrder:', sm.patientsExit.recover.simpleCheckDateOrder);
+        console.log('🔄 === FIN LEYENDO DATOS ===');
+      
+      // La hora mínima debe ser 1 minuto después de la orden de salida
+      const horaMinima = new Date(sm.patientsExit.recover.checkDate);
+      horaMinima.setMinutes(horaMinima.getMinutes() + 1);
+      
+      this.minimumSelectableDate = DateUtilsService.iso8601DateTime(DateUtilsService.toColombianOffset(horaMinima));
+      console.log('📅 horaMinima (1 minuto después):', horaMinima);
+      console.log('📅 minimumSelectableDate:', this.minimumSelectableDate);
+      console.log('🔄 === FIN ionViewWillEnter ===');
     } catch (error) {
-      console.error('Error cargando datos iniciales:', error);
+      console.error('❌ Error cargando datos iniciales:', error);
     } finally {
       this.loadingService.dismiss();
     }
@@ -78,14 +93,16 @@ export class HomeDestinationPage {
   }
 
   showMessageDateLess() {
-    this.alertService.presentBasicAlert('Atención', 'Recuerda ingresar la hora real de salida o traslado de la UCPA.');
+    this.alertService.presentBasicAlert(
+      'Atención', 
+      'La fecha y hora de salida debe ser posterior a la orden de salida. Por favor, selecciona una fecha y hora válida.'
+    );
   }
 
   checkDate() {
-    const horaRealdeSalida = new Date(this.model.envioDestinoHoraManual);
-    this.recover.checkDate = horaRealdeSalida;
-    this.recover.simpleCheckDateOrder = this.datepipe.transform(this.recover.checkDate, 'yyyy-MM-dd')!;
-    this.recover.simpleCheckHourOrder = this.datepipe.transform(this.recover.checkDate, 'HH:mm:ss')!;
+    // Este método ya no es necesario para modificar recover.checkDate
+    // ya que recover.checkDate debe mantener la fecha de orden de salida
+    // La hora real de salida se maneja directamente en goToNextPage()
   }
 
   addDummyDataToRecoveryDischarge(): Recover {
@@ -98,7 +115,6 @@ export class HomeDestinationPage {
     recover.nausea = false;
     recover.state = StatusService.TERMINADO;
     const now = new Date();
-    now.setTime(now.getTime() - (10 * 60 * 1000));
     recover.checkDate = now;
     recover.simpleCheckDateOrder = this.datepipe.transform(recover.checkDate, 'yyyy-MM-dd')!;
     recover.simpleCheckHourOrder = this.datepipe.transform(recover.checkDate, 'HH:mm:ss')!;
@@ -112,19 +128,31 @@ export class HomeDestinationPage {
     const horaRealdeSalida = new Date(this.model.envioDestinoHoraManual);
     const horaOrdenDeSalida = new Date(this.minimumSelectableDate);
 
-    if (horaRealdeSalida > horaOrdenDeSalida) {
+    console.log('📊 === VALIDACIÓN FECHA/HORA ===');
+    console.log('📅 Fecha/Hora seleccionada por usuario:', horaRealdeSalida);
+    console.log('📅 Fecha/Hora mínima permitida:', horaOrdenDeSalida);
+    console.log('✅ ¿Es válida?', horaRealdeSalida >= horaOrdenDeSalida);
+    console.log('📊 === FIN VALIDACIÓN ===');
+
+    // Validar que la fecha y hora seleccionada sea posterior a la orden de salida
+    if (horaRealdeSalida >= horaOrdenDeSalida) {
       await this.loadingService.showLoadingBasic("Cargando...");
-      this.checkDate();
 
       this.medicalService.getInProgressMedicalAtenttion().then(sm => {
         if (!sm.patientsExit) {
           sm.patientsExit = new PatientsExitList();
         }
+        if (!sm.patientsExit.recover) {
+          sm.patientsExit.recover = new Recover();
+        }
+        
         sm.patientsExit.destination = 'CASA';
-        sm.patientsExit.recover = this.recover;
-        sm.patientsExit.checkDate = this.recover.checkDate;
-        sm.patientsExit.simpleCheckDate = this.recover.simpleCheckDateOrder;
-        sm.patientsExit.simpleCheckHour = this.recover.simpleCheckHourOrder;
+        // Preservar el recover existente - NO modificarlo
+        
+        // Hora real de salida (punto 10) - se guarda en patientsExit.checkDate
+        sm.patientsExit.checkDate = horaRealdeSalida;
+        sm.patientsExit.simpleCheckDate = this.datepipe.transform(horaRealdeSalida, 'yyyy-MM-dd')!;
+        sm.patientsExit.simpleCheckHour = this.datepipe.transform(horaRealdeSalida, 'HH:mm:ss')!;
 
         sm.patientsExit.description = this.model.description;
         sm.patientsExit.state = StatusService.TERMINADO;

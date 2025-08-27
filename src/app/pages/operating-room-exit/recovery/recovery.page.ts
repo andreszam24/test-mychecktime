@@ -15,6 +15,7 @@ import { FromOperatingRoomTo } from 'src/app/models/from-operating-room-to.model
 import { LoadingService } from 'src/app/services/utilities/loading.service';
 import { InternetStatusComponent } from '../../../components/internet-status/internet-status.component';
 import { USER_KEY } from 'src/app/services/auth.service';
+import { PatientsExitList } from 'src/app/models/patients-exit-list.model';
 
 @Component({
   selector: 'app-recovery',
@@ -62,11 +63,31 @@ export class RecoveryPage implements OnInit {
 
   get idUser(): boolean {
     const userData = JSON.parse(this.dataUser);
-    return userData?.id === 870;
+    return userData?.id === 870 || userData?.id === 866;
+  }
+
+  get idRole(): boolean {
+    const userData = JSON.parse(this.dataUser);
+    return userData?.roles?.[0]?.id === 4;
   }
 
   ngOnInit() {
+    if (this.idRole) {
+      // Para idRole = 4, inicializar el modelo como en destination-selection
+      this.initializeModelForRole4();
+    }
     this.openModal();
+  }
+
+  private initializeModelForRole4() {
+    // Inicializar el modelo con los mismos valores que destination-selection
+    this.model = {
+      aldrete: '-1',
+      bromage: '-1',
+      ramsay: '-1',
+      eva: 0,
+      nausea: false
+    };
   }
 
   // initializeModel() {
@@ -175,7 +196,6 @@ export class RecoveryPage implements OnInit {
   private async readQR() {
     const { barcodes } = await BarcodeScanner.scan();
     let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    console.log('qrqrqrqr', qr);
     if (qr && qr.onlyRecovery) {
       this.model.aldrete = qr.aldrete;
       this.model.bromage = qr.bromage;
@@ -270,7 +290,11 @@ export class RecoveryPage implements OnInit {
           .then((result) => {
             this.loadingService.dismiss();
             if (result) {
-              this.navCtrl.navigateForward('/home');
+              if (this.idRole) {
+                this.executeDestinationLogic();
+              } else {
+                this.navCtrl.navigateForward('/home');
+              }
             }
           })
           .catch(() => {
@@ -285,6 +309,102 @@ export class RecoveryPage implements OnInit {
       });
   }
 
+  private async executeDestinationLogic() {
+    await this.loadingService.showLoadingBasic('Configurando destino...');
+    
+    try {
+      const sm = await this.medicalService.getInProgressMedicalAtenttion();
+  
+      const patientsExit = new PatientsExitList();
+      patientsExit.destination = 'CASA';
+      patientsExit.state = StatusService.SELECCION_DESTINO;
+      
+      const processedRecover = this.processRecoverForDestination();
+      patientsExit.recover = processedRecover;
+      
+      // NO establecer patientsExit.checkDate aquí - eso se hace en home-destination
+      // patientsExit.checkDate se usa para la hora real de salida (punto 10)
+      patientsExit.simpleCheckDate = '';
+      patientsExit.simpleCheckHour = '';
+      patientsExit.description = '';
+      
+      sm.patientsExit = patientsExit;
+      sm.state = StatusService.DESTINO_CASA;
+      
+      console.log('🔄 === RECOVERY - ANTES DE GUARDAR (idRole=4) ===');
+      console.log('📊 sm.patientsExit.recover:', sm.patientsExit.recover);
+      console.log('📅 recover.checkDate:', sm.patientsExit.recover.checkDate);
+      console.log('📅 recover.simpleCheckDateOrder:', sm.patientsExit.recover.simpleCheckDateOrder);
+      console.log('📅 recover.simpleCheckHourOrder:', sm.patientsExit.recover.simpleCheckHourOrder);
+      console.log('🔄 === FIN ANTES DE GUARDAR ===');
+      
+      const result = await this.medicalService.saveMedicalAttention(sm, 'sync');
+      
+      console.log('🔄 === RECOVERY - RESPUESTA DE DB (idRole=4) ===');
+      console.log('✅ Resultado:', result);
+      console.log('🔄 === FIN RESPUESTA DE DB ===');
+      
+      this.loadingService.dismiss();
+      if (result) {
+        this.navCtrl.navigateForward('/home-destination');
+      } else {
+        this.navCtrl.navigateForward('/home');
+      }
+      
+    } catch (error) {
+      console.error('Error ejecutando lógica de destination:', error);
+      this.loadingService.dismiss();
+      this.navCtrl.navigateForward('/home');
+    }
+  }
+
+  private processRecoverForDestination(): Recover {
+    const recover = new Recover();
+    
+    if (this.idRole) {
+      // Para idRole = 4, usar los mismos valores que destination-selection
+      recover.aldrete = this.numericValue(this.model.aldrete);
+      recover.bromage = this.numericValue(this.model.bromage);
+      recover.ramsay = this.numericValue(this.model.ramsay);
+      recover.eva = this.model.eva;
+      recover.nausea = this.model.nausea;
+    } else {
+      recover.aldrete = this.numericValue(this.model.aldrete);
+      recover.bromage = this.numericValue(this.model.bromage);
+      recover.ramsay = this.numericValue(this.model.ramsay);
+      recover.eva = this.model.eva;
+      recover.nausea = this.model.nausea;
+    }
+    
+    recover.state = StatusService.TERMINADO;
+    
+    // Fecha de orden de salida (punto 9) - igual que destination-selection
+    // Usar la misma lógica que markDepartureOrderDate() en destination-selection
+    const fechaOrdenDeSalida = new Date();
+    recover.checkDate = fechaOrdenDeSalida;
+    recover.simpleCheckDateOrder = this.datepipe.transform(fechaOrdenDeSalida, 'yyyy-MM-dd')!;
+    recover.simpleCheckHourOrder = this.datepipe.transform(fechaOrdenDeSalida, 'HH:mm:ss')!;
+    
+    console.log('🔄 === RECOVERY - GUARDANDO ORDEN DE SALIDA (idRole=4) ===');
+    console.log('📅 fechaOrdenDeSalida:', fechaOrdenDeSalida);
+    console.log('📅 recover.checkDate:', recover.checkDate);
+    console.log('📅 recover.simpleCheckDateOrder:', recover.simpleCheckDateOrder);
+    console.log('📅 recover.simpleCheckHourOrder:', recover.simpleCheckHourOrder);
+    console.log('🔄 === FIN GUARDANDO ORDEN DE SALIDA ===');
+    
+    return recover;
+  }
+
+  private numericValue(valor: any): number | null {
+    if (valor === '' || valor === null || valor === undefined) {
+      return null;
+    }
+    if (valor === '-1') {
+      return null;
+    }
+    return Number(valor);
+  }
+
   private mapViewToModel(): Recover {
     this.recover.aldrete = this.valorNumerico(this.model.aldrete);
     this.recover.bromage = this.valorNumerico(this.model.bromage);
@@ -295,7 +415,7 @@ export class RecoveryPage implements OnInit {
     return this.recover;
   }
 
-  private valorNumerico(valor: any): number {
+  private valorNumerico(valor: any): number | null {
     return valor === '' ? null : valor;
   }
 

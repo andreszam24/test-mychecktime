@@ -26,6 +26,11 @@ export class AnesthesiaOperatingRoomPage implements OnInit, OnDestroy {
   elapsedTime: string = '00:00:00';
   startTime: Date | null = null;
   isTimerFinished: boolean = false;
+  isTimerPaused: boolean = false;
+  pauseTime: Date | null = null;
+  showFinalizeButton: boolean = false;
+  startSurgeryTime: string = '';
+  endSurgeryTime: string = '';
 
   datepipe = new DatePipe('en-US');
   constructor(
@@ -217,6 +222,9 @@ export class AnesthesiaOperatingRoomPage implements OnInit, OnDestroy {
       sm.operatingRoomList.simpleStartSurgeryDate = this.datepipe.transform(sm.operatingRoomList.startSurgery,'yyyy-MM-dd')!;
       sm.operatingRoomList.simpleStartSurgeryHour = this.datepipe.transform(sm.operatingRoomList.startSurgery,'HH:mm:ss')!;
       
+      // Guardar hora de inicio para mostrar en la UI
+      this.startSurgeryTime = sm.operatingRoomList.simpleStartSurgeryHour?.toString() || '';
+      
       sm.operatingRoomList.status = StatusService.START_SURGERY;
       sm.state = StatusService.START_SURGERY;
       
@@ -235,10 +243,17 @@ export class AnesthesiaOperatingRoomPage implements OnInit, OnDestroy {
   goToFinCirugia() {
     this.inhabilitarOpcionEventoCancelar();
     this.stopTimer();
+    
+    // Guardar el tiempo de pausa
+    this.pauseTime = new Date();
+    
     const check = (sm: MedicalAttention) => {
       sm.operatingRoomList.endSurgery = new Date();
       sm.operatingRoomList.simpleEndSurgeryDate = this.datepipe.transform(sm.operatingRoomList.endSurgery,'yyyy-MM-dd')!;
       sm.operatingRoomList.simpleEndSurgeryHour = this.datepipe.transform(sm.operatingRoomList.endSurgery,'HH:mm:ss')!;
+
+      // Guardar hora de fin para mostrar en la UI
+      this.endSurgeryTime = sm.operatingRoomList.simpleEndSurgeryHour?.toString() || '';
 
       sm.operatingRoomList.status = StatusService.TERMINADO;
       sm.state = StatusService.END_SUGERY;
@@ -253,7 +268,12 @@ export class AnesthesiaOperatingRoomPage implements OnInit, OnDestroy {
       console.log('📋 Datos completos operatingRoomList:', sm.operatingRoomList);
     }
 
-    const success = () => this.navCtrl.navigateForward('/operating-room-exit-check');
+    // En lugar de navegar inmediatamente, mostrar el botón "Continuar"
+    const success = () => {
+      console.log('✅ Fin de cirugía guardado, mostrando botón continuar');
+      this.showFinalizeButton = true;
+      this.cdr.detectChanges();
+    };
 
     this.checkItemAndSave(check, success);
   }
@@ -312,9 +332,26 @@ export class AnesthesiaOperatingRoomPage implements OnInit, OnDestroy {
 
   private stopTimer() {
     this.isTimerRunning = false;
+    this.isTimerPaused = true;
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
       this.timerInterval = null;
+    }
+  }
+
+
+
+  finalizeTimer() {
+    if (this.showFinalizeButton) {
+      this.isTimerFinished = true;
+      this.isTimerPaused = false;
+      this.showFinalizeButton = false;
+      
+      console.log('✅ Timer finalizado por usuario');
+      console.log('⏱️ Tiempo final:', this.elapsedTime);
+      
+      // Continuar con el flujo normal
+      this.navCtrl.navigateForward('/operating-room-exit-check');
     }
   }
 
@@ -344,10 +381,16 @@ export class AnesthesiaOperatingRoomPage implements OnInit, OnDestroy {
     this.medicalService.getInProgressMedicalAtenttion().then(sm => {
       if (sm && sm.operatingRoomList) {
         if (sm.operatingRoomList.startSurgery) {
+          // Cargar hora de inicio
+          this.startSurgeryTime = sm.operatingRoomList.simpleStartSurgeryHour?.toString() || '';
+          
           if (!sm.operatingRoomList.endSurgery) {
             this.startTimerFromExistingData(sm.operatingRoomList.startSurgery);
           } else {
             this.showFinalSurgeryTime(sm.operatingRoomList.startSurgery, sm.operatingRoomList.endSurgery);
+            // Cargar hora de fin
+            this.endSurgeryTime = sm.operatingRoomList.simpleEndSurgeryHour?.toString() || '';
+            this.showFinalizeButton = true;
           }
         }
         
