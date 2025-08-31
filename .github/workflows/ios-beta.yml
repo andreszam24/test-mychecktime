@@ -31,7 +31,10 @@ jobs:
           npx cap add ios || true
           npx ionic build --prod
           npx cap sync ios
-      
+
+      - name: (TEMP) Probar acceso repo firmas
+        run: git -c http.extraheader="Authorization: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}" ls-remote "${{ secrets.MATCH_GIT_URL }}"
+
       - name: Inyectar permisos en Info.plist (cámara)
         run: |
           INFO_PLIST="ios/App/App/Info.plist"
