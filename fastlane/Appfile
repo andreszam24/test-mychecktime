@@ -1,0 +1,2 @@
+app_identifier(ENV["APP_IDENTIFIER"])   # co.com.mychecktime.app
+team_id(ENV["APPLE_TEAM_ID"])           # tu Team ID (viene del secret)
