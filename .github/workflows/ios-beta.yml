@@ -31,6 +31,18 @@ jobs:
           npx cap add ios || true
           npx ionic build --prod
           npx cap sync ios
+      
+      - name: Inyectar permisos en Info.plist (cámara)
+        run: |
+          INFO_PLIST="ios/App/App/Info.plist"
+
+          # Asegura que exista el archivo (Capacitor lo genera en el paso anterior)
+          test -f "$INFO_PLIST"
+
+          # NSCameraUsageDescription
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'Necesitamos acceso a la cámara para escanear códigos QR y códigos de barras.'" "$INFO_PLIST" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription 'Necesitamos acceso a la cámara para escanear códigos QR y códigos de barras.'" "$INFO_PLIST"
+
 
       - name: Fastlane beta (TestFlight)
         env:
