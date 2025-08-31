@@ -33,9 +33,12 @@ jobs:
           npx cap sync ios
 
       - name: (TEMP) Probar acceso repo firmas
+        env:
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
         run: |
-          git -c http.extraheader="Authorization: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}" \
-              ls-remote "${{ secrets.MATCH_GIT_URL }}"
+          git -c http.extraheader="Authorization: ${MATCH_GIT_BASIC_AUTHORIZATION}" ls-remote "${MATCH_GIT_URL}"
+
 
 
       - name: Inyectar permisos en Info.plist (cámara)
