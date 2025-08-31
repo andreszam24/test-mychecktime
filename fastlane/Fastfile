@@ -22,12 +22,16 @@ platform :ios do
       type: "appstore",
       app_identifier: ENV["APP_IDENTIFIER"],
       git_url: ENV["MATCH_GIT_URL"],
+      git_branch: "main",                # usa la rama por defecto de tu repo de firmas
+      shallow_clone: true,
+      clone_branch_directly: true,       # más rápido y evita timeouts
       git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
       readonly: false,
       keychain_name: "build.keychain",
       keychain_password: "ci",
       api_key: api_key
     )
+
 
     sh "npm ci || npm install"
     # Asegura que la plataforma iOS exista en el runner
