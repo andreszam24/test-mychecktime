@@ -26,7 +26,7 @@ jobs:
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
         run: |
-          npm ci || npm install
+          npm install --no-audit --no-fund
           npx ionic --version || npx -y @ionic/cli --version
           npx cap add ios || true
           npx ionic build --prod
