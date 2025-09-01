@@ -68,6 +68,8 @@ jobs:
           test -f "$INFO_PLIST"
           /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'Necesitamos acceso a la cámara para escanear códigos QR y códigos de barras.'" "$INFO_PLIST" 2>/dev/null || \
           /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription 'Necesitamos acceso a la cámara para escanear códigos QR y códigos de barras.'" "$INFO_PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'Necesitamos acceder a tu galería para que puedas seleccionar y adjuntar imágenes.'" "$INFO_PLIST" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set :NSPhotoLibraryUsageDescription 'Necesitamos acceder a tu galería para que puedas seleccionar y adjuntar imágenes.'" "$INFO_PLIST"
 
       - name: Setup SSH for match
         env:
