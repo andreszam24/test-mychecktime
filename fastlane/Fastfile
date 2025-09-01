@@ -30,7 +30,10 @@ platform :ios do
     )
 
     # Asegura que la plataforma iOS exista en el runner
-    UI.user_error!("iOS platform is missing. Run 'npx cap add ios && npx cap sync ios' before invoking this lane.") unless Dir.exist?("ios")
+    unless Dir.exist?("ios")
+          sh("npx cap add ios")
+          sh("npx cap sync ios")
+    end
 
     increment_build_number(
       xcodeproj: "ios/App/App.xcodeproj",
