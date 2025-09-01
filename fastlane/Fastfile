@@ -52,10 +52,12 @@ platform :ios do
     build_app(
       workspace: File.expand_path("ios/App/App.xcworkspace"),
       scheme: "App",
+      configuration: "Release",
       export_method: "app-store",
       output_directory: "build",
       clean: true,
       export_team_id: ENV["APPLE_TEAM_ID"],
+      allowProvisioningUpdates: true,
       xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} CODE_SIGN_STYLE=Automatic"
     )
 
