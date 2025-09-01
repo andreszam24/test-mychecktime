@@ -69,7 +69,7 @@ platform :ios do
       codesigning_identity: "Apple Distribution",
       export_options: {
         provisioningProfiles: {
-          [cite_start]ENV["APP_IDENTIFIER"] => profile_name
+          ENV["APP_IDENTIFIER"] => profile_name
         }
       },
       xcargs: xcargs
