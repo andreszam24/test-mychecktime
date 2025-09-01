@@ -29,7 +29,6 @@ platform :ios do
       api_key: api_key
     )
 
-    sh "npm ci || npm install"
     # Asegura que la plataforma iOS exista en el runner
     sh "npx cap add ios || true"
     sh "npx ionic build --prod"
