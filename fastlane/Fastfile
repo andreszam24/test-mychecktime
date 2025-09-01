@@ -56,7 +56,7 @@ platform :ios do
     )
 
     profile_name = "match AppStore #{ENV['APP_IDENTIFIER']}"
-    xcargs = "-allowProvisioningUpdates CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} PROVISIONING_PROFILE_SPECIFIER='#{profile_name}'"
+    xcargs = "-allowProvisioningUpdates CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']}"
 
     build_app(
       workspace: File.expand_path("ios/App/App.xcworkspace"),
@@ -68,11 +68,13 @@ platform :ios do
       export_team_id: ENV["APPLE_TEAM_ID"],
       codesigning_identity: "Apple Distribution",
       export_options: {
+        # CORRECTO: Aquí es donde se especifica el perfil para tu app.
+        # Esta configuración se aplica durante la exportación del IPA.
         provisioningProfiles: {
-          ENV["APP_IDENTIFIER"] => profile_name
+          [cite_start]ENV["APP_IDENTIFIER"] => profile_name # [cite: 7]
         }
       },
-      xcargs: xcargs
+      xcargs: xcargs # Pasamos los argumentos corregidos
     )
 
     upload_to_testflight(
