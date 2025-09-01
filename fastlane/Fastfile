@@ -30,9 +30,12 @@ platform :ios do
     )
 
     # Asegura que la plataforma iOS exista en el runner
-    sh("npx cap add ios") unless Dir.exist?("ios")
-    sh "npx ionic build --prod"
-    sh "npx cap sync ios"
+    project_root = File.expand_path("..", __dir__)
+    Dir.chdir(project_root) do
+      sh("npx cap add ios") unless Dir.exist?("ios")
+      sh "npx ionic build --prod"
+      sh "npx cap sync ios"
+    end
 
     increment_build_number(
       xcodeproj: "ios/App/App.xcodeproj",
