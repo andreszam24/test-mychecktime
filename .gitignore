@@ -156,3 +156,10 @@ packages/react/test/build/
 packages/react-router/test/build/
 
 .npmrc
+# Claves y perfiles iOS
+match_ci
+*.pem
+*.p8
+*.p12
+*.mobileprovision
+*.key

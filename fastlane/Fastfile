@@ -23,8 +23,6 @@ platform :ios do
       app_identifier: ENV["APP_IDENTIFIER"],
       git_url: ENV["MATCH_GIT_URL"],
       shallow_clone: true,
-      # git_branch: "main",   # <- opcional; MEJOR omitir en el primer run
-      git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
       readonly: false,
       keychain_name: "build.keychain",
       keychain_password: "ci",

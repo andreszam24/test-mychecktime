@@ -1,7 +1,7 @@
 name: iOS Beta (TestFlight)
 
 on:
-  workflow_dispatch: {}   # lo lanzas manualmente
+  workflow_dispatch: {}
 
 jobs:
   build:
@@ -32,35 +32,32 @@ jobs:
           npx ionic build --prod
           npx cap sync ios
 
-      - name: (TEMP) Probar acceso repo firmas
-        env:
-          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
-          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-        run: |
-          git -c http.extraheader="Authorization: ${MATCH_GIT_BASIC_AUTHORIZATION}" ls-remote "${MATCH_GIT_URL}"
-
-
-
       - name: Inyectar permisos en Info.plist (cámara)
         run: |
           INFO_PLIST="ios/App/App/Info.plist"
-
-          # Asegura que exista el archivo (Capacitor lo genera en el paso anterior)
           test -f "$INFO_PLIST"
-
-          # NSCameraUsageDescription
           /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'Necesitamos acceso a la cámara para escanear códigos QR y códigos de barras.'" "$INFO_PLIST" 2>/dev/null || \
           /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription 'Necesitamos acceso a la cámara para escanear códigos QR y códigos de barras.'" "$INFO_PLIST"
 
+      - name: Setup SSH for match
+        env:
+          MATCH_SSH_PRIVATE_KEY: ${{ secrets.MATCH_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$MATCH_SSH_PRIVATE_KEY" > ~/.ssh/match_key
+          chmod 600 ~/.ssh/match_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/match_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
 
       - name: Fastlane beta (TestFlight)
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_KEY_B64: ${{ secrets.ASC_KEY_B64 }}
-          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
-          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}  # git@github.com:<OWNER>/ios-signing-certificates.git
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          GIT_SSH_COMMAND: 'ssh -i ~/.ssh/match_key -o UserKnownHostsFile=~/.ssh/known_hosts -o StrictHostKeyChecking=yes'
         run: bundle exec fastlane beta
