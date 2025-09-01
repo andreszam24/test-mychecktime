@@ -68,13 +68,11 @@ platform :ios do
       export_team_id: ENV["APPLE_TEAM_ID"],
       codesigning_identity: "Apple Distribution",
       export_options: {
-        # CORRECTO: Aquí es donde se especifica el perfil para tu app.
-        # Esta configuración se aplica durante la exportación del IPA.
         provisioningProfiles: {
-          [cite_start]ENV["APP_IDENTIFIER"] => profile_name # [cite: 7]
+          [cite_start]ENV["APP_IDENTIFIER"] => profile_name
         }
       },
-      xcargs: xcargs # Pasamos los argumentos corregidos
+      xcargs: xcargs
     )
 
     upload_to_testflight(
