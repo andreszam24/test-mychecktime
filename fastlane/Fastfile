@@ -40,9 +40,9 @@ platform :ios do
     UI.user_error!("Could not find Xcode project at #{xcodeproj_path}") unless File.exist?(xcodeproj_path)
 
     update_project_team(
-        path: xcodeproj_path,
-        teamid: ENV["APPLE_TEAM_ID"]
-      )
+      path: xcodeproj_path,
+      teamid: ENV["APPLE_TEAM_ID"]
+    )
 
     increment_build_number(
       xcodeproj: xcodeproj_path,
@@ -57,8 +57,7 @@ platform :ios do
       output_directory: "build",
       clean: true,
       export_team_id: ENV["APPLE_TEAM_ID"],
-      allowProvisioningUpdates: true,
-      xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} CODE_SIGN_STYLE=Automatic"
+      xcargs: "-allowProvisioningUpdates DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} CODE_SIGN_STYLE=Automatic"
     )
 
     upload_to_testflight(
