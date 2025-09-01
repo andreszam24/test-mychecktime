@@ -30,13 +30,13 @@ platform :ios do
     )
 
     # Asegura que la plataforma iOS exista en el runner
-    Dir.chdir("..") do
+    Dir.chdir(File.expand_path("..", __dir__)) do
       unless Dir.exist?("ios")
         sh("npx cap add ios")
         sh("npx cap sync ios")
       end
 
-    increment_build_number(
+      increment_build_number(
         xcodeproj: "ios/App/App.xcodeproj",
         build_number: Time.now.strftime('%Y%m%d%H%M')
       )
