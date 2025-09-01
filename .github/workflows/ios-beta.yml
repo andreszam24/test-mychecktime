@@ -34,17 +34,32 @@ jobs:
       
       - name: Deshabilitar firma de código para Pods
         run: |
-          PODFILE="ios/App/Podfile"
-          cat <<EOF >> "$PODFILE"
+          PODFILE_PATH="ios/App/Podfile"
 
-          post_install do |installer|
+          cat <<RUBY > modify_podfile.rb
+          require 'fileutils'
+
+          podfile_path = ENV['PODFILE_PATH']
+
+          code_to_inject = <<-CODE
             installer.pods_project.targets.each do |target|
               target.build_configurations.each do |config|
                 config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
               end
             end
-          end
-          EOF
+          CODE
+
+          lines = File.readlines(podfile_path)
+          last_line = lines.pop
+          lines.push(code_to_inject)
+          lines.push(last_line)
+
+          File.write(podfile_path, lines.join)
+          RUBY
+
+          export PODFILE_PATH=$PODFILE_PATH
+          ruby modify_podfile.rb
+
           cd ios/App && pod install && cd ../..
 
       - name: Inyectar permisos en Info.plist (cámara)
@@ -70,7 +85,7 @@ jobs:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_KEY_B64: ${{ secrets.ASC_KEY_B64 }}
-          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}  # git@github.com:<OWNER>/ios-signing-certificates.git
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}  
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
