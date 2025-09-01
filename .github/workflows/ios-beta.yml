@@ -35,7 +35,16 @@ jobs:
       - name: Deshabilitar firma de código para Pods
         run: |
           PODFILE="ios/App/Podfile"
-          echo "\n\npost_install do |installer|\n  installer.pods_project.targets.each do |target|\n    target.build_configurations.each do |config|\n      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'\n    end\n  end\nend" >> "$PODFILE"
+          cat <<EOF >> "$PODFILE"
+
+          post_install do |installer|
+            installer.pods_project.targets.each do |target|
+              target.build_configurations.each do |config|
+                config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+              end
+            end
+          end
+          EOF
           cd ios/App && pod install && cd ../..
 
       - name: Inyectar permisos en Info.plist (cámara)
