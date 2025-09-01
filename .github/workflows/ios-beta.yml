@@ -28,7 +28,7 @@ jobs:
         run: |
           npm install --no-audit --no-fund
           npx ionic --version || npx -y @ionic/cli --version
-          npx cap add ios || true
+          if [ ! -d ios ]; then npx cap add ios; fi
           npx ionic build --prod
           npx cap sync ios
 
