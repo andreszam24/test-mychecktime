@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'co.com.mychecktime.app',
-  appName: 'MyCheckTime',
+  appName: 'MyCheckTime – Smart Checklists',
   webDir: 'www',
   bundledWebRuntime: false,
   plugins: {
