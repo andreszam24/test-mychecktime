@@ -29,6 +29,14 @@ jobs:
           npm install --no-audit --no-fund
           npx ionic build --prod
           npx cap sync ios
+
+      - name: Forzar Bundle ID correcto
+        env:
+          APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }} 
+        run: |
+          echo "Forzando Bundle ID a: $APP_IDENTIFIER"
+          XCODE_PROJ_FILE="ios/App/App.xcodeproj/project.pbxproj"
+          sed -i.bak "s/io.ionic.starter/$APP_IDENTIFIER/g" "$XCODE_PROJ_FILE"  
       
       - name: Deshabilitar firma de código para Pods
         run: |
