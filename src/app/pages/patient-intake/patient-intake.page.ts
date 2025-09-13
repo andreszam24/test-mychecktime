@@ -254,50 +254,98 @@ export class PatientIntakePage implements OnInit, OnDestroy {
 
   private async attemptScan(): Promise<void> {
     try {
-      await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable()
-        .then(async (data) => {
-          if (data.available) {
-            await this.readQR();
-          } else {
-            await BarcodeScanner.installGoogleBarcodeScannerModule().then(
-              async () => {
-                await this.readQR();
-              }
+      console.log('🔍 Verificando disponibilidad del módulo de escaneo...');
+      
+      // En iOS, no necesitamos el módulo de Google Barcode Scanner
+      // Vamos directamente al escaneo
+      const platform = await import('@capacitor/core').then(m => m.Capacitor.getPlatform());
+      console.log('📱 Plataforma detectada:', platform);
+      
+      if (platform === 'ios') {
+        console.log('🍎 iOS detectado, usando escáner nativo...');
+        await this.readQR();
+      } else {
+        // Para Android, verificar el módulo de Google
+        console.log('🤖 Android detectado, verificando módulo de Google...');
+        await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable()
+          .then(async (data) => {
+            console.log('📦 Estado del módulo de Google:', data);
+            if (data.available) {
+              console.log('✅ Módulo de Google disponible, iniciando escaneo...');
+              await this.readQR();
+            } else {
+              console.log('📥 Instalando módulo de Google...');
+              await BarcodeScanner.installGoogleBarcodeScannerModule().then(
+                async () => {
+                  console.log('✅ Módulo de Google instalado, iniciando escaneo...');
+                  await this.readQR();
+                }
+              );
+            }
+          })
+          .catch((error) => {
+            console.error('❌ Error verificando módulo de escaneo:', error);
+            this.cameraPermissionRequested = false;
+            this.alertService.presentBasicAlert(
+              'Error de escaneo',
+              'No se pudo inicializar el escáner. Por favor, intenta nuevamente.'
             );
-          }
-        })
-        .catch((error) => {
-          console.error('Error verificando módulo de escaneo:', error);
-          this.cameraPermissionRequested = false;
-          if (!this.medicalAttention?.patient) {
-            this.changeStatusManulIntake(true);
-          }
-        });
+            if (!this.medicalAttention?.patient) {
+              this.changeStatusManulIntake(true);
+            }
+          });
+      }
     } catch (error) {
-      console.error('Error en attemptScan:', error);
+      console.error('💥 Error en attemptScan:', error);
       this.cameraPermissionRequested = false;
+      this.alertService.presentBasicAlert(
+        'Error de escaneo',
+        'Ocurrió un error al intentar abrir la cámara. Por favor, verifica los permisos y vuelve a intentar.'
+      );
       this.changeStatusManulIntake(true);
     }
   }
 
   async scan(): Promise<void> {
     if (this.cameraPermissionRequested) {
+      console.log('⚠️ Scan ya en progreso, ignorando solicitud');
       return;
     }
 
+    console.log('📱 Iniciando proceso de escaneo...');
     this.cameraPermissionRequested = true;
 
     try {
+      // Verificar soporte del dispositivo primero
+      const supportResult = await BarcodeScanner.isSupported();
+      console.log('🔍 Soporte del dispositivo:', supportResult);
+      
+      if (!supportResult.supported) {
+        console.log('❌ Dispositivo no soporta escaneo de códigos');
+        await this.unsupportedBarcodeMessage();
+        this.changeStatusManulIntake(true);
+        return;
+      }
+
       const granted = await this.ensureCameraPermissions();
+      console.log('🔐 Permisos de cámara:', granted);
       
       if (granted) {
         await this.attemptScan();
+      } else {
+        console.log('❌ Permisos de cámara denegados');
+        this.changeStatusManulIntake(true);
       }
     } catch (error) {
-      console.error('Error en scan:', error);
+      console.error('💥 Error en scan:', error);
+      this.alertService.presentBasicAlert(
+        'Error de escaneo',
+        'No se pudo abrir la cámara. Por favor, verifica los permisos y vuelve a intentar.'
+      );
       this.changeStatusManulIntake(true);
     } finally {
       this.cameraPermissionRequested = false;
+      console.log('✅ Proceso de escaneo finalizado');
     }
   }
 
@@ -321,62 +369,120 @@ export class PatientIntakePage implements OnInit, OnDestroy {
   }
 
   private async readQR() {
-    const { barcodes } = await BarcodeScanner.scan();
-    let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    
-    if (qr && qr.patient) {
-      const isSamePatient = this.medicalAttention.patient?.dni === qr.patient.dni;
+    try {
+      console.log('📷 Iniciando escaneo de QR...');
       
-      if (isSamePatient && this.medicalAttention.patient?.dni) {
-        const newCupsCode = qr.procedureCodes?.[0]?.code;
-        const existingCupsCodes = this.medicalAttention.procedureCodes?.map(cup => cup.code) || [];
-        
-        if (newCupsCode && !existingCupsCodes.includes(newCupsCode)) {
-          this.medicalAttention.procedureCodes = [
-            ...this.medicalAttention.procedureCodes,
-            ...qr.procedureCodes
-          ];
-          
-          this.alertService.presentBasicAlert(
-            'CUPS agregado',
-            `Se agregó el código CUPS ${newCupsCode} al paciente ${qr.patient.name} ${qr.patient.lastname}`
-          );
-        } else if (newCupsCode && existingCupsCodes.includes(newCupsCode)) {
-          this.alertService.presentBasicAlert(
-            'CUPS duplicado',
-            `El código CUPS ${newCupsCode} ya está registrado para este paciente`
-          );
-        }
-      } else {
-        this.medicalAttention.patient = qr.patient;
-        this.medicalAttention.specialty = qr.specialty;
-        this.medicalAttention.procedureCodes = qr.procedureCodes || [];
-        this.medicalAttention.programming = qr.programming;
-        this.medicalAttention.numeroResgistro = qr.register;
-        
-        this.profileForm.patchValue({
-          registerCode: qr.register,
-          programmingType: qr.programming,
-          dni: qr.patient.dni,
-          name: qr.patient.name,
-          lastName: qr.patient.lastname,
-          gender: qr.patient.gender,
-          birthday: this.getBirthdayYearFromDate(qr.patient.birthday)
-        });
-        
-        this.changeStatusManulIntake(true);
-        this.changeStatusLookingForPatient(true);
+      // Configurar opciones de escaneo específicas para iOS
+      const scanOptions = {
+        formats: ['QR_CODE', 'PDF_417'] as any[],
+        // En iOS, no necesitamos configuraciones adicionales
+      };
+      
+      console.log('⚙️ Opciones de escaneo:', scanOptions);
+      
+      const result = await BarcodeScanner.scan(scanOptions);
+      console.log('📊 Resultado del escaneo:', result);
+      
+      if (!result.barcodes || result.barcodes.length === 0) {
+        console.log('❌ No se detectaron códigos en el escaneo');
+        this.alertService.presentActionAlert(
+          'No se detectó código',
+          'No se pudo detectar ningún código QR. Por favor, asegúrate de que el código esté bien visible y vuelve a intentar.',
+          () => {
+            this.cameraPermissionRequested = false;
+            this.changeStatusManulIntake(true);
+          }
+        );
+        return;
       }
       
-      this.cameraPermissionRequested = false;
-    } else {
-      this.alertService.presentActionAlert(
-        '¡Ups! Parece que ocurrió un problema con el QR',
-        'Por favor, escanea un código QR valido para continuar.',
-        () => {
+      const barcode = result.barcodes[0];
+      console.log('🔍 Código detectado:', barcode);
+      
+      let qr = this.parseJSONMedicalAttentionSafely(barcode.displayValue);
+      console.log('📋 QR parseado:', qr);
+      
+      if (qr && qr.patient) {
+        const isSamePatient = this.medicalAttention.patient?.dni === qr.patient.dni;
+        
+        if (isSamePatient && this.medicalAttention.patient?.dni) {
+          const newCupsCode = qr.procedureCodes?.[0]?.code;
+          const existingCupsCodes = this.medicalAttention.procedureCodes?.map(cup => cup.code) || [];
+          
+          if (newCupsCode && !existingCupsCodes.includes(newCupsCode)) {
+            this.medicalAttention.procedureCodes = [
+              ...this.medicalAttention.procedureCodes,
+              ...qr.procedureCodes
+            ];
+            
+            this.alertService.presentBasicAlert(
+              'CUPS agregado',
+              `Se agregó el código CUPS ${newCupsCode} al paciente ${qr.patient.name} ${qr.patient.lastname}`
+            );
+          } else if (newCupsCode && existingCupsCodes.includes(newCupsCode)) {
+            this.alertService.presentBasicAlert(
+              'CUPS duplicado',
+              `El código CUPS ${newCupsCode} ya está registrado para este paciente`
+            );
+          }
+        } else {
+          this.medicalAttention.patient = qr.patient;
+          this.medicalAttention.specialty = qr.specialty;
+          this.medicalAttention.procedureCodes = qr.procedureCodes || [];
+          this.medicalAttention.programming = qr.programming;
+          this.medicalAttention.numeroResgistro = qr.register;
+          
+          this.profileForm.patchValue({
+            registerCode: qr.register,
+            programmingType: qr.programming,
+            dni: qr.patient.dni,
+            name: qr.patient.name,
+            lastName: qr.patient.lastname,
+            gender: qr.patient.gender,
+            birthday: this.getBirthdayYearFromDate(qr.patient.birthday)
+          });
+          
           this.changeStatusManulIntake(true);
+          this.changeStatusLookingForPatient(true);
         }
-      );
+        
+        this.cameraPermissionRequested = false;
+        console.log('✅ Escaneo completado exitosamente');
+      } else {
+        console.log('❌ QR inválido o sin datos de paciente');
+        this.alertService.presentActionAlert(
+          '¡Ups! Parece que ocurrió un problema con el QR',
+          'Por favor, escanea un código QR válido para continuar.',
+          () => {
+            this.cameraPermissionRequested = false;
+            this.changeStatusManulIntake(true);
+          }
+        );
+      }
+    } catch (error) {
+      console.error('💥 Error en readQR:', error);
+      this.cameraPermissionRequested = false;
+      
+      // Manejar errores específicos
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('camera')) {
+        this.alertService.presentBasicAlert(
+          'Error de cámara',
+          'No se pudo acceder a la cámara. Por favor, verifica los permisos en la configuración del dispositivo.'
+        );
+      } else if (errorMessage.includes('permission')) {
+        this.alertService.presentBasicAlert(
+          'Permisos denegados',
+          'La aplicación no tiene permisos para usar la cámara. Por favor, habilita los permisos en la configuración.'
+        );
+      } else {
+        this.alertService.presentBasicAlert(
+          'Error de escaneo',
+          'Ocurrió un error inesperado durante el escaneo. Por favor, intenta nuevamente.'
+        );
+      }
+      
+      this.changeStatusManulIntake(true);
     }
   }
 
