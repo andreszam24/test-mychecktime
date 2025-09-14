@@ -67,45 +67,122 @@ export class CheckPatientInfoPage implements OnInit {
   }
 
   async scan(): Promise<void> {
-    const granted = await this.requestPermissions();
-    if (!granted) {
-      this.textItem = '¡Ups! Sin permisos ¡Activa los permisos de la cámara para usar el escáner de códigos o ingresa los ultimos 4 digitos de su identificacion  y oprime continuar';
-      return;
-    }
-    // NOTE: To avoid that scan it doesn't work, you may use 5.0.3 version or higher: npm i @capacitor-mlkit/barcode-scanning@5.0.3
-    //Check if the Google ML Kit barcode scanner is available
-    await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable().then(async (data) => {
-      if (data.available) {
-        // Start the barcode scanner
+    console.log('📱 Iniciando proceso de escaneo en check-patient-info...');
+    
+    try {
+      // Verificar soporte del dispositivo primero
+      const supportResult = await BarcodeScanner.isSupported();
+      console.log('🔍 Soporte del dispositivo:', supportResult);
+      
+      if (!supportResult.supported) {
+        console.log('❌ Dispositivo no soporta escaneo de códigos');
+        this.textItem = '¡Ups! Parece que tu dispositivo no puede escanear códigos con la cámara en este momento. Lamentablemente, esta función no está disponible en tu dispositivo.';
+        return;
+      }
+
+      const granted = await this.requestPermissions();
+      console.log('🔐 Permisos de cámara:', granted);
+      
+      if (!granted) {
+        console.log('❌ Permisos de cámara denegados');
+        this.textItem = '¡Ups! Sin permisos ¡Activa los permisos de la cámara para usar el escáner de códigos o ingresa los ultimos 4 digitos de su identificacion  y oprime continuar';
+        return;
+      }
+
+      // Detectar plataforma y usar el método apropiado
+      const platform = await import('@capacitor/core').then(m => m.Capacitor.getPlatform());
+      console.log('📱 Plataforma detectada:', platform);
+      
+      if (platform === 'ios') {
+        console.log('🍎 iOS detectado, usando escáner nativo...');
         await this.readQR();
       } else {
-        // Install the Google ML Kit barcode scanner
-        await BarcodeScanner.installGoogleBarcodeScannerModule().then(async () => {
-          await this.readQR();
-        });
+        // Para Android, verificar el módulo de Google
+        console.log('🤖 Android detectado, verificando módulo de Google...');
+        await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable()
+          .then(async (data) => {
+            console.log('📦 Estado del módulo de Google:', data);
+            if (data.available) {
+              console.log('✅ Módulo de Google disponible, iniciando escaneo...');
+              await this.readQR();
+            } else {
+              console.log('📥 Instalando módulo de Google...');
+              await BarcodeScanner.installGoogleBarcodeScannerModule().then(
+                async () => {
+                  console.log('✅ Módulo de Google instalado, iniciando escaneo...');
+                  await this.readQR();
+                }
+              );
+            }
+          })
+          .catch((error) => {
+            console.error('❌ Error verificando módulo de escaneo:', error);
+            this.textItem = 'No se pudo inicializar el escáner. Por favor, intenta nuevamente o ingresa los últimos 4 dígitos de su identificación.';
+          });
       }
-    }).catch(error => {
-      if (error.message === 'scan canceled.') {
+    } catch (error) {
+      console.error('💥 Error en scan check-patient-info:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      if (errorMessage === 'scan canceled.') {
         this.textItem = '¡Ups! Parece que cancelaste el escaneo. Por favor, escanea el código QR para verificar identidad del paciente o ingresa los ultimos 4 digitos de su identificacion  y oprime continuar.';
-    } else if (error.message.includes('device') || error.message.includes('camera')) {
+      } else if (errorMessage.includes('device') || errorMessage.includes('camera')) {
         this.textItem = '¡Ups! Parece que hay un problema con tu dispositivo o cámara. Asegúrate de que estén funcionando correctamente y vuelve a intentarlo.';
-    } else {
-        console.error(error.message);
-        this.textItem = error.message;
+      } else {
+        console.error('Error inesperado:', errorMessage);
+        this.textItem = 'Ocurrió un error inesperado durante el escaneo. Por favor, intenta nuevamente o ingresa los últimos 4 dígitos de su identificación.';
+      }
     }
-    });
-
   }
 
   private async readQR() {
-    const { barcodes } = await BarcodeScanner.scan();
-    let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    if(qr && qr.patient){
-      this.validPerson = qr.patient;
-      this.verifyDataPatient(); 
-    } else {
-      console.log(qr)
-      throw new Error('¡Ups! Parece que ocurrió un problema con el QR, ingresa los ultimos 4 digitos de su identificacion  y oprime continuar');     
+    try {
+      console.log('📷 Iniciando escaneo de QR en check-patient-info...');
+      
+      // Configurar opciones de escaneo específicas para iOS
+      const scanOptions = {
+        formats: ['QR_CODE', 'PDF_417'] as any[],
+        // En iOS, no necesitamos configuraciones adicionales
+      };
+      
+      console.log('⚙️ Opciones de escaneo:', scanOptions);
+      
+      const result = await BarcodeScanner.scan(scanOptions);
+      console.log('📊 Resultado del escaneo:', result);
+      
+      if (!result.barcodes || result.barcodes.length === 0) {
+        console.log('❌ No se detectaron códigos en el escaneo');
+        this.textItem = 'No se pudo detectar ningún código QR. Por favor, asegúrate de que el código esté bien visible y vuelve a intentar, o ingresa los últimos 4 dígitos de su identificación.';
+        return;
+      }
+      
+      const barcode = result.barcodes[0];
+      console.log('🔍 Código detectado:', barcode);
+      
+      let qr = this.parseJSONMedicalAttentionSafely(barcode.displayValue);
+      console.log('📋 QR parseado:', qr);
+      
+      if (qr && qr.patient) {
+        console.log('✅ QR válido, procesando datos del paciente...');
+        this.validPerson = qr.patient;
+        this.verifyDataPatient();
+      } else {
+        console.log('❌ QR inválido o sin datos de paciente');
+        this.textItem = '¡Ups! Parece que ocurrió un problema con el QR, ingresa los ultimos 4 digitos de su identificacion  y oprime continuar';
+      }
+    } catch (error) {
+      console.error('💥 Error en readQR check-patient-info:', error);
+      
+      // Manejar errores específicos
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('camera')) {
+        this.textItem = 'No se pudo acceder a la cámara. Por favor, verifica los permisos en la configuración del dispositivo o ingresa los últimos 4 dígitos de su identificación.';
+      } else if (errorMessage.includes('permission')) {
+        this.textItem = 'La aplicación no tiene permisos para usar la cámara. Por favor, habilita los permisos en la configuración o ingresa los últimos 4 dígitos de su identificación.';
+      } else {
+        this.textItem = 'Ocurrió un error inesperado durante el escaneo. Por favor, intenta nuevamente o ingresa los últimos 4 dígitos de su identificación.';
+      }
     }
   }
 
@@ -116,10 +193,21 @@ export class CheckPatientInfoPage implements OnInit {
   }
 
   verifyDataPatient(){
-    if(this.doesMatch()){
-      this.goToNextPage();
-    } else {
-      throw new Error('¡Ups! Parece que ocurrió un problema, el contenido del código QR no corresponde al paciente, verifica la identidad antes de continuar');     
+    try {
+      console.log('🔍 Verificando datos del paciente...');
+      console.log('👤 Paciente del servicio médico:', this.medicalServiceInProgressDataPatient);
+      console.log('👤 Paciente del QR:', this.validPerson);
+      
+      if(this.doesMatch()){
+        console.log('✅ Los datos del paciente coinciden, continuando...');
+        this.goToNextPage();
+      } else {
+        console.log('❌ Los datos del paciente no coinciden');
+        this.textItem = '¡Ups! Parece que ocurrió un problema, el contenido del código QR no corresponde al paciente, verifica la identidad antes de continuar';
+      }
+    } catch (error) {
+      console.error('💥 Error en verifyDataPatient:', error);
+      this.textItem = 'Error verificando los datos del paciente. Por favor, intenta nuevamente o ingresa los últimos 4 dígitos de su identificación.';
     }
   }
 

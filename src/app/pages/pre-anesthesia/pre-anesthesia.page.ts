@@ -178,84 +178,183 @@ export class PreAnesthesiaPage implements OnInit {
   };
 
   async scan(): Promise<void> {
-    const granted = await this.requestPermissions();
-    if (!granted) {
-      this.alertService.presentActionAlertCustom(
-        '¡Ups! Sin permisos',
-        '¡Activa los permisos de la cámara para usar el escáner de códigos!',
-        this.handleOpenPermission,
-        () => this.navCtrl.navigateForward('home')
-      );
-      return;
-    }
+    console.log('📱 Iniciando proceso de escaneo en pre-anestesia...');
+    
+    try {
+      // Verificar soporte del dispositivo primero
+      const supportResult = await BarcodeScanner.isSupported();
+      console.log('🔍 Soporte del dispositivo:', supportResult);
+      
+      if (!supportResult.supported) {
+        console.log('❌ Dispositivo no soporta escaneo de códigos');
+        await this.unsupportedBarcodeMessage();
+        this.navCtrl.navigateForward('home');
+        return;
+      }
 
-    // NOTE: To avoid that scan it doesn't work, you may use 5.0.3 version or higher: npm i @capacitor-mlkit/barcode-scanning@5.0.3
-    //Check if the Google ML Kit barcode scanner is available
-    await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable()
-      .then(async (data) => {
-        if (data.available) {
-          // Start the barcode scanner
-          await this.readQR();
-        } else {
-          // Install the Google ML Kit barcode scanner
-          await BarcodeScanner.installGoogleBarcodeScannerModule().then(
-            async () => {
+      const granted = await this.requestPermissions();
+      console.log('🔐 Permisos de cámara:', granted);
+      
+      if (!granted) {
+        console.log('❌ Permisos de cámara denegados');
+        this.alertService.presentActionAlertCustom(
+          '¡Ups! Sin permisos',
+          '¡Activa los permisos de la cámara para usar el escáner de códigos!',
+          this.handleOpenPermission,
+          () => this.navCtrl.navigateForward('home')
+        );
+        return;
+      }
+
+      // Detectar plataforma y usar el método apropiado
+      const platform = await import('@capacitor/core').then(m => m.Capacitor.getPlatform());
+      console.log('📱 Plataforma detectada:', platform);
+      
+      if (platform === 'ios') {
+        console.log('🍎 iOS detectado, usando escáner nativo...');
+        await this.readQR();
+      } else {
+        // Para Android, verificar el módulo de Google
+        console.log('🤖 Android detectado, verificando módulo de Google...');
+        await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable()
+          .then(async (data) => {
+            console.log('📦 Estado del módulo de Google:', data);
+            if (data.available) {
+              console.log('✅ Módulo de Google disponible, iniciando escaneo...');
               await this.readQR();
+            } else {
+              console.log('📥 Instalando módulo de Google...');
+              await BarcodeScanner.installGoogleBarcodeScannerModule().then(
+                async () => {
+                  console.log('✅ Módulo de Google instalado, iniciando escaneo...');
+                  await this.readQR();
+                }
+              );
             }
-          );
-        }
-      })
-      .catch((error) => {
-        this.showAudioAlert = false;
-        if (error.message === 'scan canceled.') {
-          this.alertService.presentActionAlert(
-            '¡Ups! Parece que cancelaste el escaneo',
-            'Por favor, escanea el código QR de area pre-operatoria para continuar.',
-            () => {
-              this.navCtrl.navigateForward('home');
-            }
-          );
-        } else if (
-          error.message.includes('device') ||
-          error.message.includes('camera')
-        ) {
-          this.alertService.presentActionAlert(
-            '¡Ups! Parece que hay un problema con tu dispositivo o cámara',
-            'Asegúrate de que estén funcionando correctamente y vuelve a intentarlo.',
-            () => {
-              this.navCtrl.navigateForward('home');
-            }
-          );
-        } else {
-          console.error(error.message);
-          this.navCtrl.navigateForward('home');
-        }
-      });
+          })
+          .catch((error) => {
+            console.error('❌ Error verificando módulo de escaneo:', error);
+            this.showAudioAlert = false;
+            this.alertService.presentBasicAlert(
+              'Error de escaneo',
+              'No se pudo inicializar el escáner. Por favor, intenta nuevamente.'
+            );
+            this.navCtrl.navigateForward('home');
+          });
+      }
+    } catch (error) {
+      console.error('💥 Error en scan pre-anestesia:', error);
+      this.showAudioAlert = false;
+      
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      if (errorMessage === 'scan canceled.') {
+        this.alertService.presentActionAlert(
+          '¡Ups! Parece que cancelaste el escaneo',
+          'Por favor, escanea el código QR de area pre-operatoria para continuar.',
+          () => {
+            this.navCtrl.navigateForward('home');
+          }
+        );
+      } else if (errorMessage.includes('device') || errorMessage.includes('camera')) {
+        this.alertService.presentActionAlert(
+          '¡Ups! Parece que hay un problema con tu dispositivo o cámara',
+          'Asegúrate de que estén funcionando correctamente y vuelve a intentarlo.',
+          () => {
+            this.navCtrl.navigateForward('home');
+          }
+        );
+      } else {
+        console.error('Error inesperado:', errorMessage);
+        this.alertService.presentBasicAlert(
+          'Error de escaneo',
+          'Ocurrió un error inesperado durante el escaneo. Por favor, intenta nuevamente.'
+        );
+        this.navCtrl.navigateForward('home');
+      }
+    }
   }
 
   private async readQR() {
-    const { barcodes } = await BarcodeScanner.scan();
-    let qr = this.parseJSONMedicalAttentionSafely(barcodes[0].displayValue);
-    if (qr && qr.basicConfirmation) {
-      this.model.basicConfirmation = qr.basicConfirmation;
-      this.model.site = qr.site;
-      this.model.anesthesiaSecurity = qr.anesthesiaSecurity;
-      this.model.pulsometer = qr.pulsometer;
-      this.model.allergy = qr.allergy;
-      this.model.difficultAirway = qr.difficultAirway;
-      this.model.riskOfHemorrhage = qr.riskOfHemorrhage;
-      this.model.intervention = qr.intervention ?? 'Ninguna';
-      this.scannDataForm = true;
-      // Solo mostrar alerta de audio si NO es el usuario 870 o 866
-      this.showAudioAlert = !this.idUser;
-    } else {
-      this.alertService.presentActionAlert(
-        '¡Ups! Parece que ocurrió un problema con el QR',
-        'Por favor, escanea un código QR valido para continuar.',
-        () => {
-          this.navCtrl.navigateForward('home');
-        }
-      );
+    try {
+      console.log('📷 Iniciando escaneo de QR en pre-anestesia...');
+      
+      // Configurar opciones de escaneo específicas para iOS
+      const scanOptions = {
+        formats: ['QR_CODE', 'PDF_417'] as any[],
+        // En iOS, no necesitamos configuraciones adicionales
+      };
+      
+      console.log('⚙️ Opciones de escaneo:', scanOptions);
+      
+      const result = await BarcodeScanner.scan(scanOptions);
+      console.log('📊 Resultado del escaneo:', result);
+      
+      if (!result.barcodes || result.barcodes.length === 0) {
+        console.log('❌ No se detectaron códigos en el escaneo');
+        this.alertService.presentActionAlert(
+          'No se detectó código',
+          'No se pudo detectar ningún código QR. Por favor, asegúrate de que el código esté bien visible y vuelve a intentar.',
+          () => {
+            this.navCtrl.navigateForward('home');
+          }
+        );
+        return;
+      }
+      
+      const barcode = result.barcodes[0];
+      console.log('🔍 Código detectado:', barcode);
+      
+      let qr = this.parseJSONMedicalAttentionSafely(barcode.displayValue);
+      console.log('📋 QR parseado:', qr);
+      
+      if (qr && qr.basicConfirmation) {
+        console.log('✅ QR válido, procesando datos...');
+        this.model.basicConfirmation = qr.basicConfirmation;
+        this.model.site = qr.site;
+        this.model.anesthesiaSecurity = qr.anesthesiaSecurity;
+        this.model.pulsometer = qr.pulsometer;
+        this.model.allergy = qr.allergy;
+        this.model.difficultAirway = qr.difficultAirway;
+        this.model.riskOfHemorrhage = qr.riskOfHemorrhage;
+        this.model.intervention = qr.intervention ?? 'Ninguna';
+        this.scannDataForm = true;
+        // Solo mostrar alerta de audio si NO es el usuario 870 o 866
+        this.showAudioAlert = !this.idUser;
+        console.log('✅ Escaneo completado exitosamente en pre-anestesia');
+      } else {
+        console.log('❌ QR inválido o sin datos de confirmación básica');
+        this.alertService.presentActionAlert(
+          '¡Ups! Parece que ocurrió un problema con el QR',
+          'Por favor, escanea un código QR válido para continuar.',
+          () => {
+            this.navCtrl.navigateForward('home');
+          }
+        );
+      }
+    } catch (error) {
+      console.error('💥 Error en readQR pre-anestesia:', error);
+      
+      // Manejar errores específicos
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('camera')) {
+        this.alertService.presentBasicAlert(
+          'Error de cámara',
+          'No se pudo acceder a la cámara. Por favor, verifica los permisos en la configuración del dispositivo.'
+        );
+      } else if (errorMessage.includes('permission')) {
+        this.alertService.presentBasicAlert(
+          'Permisos denegados',
+          'La aplicación no tiene permisos para usar la cámara. Por favor, habilita los permisos en la configuración.'
+        );
+      } else {
+        this.alertService.presentBasicAlert(
+          'Error de escaneo',
+          'Ocurrió un error inesperado durante el escaneo. Por favor, intenta nuevamente.'
+        );
+      }
+      
+      this.navCtrl.navigateForward('home');
     }
   }
 
