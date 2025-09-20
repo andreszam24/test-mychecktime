@@ -131,21 +131,17 @@ export class OperatingRoomListPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    if (!this.model.confirmMembers) {
-      // Solo mostrar alerta de audio si NO es el usuario 870 o 866
-      this.showAudioAlert = !this.idUser;
-      this.model.confirmMembers = true;
-      this.model.confirmIdentity = true;
-      this.model.criticalEvents = true;
-      this.model.anesthesiaTeamReview = true;
-      this.model.nurseTeamReview = true;
-      this.model.administeredProphylaxis = false;
-      this.model.diagnosticImages = false;
-      this.checkDate();
-      this.checkDateExit();
-    } else {
-      this.showAudioAlert = false;
-    }
+    // Solo mostrar alerta de audio si NO es el usuario 870 o 866
+    this.showAudioAlert = !this.idUser;
+    this.model.confirmMembers = true;
+    this.model.confirmIdentity = true;
+    this.model.criticalEvents = true;
+    this.model.anesthesiaTeamReview = true;
+    this.model.nurseTeamReview = true;
+    this.model.administeredProphylaxis = false;
+    this.model.diagnosticImages = false;
+    this.checkDate();
+    this.checkDateExit();
   }
 
   initializeModel() {

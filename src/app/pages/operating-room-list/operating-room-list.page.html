@@ -8,9 +8,7 @@
   </ion-header>
 
   <app-audio-alert *ngIf="showAudioAlert" [audioSrc]="audioSrc" [audioHeader]="header" [alertButtons]="alertButtons" [textValidate]="textValidate" (alertClosed)="showAudioAlert = false"></app-audio-alert>
-  <!-- <app-audio-modal *ngIf="showAudioAlert">
 
-  </app-audio-modal> -->
   <form class="formulario-chequeo">
     <div *ngIf="!showSearchConcepts">
 
